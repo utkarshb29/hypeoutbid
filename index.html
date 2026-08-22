@@ -289,6 +289,30 @@ body.light .bid-label{color:var(--muted);}
 .theme-btn{background:var(--s2);border:1px solid var(--border);border-radius:50%;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1rem;transition:all .2s;margin-right:.5rem;}
 .theme-btn:hover{border-color:var(--accent);transform:rotate(20deg);}
 
+
+/* Custom Dropdown */
+.custom-dropdown{position:relative;min-width:200px;}
+.dropdown-btn{display:flex;align-items:center;gap:.5rem;width:100%;background:var(--s2);border:1px solid var(--border);border-radius:var(--r-sm);padding:.75rem 1rem;color:var(--text);font-size:.85rem;cursor:pointer;transition:all .2s;text-align:left;}
+.dropdown-btn:hover{border-color:var(--accent);}
+.dropdown-btn:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-bg);outline:none;}
+.dd-icon{font-size:1rem;}
+.dd-text{flex:1;}
+.dd-arrow{transition:transform .2s;opacity:.6;}
+.custom-dropdown.open .dd-arrow{transform:rotate(180deg);}
+.dropdown-menu{position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--s1);border:1px solid var(--border);border-radius:var(--r-sm);padding:.4rem;max-height:320px;overflow-y:auto;z-index:100;opacity:0;visibility:hidden;transform:translateY(-8px);transition:all .2s ease;box-shadow:0 12px 40px rgba(0,0,0,.4);}
+.custom-dropdown.open .dropdown-menu{opacity:1;visibility:visible;transform:translateY(0);}
+.dd-item{display:flex;align-items:center;gap:.6rem;padding:.6rem .75rem;border-radius:var(--r-xs);cursor:pointer;font-size:.85rem;color:var(--text2);transition:all .15s;}
+.dd-item:hover{background:var(--accent-bg);color:var(--text);}
+.dd-item.selected{background:var(--accent-bg);color:var(--accent);font-weight:600;}
+.dd-item.selected::after{content:"✓";margin-left:auto;color:var(--accent);}
+.dd-i-icon{font-size:1rem;width:20px;text-align:center;}
+.dropdown-menu::-webkit-scrollbar{width:6px;}
+.dropdown-menu::-webkit-scrollbar-track{background:transparent;}
+.dropdown-menu::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+body.light .dropdown-menu{background:#fff;box-shadow:0 12px 40px rgba(0,0,0,.12);}
+body.light .dd-item:hover{background:rgba(225,48,108,.06);}
+body.light .dropdown-btn{background:#fff;}
+
 </style>
 <script src="https://checkout.razorpay.com/v1/checkout.js">
 // ── THEME TOGGLE ──
@@ -314,6 +338,30 @@ function toggleTheme(){
     if(btn) btn.textContent="☀️";
   }
 })();
+
+
+// ── CUSTOM DROPDOWN ──
+var heroCatValue = "all";
+function toggleDropdown(){
+  document.getElementById("heroCatWrap").classList.toggle("open");
+}
+function selectCat(el){
+  var val = el.getAttribute("data-val");
+  var text = el.textContent.trim();
+  var icon = el.querySelector(".dd-i-icon").textContent;
+  heroCatValue = val;
+  document.getElementById("heroCatBtn").querySelector(".dd-text").textContent = text;
+  document.getElementById("heroCatBtn").querySelector(".dd-icon").textContent = icon;
+  document.querySelectorAll(".dd-item").forEach(function(i){ i.classList.remove("selected"); });
+  el.classList.add("selected");
+  document.getElementById("heroCatWrap").classList.remove("open");
+  updateHeroPrice();
+}
+// Close dropdown on outside click
+document.addEventListener("click", function(e){
+  var dd = document.getElementById("heroCatWrap");
+  if(dd && !dd.contains(e.target)) dd.classList.remove("open");
+});
 
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js">
@@ -341,6 +389,30 @@ function toggleTheme(){
   }
 })();
 
+
+// ── CUSTOM DROPDOWN ──
+var heroCatValue = "all";
+function toggleDropdown(){
+  document.getElementById("heroCatWrap").classList.toggle("open");
+}
+function selectCat(el){
+  var val = el.getAttribute("data-val");
+  var text = el.textContent.trim();
+  var icon = el.querySelector(".dd-i-icon").textContent;
+  heroCatValue = val;
+  document.getElementById("heroCatBtn").querySelector(".dd-text").textContent = text;
+  document.getElementById("heroCatBtn").querySelector(".dd-icon").textContent = icon;
+  document.querySelectorAll(".dd-item").forEach(function(i){ i.classList.remove("selected"); });
+  el.classList.add("selected");
+  document.getElementById("heroCatWrap").classList.remove("open");
+  updateHeroPrice();
+}
+// Close dropdown on outside click
+document.addEventListener("click", function(e){
+  var dd = document.getElementById("heroCatWrap");
+  if(dd && !dd.contains(e.target)) dd.classList.remove("open");
+});
+
 </script>
 </head>
 <body><nav class="nav"><div class="container">
@@ -357,26 +429,33 @@ function toggleTheme(){
   <p class="hero-sub">New spots start at <span class="hl-green">$1</span>. Paying less than the #1 price still puts you on the board at whatever place that bid can take.</p>
   <div class="hero-bid-row">
     <input class="hero-input" type="text" id="heroHandle" placeholder="Your product URL or @handle"/>
-    <select class="hero-select" id="heroCat" onchange="updateHeroPrice()">
-      <option value="all">Choose a category</option>
-      <option value="celebrity">Celebrities</option>
-      <option value="creator">Creators & Influencers</option>
-      <option value="athlete">Athletes & Sports</option>
-      <option value="music">Music & Entertainment</option>
-      <option value="business">Business & Brands</option>
-      <option value="fashion">Fashion & Beauty</option>
-      <option value="food">Food & Lifestyle</option>
-      <option value="travel">Travel & Adventure</option>
-      <option value="tech">Tech & Gaming</option>
-      <option value="comedy">Comedy & Memes</option>
-      <option value="photography">Photography</option>
-      <option value="fitness">Fitness & Health</option>
-      <option value="indian">India (IN)</option>
-      <option value="ai">AI & Startups</option>
-      <option value="crypto">Crypto & Web3</option>
-      <option value="finance">Finance & Investing</option>
-      <option value="education">Education & Coaching</option>
-    </select>
+    <div class="custom-dropdown" id="heroCatWrap">
+      <button class="dropdown-btn" id="heroCatBtn" onclick="toggleDropdown()">
+        <span class="dd-icon">📂</span>
+        <span class="dd-text">Choose a category</span>
+        <svg class="dd-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="dropdown-menu" id="heroCatMenu">
+        <div class="dd-item" data-val="all" onclick="selectCat(this)"><span class="dd-i-icon">📊</span> All Categories</div>
+        <div class="dd-item" data-val="celebrity" onclick="selectCat(this)"><span class="dd-i-icon">⭐</span> Celebrities</div>
+        <div class="dd-item" data-val="creator" onclick="selectCat(this)"><span class="dd-i-icon">🎬</span> Creators & Influencers</div>
+        <div class="dd-item" data-val="athlete" onclick="selectCat(this)"><span class="dd-i-icon">🏆</span> Athletes & Sports</div>
+        <div class="dd-item" data-val="music" onclick="selectCat(this)"><span class="dd-i-icon">🎵</span> Music & Entertainment</div>
+        <div class="dd-item" data-val="business" onclick="selectCat(this)"><span class="dd-i-icon">📈</span> Business & Brands</div>
+        <div class="dd-item" data-val="fashion" onclick="selectCat(this)"><span class="dd-i-icon">👗</span> Fashion & Beauty</div>
+        <div class="dd-item" data-val="food" onclick="selectCat(this)"><span class="dd-i-icon">🍕</span> Food & Lifestyle</div>
+        <div class="dd-item" data-val="travel" onclick="selectCat(this)"><span class="dd-i-icon">✈️</span> Travel & Adventure</div>
+        <div class="dd-item" data-val="tech" onclick="selectCat(this)"><span class="dd-i-icon">💻</span> Tech & Gaming</div>
+        <div class="dd-item" data-val="comedy" onclick="selectCat(this)"><span class="dd-i-icon">😂</span> Comedy & Memes</div>
+        <div class="dd-item" data-val="photography" onclick="selectCat(this)"><span class="dd-i-icon">📸</span> Photography</div>
+        <div class="dd-item" data-val="fitness" onclick="selectCat(this)"><span class="dd-i-icon">💪</span> Fitness & Health</div>
+        <div class="dd-item" data-val="indian" onclick="selectCat(this)"><span class="dd-i-icon">🇮🇳</span> India</div>
+        <div class="dd-item" data-val="ai" onclick="selectCat(this)"><span class="dd-i-icon">🤖</span> AI & Startups</div>
+        <div class="dd-item" data-val="crypto" onclick="selectCat(this)"><span class="dd-i-icon">🪙</span> Crypto & Web3</div>
+        <div class="dd-item" data-val="finance" onclick="selectCat(this)"><span class="dd-i-icon">💰</span> Finance & Investing</div>
+        <div class="dd-item" data-val="education" onclick="selectCat(this)"><span class="dd-i-icon">📚</span> Education & Coaching</div>
+      </div>
+    </div>
     <button class="btn btn-hot btn-lg" onclick="openBidModal(0)">Outbid</button>
   </div>
   <p class="hero-note">Already on the list? Enter the same @handle and up your bid.</p>
@@ -709,7 +788,7 @@ function render(){
 function filterCat(c,btn){ curFilter=c; document.querySelectorAll(".tab").forEach(function(t){ t.classList.remove("active"); }); btn.classList.add("active"); render(); updateHeroPrice(); }
 
 function updateHeroPrice(){
-  var cat = document.getElementById("heroCat") ? document.getElementById("heroCat").value : curFilter;
+  var cat = heroCatValue || curFilter;
   if(cat==="all"||!cat) cat="all";
   var list = cat==="all" ? sorted() : sorted().filter(function(p){ return p.cat===cat; });
   var topBid = list.length>0 ? list[0].bid_paise : 0;
@@ -892,5 +971,29 @@ function toggleTheme(){
     if(btn) btn.textContent="☀️";
   }
 })();
+
+
+// ── CUSTOM DROPDOWN ──
+var heroCatValue = "all";
+function toggleDropdown(){
+  document.getElementById("heroCatWrap").classList.toggle("open");
+}
+function selectCat(el){
+  var val = el.getAttribute("data-val");
+  var text = el.textContent.trim();
+  var icon = el.querySelector(".dd-i-icon").textContent;
+  heroCatValue = val;
+  document.getElementById("heroCatBtn").querySelector(".dd-text").textContent = text;
+  document.getElementById("heroCatBtn").querySelector(".dd-icon").textContent = icon;
+  document.querySelectorAll(".dd-item").forEach(function(i){ i.classList.remove("selected"); });
+  el.classList.add("selected");
+  document.getElementById("heroCatWrap").classList.remove("open");
+  updateHeroPrice();
+}
+// Close dropdown on outside click
+document.addEventListener("click", function(e){
+  var dd = document.getElementById("heroCatWrap");
+  if(dd && !dd.contains(e.target)) dd.classList.remove("open");
+});
 
 </script></body></html>
