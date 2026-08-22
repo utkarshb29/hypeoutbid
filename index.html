@@ -107,17 +107,103 @@ a{color:var(--accent-light);text-decoration:none;}button{font-family:inherit;}
 @keyframes ti{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:translateX(0)}}
 @media(max-width:768px){.nav-links{display:none;}.hero h1{font-size:2rem;}.top-card{flex-direction:column;text-align:center;}.top-card::before{display:none;}.top-bid-side{text-align:center;}.top-metrics{justify-content:center;}}
 
+/* ── INTERACTIVE & POLISH ── */
 .hero-bid-row{display:flex;gap:.75rem;max-width:700px;margin:1.5rem auto 0;align-items:center;}
-.hero-input{flex:1;background:var(--s2);border:1px solid var(--border);border-radius:var(--r-sm);padding:.75rem 1rem;color:var(--text);font-size:.95rem;outline:none;transition:border .2s;}
-.hero-input:focus{border-color:var(--accent);}
-.hero-select{background:var(--s2);border:1px solid var(--border);border-radius:var(--r-sm);padding:.75rem 1rem;color:var(--text);font-size:.85rem;cursor:pointer;min-width:180px;outline:none;}
-.hero-select:focus{border-color:var(--accent);}
+.hero-input{flex:1;background:var(--s2);border:1px solid var(--border);border-radius:var(--r-sm);padding:.75rem 1rem;color:var(--text);font-size:.95rem;outline:none;transition:border .2s,box-shadow .2s;}
+.hero-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-bg);}
+.hero-input::placeholder{color:var(--muted);}
+.hero-select{background:var(--s2);border:1px solid var(--border);border-radius:var(--r-sm);padding:.75rem 1rem;color:var(--text);font-size:.85rem;cursor:pointer;min-width:180px;outline:none;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:2.5rem;transition:border .2s,box-shadow .2s;}
+.hero-select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-bg);}
+.hero-select option{background:var(--s1);color:var(--text);padding:.5rem;}
 .hero-sub{color:var(--text2);font-size:.95rem;margin-top:.5rem;}
 .hero-note{color:var(--muted);font-size:.8rem;margin-top:.75rem;}
 .hl-green{color:var(--green);}
 .tabs{overflow-x:auto;white-space:nowrap;padding-bottom:.5rem;-ms-overflow-style:none;scrollbar-width:thin;}
 #heroPrice{font-size:inherit;color:var(--hot);transition:all .3s ease;}
 #onlineCount{color:var(--green);}
+
+/* Dark form inputs everywhere */
+.form-input{background:var(--s2) !important;border:1px solid var(--border) !important;color:var(--text) !important;border-radius:var(--r-sm);padding:.75rem 1rem;font-size:.95rem;outline:none;width:100%;box-sizing:border-box;transition:border .2s,box-shadow .2s;}
+.form-input:focus{border-color:var(--accent) !important;box-shadow:0 0 0 3px var(--accent-bg) !important;background:var(--s3) !important;}
+.form-input::placeholder{color:var(--muted) !important;}
+
+/* Pointer cursors on interactive elements */
+.lb-row{cursor:pointer;transition:all .2s ease;border:1px solid transparent;}
+.lb-row:hover{background:var(--s2);border-color:var(--border);transform:translateX(4px);box-shadow:0 4px 16px rgba(0,0,0,.3);}
+.lb-row:hover .bid-amount{color:var(--hot);transform:scale(1.05);}
+.lb-row:hover .user-name{color:var(--accent-light);}
+.top-card{cursor:pointer;transition:all .3s ease;}
+.top-card:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(225,48,108,.15);}
+.user-name{transition:color .2s;cursor:pointer;}
+.user-handle{cursor:pointer;transition:color .2s;}
+.user-handle:hover{color:var(--accent);}
+.bid-amount{transition:all .2s ease;}
+
+/* Tab hover effects */
+.tab{cursor:pointer;transition:all .2s ease;position:relative;}
+.tab:hover{background:var(--s3);color:var(--text);transform:translateY(-1px);}
+.tab.active{position:relative;}
+.tab.active::after{content:'';position:absolute;bottom:-2px;left:20%;right:20%;height:2px;background:var(--accent);border-radius:2px;}
+
+/* Button hover enhancements */
+.btn{cursor:pointer;transition:all .2s ease;position:relative;overflow:hidden;}
+.btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.3);}
+.btn:active{transform:translateY(0);box-shadow:none;}
+.btn-hot{position:relative;}
+.btn-hot:hover{box-shadow:0 4px 20px rgba(255,71,87,.3);}
+.btn-accent:hover{box-shadow:0 4px 20px rgba(225,48,108,.3);}
+
+/* Outbid button pulse on hover */
+.outbid-btn .btn:hover{animation:pulse-hot .6s ease-in-out infinite alternate;}
+@keyframes pulse-hot{from{box-shadow:0 0 0 0 rgba(255,71,87,.4)}to{box-shadow:0 0 0 8px rgba(255,71,87,0)}}
+
+/* Modal dark inputs */
+.modal{background:var(--s1);border:1px solid var(--border);}
+.modal input{background:var(--s2) !important;border:1px solid var(--border) !important;color:var(--text) !important;caret-color:var(--accent);}
+.modal input:focus{border-color:var(--accent) !important;box-shadow:0 0 0 3px var(--accent-bg) !important;background:var(--s3) !important;}
+.modal input::placeholder{color:var(--muted) !important;}
+
+/* Nav links interactive */
+.nav-links a{position:relative;transition:color .2s;}
+.nav-links a:hover{color:var(--accent);}
+.nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;right:0;height:2px;background:var(--accent);transform:scaleX(0);transition:transform .2s;border-radius:2px;}
+.nav-links a:hover::after{transform:scaleX(1);}
+
+/* Live dot pulse */
+.live-dot{animation:livePulse 2s ease-in-out infinite;}
+@keyframes livePulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.6;transform:scale(1.3);}}
+
+/* Hero price animation */
+#heroPrice{display:inline-block;transition:all .3s cubic-bezier(.4,0,.2,1);}
+.price-bounce{animation:priceBounce .4s ease;}
+@keyframes priceBounce{0%{transform:scale(1)}50%{transform:scale(1.15)}100%{transform:scale(1)}}
+
+/* Smooth scroll */
+html{scroll-behavior:smooth;}
+
+/* Feed items hover */
+.feed-item{transition:all .2s;cursor:default;border-left:2px solid transparent;padding-left:.5rem;}
+.feed-item:hover{background:var(--s2);border-left-color:var(--accent);border-radius:var(--r-xs);}
+
+/* Badge pulse */
+.badge{animation:badgePulse 2s ease-in-out infinite;}
+@keyframes badgePulse{0%,100%{opacity:1}50%{opacity:.7}}
+
+/* Rank number animations */
+.rank-num{transition:all .3s ease;}
+.r1{animation:goldShine 3s ease-in-out infinite;}
+@keyframes goldShine{0%,100%{text-shadow:0 0 8px rgba(255,193,7,.3)}50%{text-shadow:0 0 16px rgba(255,193,7,.6)}}
+
+/* Tooltip on hover for handles */
+.user-handle{text-decoration:none;border-bottom:1px dashed transparent;transition:all .2s;}
+.user-handle:hover{border-bottom-color:var(--accent);color:var(--accent);}
+
+/* Stats bar number animation */
+.stat .val{transition:all .3s ease;}
+.stat:hover .val{color:var(--accent);transform:scale(1.05);}
+.stat{cursor:default;transition:transform .2s;}
+.stat:hover{transform:translateY(-2px);}
+
 </style>
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -129,7 +215,7 @@ a{color:var(--accent-light);text-decoration:none;}button{font-family:inherit;}
 </div></nav>
 
 <section class="hero"><div class="container">
-  <div class="hero-badge"><div class="live-dot"></div> <span id="onlineCount">0</span> online · <span id="statProfiles">20</span> profiles listed</div>
+  <div class="hero-badge"><div class="live-dot"></div> <span id="onlineCount">347</span> online · <span id="statProfiles">20</span> profiles listed</div>
   <h1>Claim #1 for <span class="hl" id="heroPrice">$1</span></h1>
   <p class="hero-sub">New spots start at <span class="hl-green">$1</span>. Paying less than the #1 price still puts you on the board at whatever place that bid can take.</p>
   <div class="hero-bid-row">
@@ -147,7 +233,7 @@ a{color:var(--accent-light);text-decoration:none;}button{font-family:inherit;}
       <option value="comedy">Comedy & Memes</option>
       <option value="photography">Photography</option>
       <option value="fitness">Fitness & Health</option>
-      <option value="indian">🇮🇳 India</option>
+      <option value="indian">India (IN)</option>
     </select>
     <button class="btn btn-hot btn-lg" onclick="openBidModal(0)">Outbid</button>
   </div>
@@ -397,7 +483,7 @@ function render(){
     if(prev!==undefined&&prev<gr) arrow="<span class=\"rank-arrow ra-dn\">▼</span>";
     var rc=gr===1?"r1":gr===2?"r2":gr===3?"r3":"rn";
     var rowcls="lb-row"+(gr===1?" top1":gr===2?" top2":gr===3?" top3":"")+(p._f?" flash":"");
-    tb.innerHTML+="<div class=\""+rowcls+"\">"+
+    tb.innerHTML+="<div class=\""+rowcls+"\" onclick=\"openBidModal("+p.id+")\">"+
       "<div class=\"rank-num "+rc+"\">"+(gr===1?"👑":gr)+"</div>"+arrow+
       "<div class=\"user-avatar"+(p.verified?" verified":"")+"\">"+(p.av||"👤")+"</div>"+
       "<div class=\"user-info\"><div class=\"user-name\">"+p.name+(p.verified?" <span class=\"verify\">✓</span>":"")+"</div>"+
@@ -418,7 +504,7 @@ function updateHeroPrice(){
   var list = cat==="all" ? sorted() : sorted().filter(function(p){ return p.cat===cat; });
   var topBid = list.length>0 ? list[0].bid_paise : 0;
   var price = topBid>0 ? topBid+100 : 100; // must exceed by $1
-  document.getElementById("heroPrice").textContent = fmtINR(price);
+  var el=document.getElementById("heroPrice"); el.textContent = fmtINR(price); el.classList.remove("price-bounce"); void el.offsetWidth; el.classList.add("price-bounce");
 }
 
 function renderDefaultFeed(){
