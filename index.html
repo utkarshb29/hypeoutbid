@@ -234,6 +234,8 @@ body.light .feed{background:#fff;border-color:var(--border);}
 .tabs::-webkit-scrollbar-track{background:transparent;}
 .tabs::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
 
+
+.hero-tagline{font-size:1.1rem;color:var(--text2);font-weight:500;margin-bottom:.5rem;letter-spacing:-.01em;max-width:600px;margin-left:auto;margin-right:auto;}
 </style>
 <script src="https://checkout.razorpay.com/v1/checkout.js">
 // ── THEME TOGGLE ──
@@ -297,6 +299,7 @@ function toggleTheme(){
 
 <section class="hero"><div class="container">
   <div class="hero-badge"><div class="live-dot"></div> <span id="onlineCount">347</span> online · <span id="statProfiles">20</span> profiles listed</div>
+  <p class="hero-tagline">Where the next billion-dollar founders and viral creators fight for the #1 spot.</p>
   <h1>Claim #1 for <span class="hl" id="heroPrice">$1</span></h1>
   <p class="hero-sub">New spots start at <span class="hl-green">$1</span>. Paying less than the #1 price still puts you on the board at whatever place that bid can take.</p>
   <div class="hero-bid-row">
@@ -315,6 +318,10 @@ function toggleTheme(){
       <option value="photography">Photography</option>
       <option value="fitness">Fitness & Health</option>
       <option value="indian">India (IN)</option>
+      <option value="ai">AI & Startups</option>
+      <option value="crypto">Crypto & Web3</option>
+      <option value="finance">Finance & Investing</option>
+      <option value="education">Education & Coaching</option>
     </select>
     <button class="btn btn-hot btn-lg" onclick="openBidModal(0)">Outbid</button>
   </div>
@@ -474,6 +481,28 @@ var P=[
   {id:46,name:"Priyanka Chopra",handle:"@priyankachopra",av:"⭐",followers:"91M",eng:"2.4%",cat:"indian",bid_paise:100,verified:true},
   {id:47,name:"Shraddha Kapoor",handle:"@shraddhakapoor",av:"🌸",followers:"87M",eng:"4.1%",cat:"indian",bid_paise:100,verified:true},
   {id:48,name:"Ranveer Singh",handle:"@ranveersingh",av:"🎭",followers:"44M",eng:"3.9%",cat:"indian",bid_paise:100,verified:true},
+  // AI & Startups
+  {id:49,name:"Sam Altman",handle:"@sama",av:"🧠",followers:"3M",eng:"9.2%",cat:"ai",bid_paise:100,verified:true},
+  {id:50,name:"Aravind Srinivas",handle:"@AravSrinivas",av:"🔍",followers:"800K",eng:"11%",cat:"ai",bid_paise:100,verified:true},
+  {id:51,name:"Dario Amodei",handle:"@daboramodei",av:"🤖",followers:"500K",eng:"8.5%",cat:"ai",bid_paise:100,verified:false},
+  {id:52,name:"Emmett Shear",handle:"@eshear",av:"💡",followers:"400K",eng:"7.8%",cat:"ai",bid_paise:100,verified:false},
+  {id:53,name:"Alexandr Wang",handle:"@alexandr_wang",av:"📊",followers:"300K",eng:"9.1%",cat:"ai",bid_paise:100,verified:false},
+  {id:54,name:"Pieter Levels",handle:"@levelsio",av:"🛫",followers:"600K",eng:"12%",cat:"ai",bid_paise:100,verified:true},
+  // Crypto & Web3
+  {id:55,name:"Vitalik Buterin",handle:"@vaborikbuterin",av:"💎",followers:"5M",eng:"6.3%",cat:"crypto",bid_paise:100,verified:true},
+  {id:56,name:"CZ Binance",handle:"@caborz",av:"🪙",followers:"12M",eng:"4.1%",cat:"crypto",bid_paise:100,verified:true},
+  {id:57,name:"Brian Armstrong",handle:"@brian_armstrong",av:"🏦",followers:"2M",eng:"5.5%",cat:"crypto",bid_paise:100,verified:true},
+  {id:58,name:"Balaji Srinivasan",handle:"@balaborijis",av:"🌐",followers:"1.5M",eng:"7.2%",cat:"crypto",bid_paise:100,verified:true},
+  // Finance & Investing
+  {id:59,name:"Ankur Warikoo",handle:"@waaborikoo",av:"📖",followers:"4M",eng:"6.8%",cat:"finance",bid_paise:100,verified:true},
+  {id:60,name:"Zerodha Nithin",handle:"@nitaborhin0dha",av:"📉",followers:"2M",eng:"5.9%",cat:"finance",bid_paise:100,verified:true},
+  {id:61,name:"Graham Stephan",handle:"@graaborhamstephan",av:"🏠",followers:"4M",eng:"5.1%",cat:"finance",bid_paise:100,verified:true},
+  {id:62,name:"Sharan Hegde",handle:"@financewithsharan",av:"💸",followers:"3M",eng:"7.5%",cat:"finance",bid_paise:100,verified:true},
+  // Education & Coaching
+  {id:63,name:"Ali Abdaal",handle:"@aliabdaal",av:"🎓",followers:"5M",eng:"5.8%",cat:"education",bid_paise:100,verified:true},
+  {id:64,name:"Jay Shetty",handle:"@jayshetty",av:"🧘",followers:"15M",eng:"3.4%",cat:"education",bid_paise:100,verified:true},
+  {id:65,name:"Thomas Frank",handle:"@thomaborasfrank",av:"📝",followers:"2M",eng:"6.2%",cat:"education",bid_paise:100,verified:true},
+  {id:66,name:"Ranveer Allahbadia",handle:"@beerbiceps",av:"🎙️",followers:"9M",eng:"5.6%",cat:"education",bid_paise:100,verified:true},
 ];
 
 var curFilter="all", prevR={}, bidTargetId=null, CONFIG=null, sbClient=null;
