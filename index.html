@@ -118,7 +118,7 @@ a{color:var(--accent-light);text-decoration:none;}button{font-family:inherit;}
 .hero-sub{color:var(--text2);font-size:.95rem;margin-top:.5rem;}
 .hero-note{color:var(--muted);font-size:.8rem;margin-top:.75rem;}
 .hl-green{color:var(--green);}
-.tabs{overflow-x:auto;white-space:nowrap;padding-bottom:.5rem;-ms-overflow-style:none;scrollbar-width:thin;}
+
 #heroPrice{font-size:inherit;color:var(--hot);transition:all .3s ease;}
 #onlineCount{color:var(--green);}
 
@@ -140,10 +140,7 @@ a{color:var(--accent-light);text-decoration:none;}button{font-family:inherit;}
 .bid-amount{transition:all .2s ease;}
 
 /* Tab hover effects */
-.tab{cursor:pointer;transition:all .2s ease;position:relative;}
-.tab:hover{background:var(--s3);color:var(--text);transform:translateY(-1px);}
-.tab.active{position:relative;}
-.tab.active::after{content:'';position:absolute;bottom:-2px;left:20%;right:20%;height:2px;background:var(--accent);border-radius:2px;}
+
 
 /* Button hover enhancements */
 .btn{cursor:pointer;transition:all .2s ease;position:relative;overflow:hidden;}
@@ -225,6 +222,17 @@ body.light .feed{background:#fff;border-color:var(--border);}
 /* Theme toggle button */
 .theme-toggle{position:fixed;bottom:1.5rem;left:1.5rem;z-index:200;width:44px;height:44px;border-radius:50%;background:var(--s2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.2rem;transition:all .3s ease;box-shadow:var(--shadow);}
 .theme-toggle:hover{transform:scale(1.1);border-color:var(--accent);}
+
+
+/* Category pills - colorful */
+.tab{background:var(--s2);border:1px solid var(--border);border-radius:20px;padding:.45rem 1rem;font-size:.8rem;color:var(--text2);cursor:pointer;transition:all .2s ease;white-space:nowrap;font-weight:500;}
+.tab:hover{background:var(--s3);color:var(--text);border-color:var(--accent);transform:translateY(-1px);}
+.tab.active{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:600;}
+.tab.active::after{display:none;}
+.tabs{display:flex;gap:.5rem;overflow-x:auto;padding-bottom:.5rem;scrollbar-width:thin;-ms-overflow-style:none;}
+.tabs::-webkit-scrollbar{height:4px;}
+.tabs::-webkit-scrollbar-track{background:transparent;}
+.tabs::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
 
 </style>
 <script src="https://checkout.razorpay.com/v1/checkout.js">
@@ -406,38 +414,66 @@ function toggleTheme(){
 <div class="toast-wrap" id="tw"></div><script>
 // ── DATA (bids will be overwritten from DB) ──
 var P=[
-  {id:1,name:"Cristiano Ronaldo",handle:"@cristiano",av:"⚽",followers:"636M",eng:"3.2%",cat:"athlete",bid_paise:100,verified:true},
-  {id:2,name:"Lionel Messi",handle:"@leomessi",av:"🐐",followers:"504M",eng:"2.8%",cat:"athlete",bid_paise:100,verified:true},
-  {id:3,name:"Kylie Jenner",handle:"@kyliejenner",av:"💄",followers:"399M",eng:"1.9%",cat:"celebrity",bid_paise:100,verified:true},
-  {id:4,name:"Virat Kohli",handle:"@virat.kohli",av:"🏏",followers:"271M",eng:"3.5%",cat:"indian",bid_paise:100,verified:true},
-  {id:5,name:"Taylor Swift",handle:"@taylorswift",av:"🎵",followers:"283M",eng:"2.1%",cat:"music",bid_paise:100,verified:true},
-  {id:6,name:"MrBeast",handle:"@mrbeast",av:"🎬",followers:"245M",eng:"4.2%",cat:"creator",bid_paise:100,verified:true},
-  {id:7,name:"Narendra Modi",handle:"@narendramodi",av:"🇮🇳",followers:"102M",eng:"2.8%",cat:"indian",bid_paise:100,verified:true},
-  {id:8,name:"Khaby Lame",handle:"@khaby00",av:"🤷",followers:"162M",eng:"3.8%",cat:"creator",bid_paise:100,verified:true},
-  {id:9,name:"Dwayne Johnson",handle:"@therock",av:"💪",followers:"395M",eng:"1.5%",cat:"celebrity",bid_paise:100,verified:true},
-  {id:10,name:"Elon Musk",handle:"@elonmusk",av:"🚀",followers:"42M",eng:"5.1%",cat:"business",bid_paise:100,verified:true},
-  {id:11,name:"Priyanka Chopra",handle:"@priyankachopra",av:"⭐",followers:"91M",eng:"2.4%",cat:"indian",bid_paise:100,verified:true},
-  {id:12,name:"Neymar Jr",handle:"@neymarjr",av:"🇧🇷",followers:"228M",eng:"2.9%",cat:"athlete",bid_paise:100,verified:true},
-  {id:13,name:"Shraddha Kapoor",handle:"@shraddhakapoor",av:"🌸",followers:"87M",eng:"4.1%",cat:"indian",bid_paise:100,verified:true},
+  // Celebrities
+  {id:1,name:"Cristiano Ronaldo",handle:"@cristiano",av:"⚽",followers:"636M",eng:"3.2%",cat:"celebrity",bid_paise:100,verified:true},
+  {id:2,name:"Kylie Jenner",handle:"@kyliejenner",av:"💄",followers:"399M",eng:"1.9%",cat:"celebrity",bid_paise:100,verified:true},
+  {id:3,name:"Dwayne Johnson",handle:"@therock",av:"💪",followers:"395M",eng:"1.5%",cat:"celebrity",bid_paise:100,verified:true},
+  {id:4,name:"Kim Kardashian",handle:"@kimkardashian",av:"✨",followers:"364M",eng:"1.7%",cat:"celebrity",bid_paise:100,verified:true},
+  // Creators & Influencers
+  {id:5,name:"MrBeast",handle:"@mrbeast",av:"🎬",followers:"245M",eng:"4.2%",cat:"creator",bid_paise:100,verified:true},
+  {id:6,name:"Khaby Lame",handle:"@khaby00",av:"🤷",followers:"162M",eng:"3.8%",cat:"creator",bid_paise:100,verified:true},
+  {id:7,name:"PewDiePie",handle:"@pewdiepie",av:"👊",followers:"21M",eng:"6.2%",cat:"creator",bid_paise:100,verified:true},
+  {id:8,name:"Emma Chamberlain",handle:"@emmachamberlain",av:"☕",followers:"16M",eng:"5.5%",cat:"creator",bid_paise:100,verified:true},
+  // Athletes & Sports
+  {id:9,name:"Lionel Messi",handle:"@leomessi",av:"🐐",followers:"504M",eng:"2.8%",cat:"athlete",bid_paise:100,verified:true},
+  {id:10,name:"Virat Kohli",handle:"@virat.kohli",av:"🏏",followers:"271M",eng:"3.5%",cat:"athlete",bid_paise:100,verified:true},
+  {id:11,name:"Neymar Jr",handle:"@neymarjr",av:"🇧🇷",followers:"228M",eng:"2.9%",cat:"athlete",bid_paise:100,verified:true},
+  {id:12,name:"LeBron James",handle:"@kingjames",av:"🏀",followers:"159M",eng:"2.1%",cat:"athlete",bid_paise:100,verified:true},
+  // Music & Entertainment
+  {id:13,name:"Taylor Swift",handle:"@taylorswift",av:"🎵",followers:"283M",eng:"2.1%",cat:"music",bid_paise:100,verified:true},
   {id:14,name:"Drake",handle:"@champagnepapi",av:"🎤",followers:"146M",eng:"1.8%",cat:"music",bid_paise:100,verified:true},
-  {id:15,name:"PewDiePie",handle:"@pewdiepie",av:"👊",followers:"21M",eng:"6.2%",cat:"creator",bid_paise:100,verified:true},
-  {id:16,name:"Nikhil Kamath",handle:"@nikhil.kamath",av:"📈",followers:"5M",eng:"7.8%",cat:"indian",bid_paise:100,verified:false},
-  {id:17,name:"Billie Eilish",handle:"@billieeilish",av:"🖤",followers:"118M",eng:"2.3%",cat:"music",bid_paise:100,verified:true},
+  {id:15,name:"Billie Eilish",handle:"@billieeilish",av:"🖤",followers:"118M",eng:"2.3%",cat:"music",bid_paise:100,verified:true},
+  {id:16,name:"Bad Bunny",handle:"@badbunnypr",av:"🐰",followers:"95M",eng:"3.1%",cat:"music",bid_paise:100,verified:true},
+  // Business & Brands
+  {id:17,name:"Elon Musk",handle:"@elonmusk",av:"🚀",followers:"42M",eng:"5.1%",cat:"business",bid_paise:100,verified:true},
   {id:18,name:"Gary Vee",handle:"@garyvee",av:"🍷",followers:"16M",eng:"4.5%",cat:"business",bid_paise:100,verified:true},
-  {id:19,name:"Ranveer Singh",handle:"@ranveersingh",av:"🎭",followers:"44M",eng:"3.9%",cat:"indian",bid_paise:100,verified:true},
-  {id:20,name:"Mark Zuckerberg",handle:"@zuck",av:"👓",followers:"14M",eng:"8.1%",cat:"business",bid_paise:100,verified:true},
+  {id:19,name:"Mark Zuckerberg",handle:"@zuck",av:"👓",followers:"14M",eng:"8.1%",cat:"business",bid_paise:100,verified:true},
+  {id:20,name:"Nikhil Kamath",handle:"@nikhil.kamath",av:"📈",followers:"5M",eng:"7.8%",cat:"business",bid_paise:100,verified:false},
+  // Fashion & Beauty
   {id:21,name:"Chiara Ferragni",handle:"@chiaraferragni",av:"👗",followers:"29M",eng:"2.1%",cat:"fashion",bid_paise:100,verified:true},
   {id:22,name:"Huda Kattan",handle:"@hudabeauty",av:"💋",followers:"54M",eng:"2.8%",cat:"fashion",bid_paise:100,verified:true},
-  {id:23,name:"Gordon Ramsay",handle:"@gordongram",av:"🧑‍🍳",followers:"19M",eng:"3.4%",cat:"food",bid_paise:100,verified:true},
-  {id:24,name:"Nas Daily",handle:"@nasdaily",av:"🌍",followers:"42M",eng:"4.0%",cat:"food",bid_paise:100,verified:true},
-  {id:25,name:"MKBHD",handle:"@mkbhd",av:"📱",followers:"5M",eng:"6.5%",cat:"tech",bid_paise:100,verified:true},
-  {id:26,name:"Ninja",handle:"@ninja",av:"🎮",followers:"12M",eng:"3.8%",cat:"tech",bid_paise:100,verified:true},
-  {id:27,name:"Lele Pons",handle:"@lelepons",av:"🤣",followers:"53M",eng:"2.2%",cat:"comedy",bid_paise:100,verified:true},
-  {id:28,name:"Zach King",handle:"@zachking",av:"🎩",followers:"78M",eng:"5.1%",cat:"comedy",bid_paise:100,verified:true},
-  {id:29,name:"Chris Burkard",handle:"@chrisburkard",av:"📷",followers:"4M",eng:"7.2%",cat:"photography",bid_paise:100,verified:true},
-  {id:30,name:"Murad Osmann",handle:"@muradosmann",av:"🏔️",followers:"4.5M",eng:"3.9%",cat:"photography",bid_paise:100,verified:true},
-  {id:31,name:"Kayla Itsines",handle:"@kayla_itsines",av:"🏋️",followers:"16M",eng:"3.1%",cat:"fitness",bid_paise:100,verified:true},
-  {id:32,name:"Simeon Panda",handle:"@simeonpanda",av:"💪",followers:"8M",eng:"4.6%",cat:"fitness",bid_paise:100,verified:true},
+  {id:23,name:"Camila Coelho",handle:"@camilacoelho",av:"👠",followers:"10M",eng:"3.2%",cat:"fashion",bid_paise:100,verified:true},
+  {id:24,name:"Jeffree Star",handle:"@jeffreestar",av:"💅",followers:"13M",eng:"3.9%",cat:"fashion",bid_paise:100,verified:true},
+  // Food & Travel
+  {id:25,name:"Gordon Ramsay",handle:"@gordongram",av:"👨‍🍳",followers:"19M",eng:"3.4%",cat:"food",bid_paise:100,verified:true},
+  {id:26,name:"Nas Daily",handle:"@nasdaily",av:"🌍",followers:"42M",eng:"4.0%",cat:"food",bid_paise:100,verified:true},
+  {id:27,name:"Salt Bae",handle:"@nuaboreu_saltbae",av:"🧂",followers:"51M",eng:"2.6%",cat:"food",bid_paise:100,verified:true},
+  {id:28,name:"Jack Morris",handle:"@doyoutravel",av:"✈️",followers:"3M",eng:"5.8%",cat:"food",bid_paise:100,verified:true},
+  // Tech & Gaming
+  {id:29,name:"MKBHD",handle:"@mkbhd",av:"📱",followers:"5M",eng:"6.5%",cat:"tech",bid_paise:100,verified:true},
+  {id:30,name:"Ninja",handle:"@ninja",av:"🎮",followers:"12M",eng:"3.8%",cat:"tech",bid_paise:100,verified:true},
+  {id:31,name:"Linus Tech",handle:"@linustech",av:"💻",followers:"4M",eng:"5.2%",cat:"tech",bid_paise:100,verified:true},
+  {id:32,name:"Pokimane",handle:"@pokimanelol",av:"🎧",followers:"7M",eng:"4.8%",cat:"tech",bid_paise:100,verified:true},
+  // Comedy & Memes
+  {id:33,name:"Zach King",handle:"@zachking",av:"🎩",followers:"78M",eng:"5.1%",cat:"comedy",bid_paise:100,verified:true},
+  {id:34,name:"Lele Pons",handle:"@lelepons",av:"🤣",followers:"53M",eng:"2.2%",cat:"comedy",bid_paise:100,verified:true},
+  {id:35,name:"Matt Rife",handle:"@mattrife",av:"😂",followers:"19M",eng:"6.1%",cat:"comedy",bid_paise:100,verified:true},
+  {id:36,name:"Bhuvan Bam",handle:"@bfrhanmainan",av:"🎭",followers:"18M",eng:"5.4%",cat:"comedy",bid_paise:100,verified:true},
+  // Photography
+  {id:37,name:"Chris Burkard",handle:"@chrisburkard",av:"📷",followers:"4M",eng:"7.2%",cat:"photography",bid_paise:100,verified:true},
+  {id:38,name:"Murad Osmann",handle:"@muradosmann",av:"🏔️",followers:"4.5M",eng:"3.9%",cat:"photography",bid_paise:100,verified:true},
+  {id:39,name:"Brandon Woelfel",handle:"@brandonwoelfel",av:"🌃",followers:"3M",eng:"6.8%",cat:"photography",bid_paise:100,verified:true},
+  {id:40,name:"Peter McKinnon",handle:"@petermckinnon",av:"📸",followers:"3.5M",eng:"5.5%",cat:"photography",bid_paise:100,verified:true},
+  // Fitness & Health
+  {id:41,name:"Kayla Itsines",handle:"@kayla_itsines",av:"🏋️",followers:"16M",eng:"3.1%",cat:"fitness",bid_paise:100,verified:true},
+  {id:42,name:"Simeon Panda",handle:"@simeonpanda",av:"💪",followers:"8M",eng:"4.6%",cat:"fitness",bid_paise:100,verified:true},
+  {id:43,name:"Chloe Ting",handle:"@chloe_t",av:"🧘",followers:"5M",eng:"5.3%",cat:"fitness",bid_paise:100,verified:true},
+  {id:44,name:"David Laid",handle:"@davidlaid",av:"🏆",followers:"4M",eng:"6.7%",cat:"fitness",bid_paise:100,verified:true},
+  // India
+  {id:45,name:"Narendra Modi",handle:"@narendramodi",av:"🇮🇳",followers:"102M",eng:"2.8%",cat:"indian",bid_paise:100,verified:true},
+  {id:46,name:"Priyanka Chopra",handle:"@priyankachopra",av:"⭐",followers:"91M",eng:"2.4%",cat:"indian",bid_paise:100,verified:true},
+  {id:47,name:"Shraddha Kapoor",handle:"@shraddhakapoor",av:"🌸",followers:"87M",eng:"4.1%",cat:"indian",bid_paise:100,verified:true},
+  {id:48,name:"Ranveer Singh",handle:"@ranveersingh",av:"🎭",followers:"44M",eng:"3.9%",cat:"indian",bid_paise:100,verified:true},
 ];
 
 var curFilter="all", prevR={}, bidTargetId=null, CONFIG=null, sbClient=null;
