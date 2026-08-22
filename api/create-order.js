@@ -10,7 +10,7 @@ module.exports = async (req, res) => {
 
   const { amount_rupees, profile_id, bidder_handle, bidder_email } = req.body;
 
-  if (!amount_rupees || !profile_id || !bidder_handle || !bidder_email) {
+  if (!amount_rupees || profile_id === undefined || profile_id === null || !bidder_handle || !bidder_email) {
     return res.status(400).json({ error: 'Missing required fields' });
   }
 
