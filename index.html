@@ -204,9 +204,7 @@ html{scroll-behavior:smooth;}
 
 
 
-/* Theme toggle button */
-.theme-toggle{position:fixed;bottom:1.5rem;left:1.5rem;z-index:200;width:44px;height:44px;border-radius:50%;background:var(--s2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.2rem;transition:all .3s ease;box-shadow:var(--shadow);}
-.theme-toggle:hover{transform:scale(1.1);border-color:var(--accent);}
+
 
 
 /* Category pills - colorful */
@@ -286,6 +284,11 @@ body.light .stat .lbl{color:var(--muted);}
 body.light .rank-num{color:var(--text);}
 body.light .bid-label{color:var(--muted);}
 
+
+/* Theme toggle in nav */
+.theme-btn{background:var(--s2);border:1px solid var(--border);border-radius:50%;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1rem;transition:all .2s;margin-right:.5rem;}
+.theme-btn:hover{border-color:var(--accent);transform:rotate(20deg);}
+
 </style>
 <script src="https://checkout.razorpay.com/v1/checkout.js">
 // ── THEME TOGGLE ──
@@ -343,9 +346,9 @@ function toggleTheme(){
 <body><nav class="nav"><div class="container">
   <div class="nav-logo"><div class="text">HypeOutbid</div></div>
   <div class="nav-links"><a href="#leaderboard">Leaderboard</a><a href="#how">How it Works</a><a href="#activity">Live Feed</a></div>
-  <div class="nav-right"><span class="made-india">Made in India 🇮🇳</span><button class="btn btn-ghost btn-sm" onclick="openClaimModal()">Claim Profile</button><button class="btn btn-accent btn-sm" onclick="openBidModal(0)">Place a Bid</button></div>
+  <div class="nav-right"><button class="theme-btn" id="themeToggle" onclick="toggleTheme()" title="Toggle theme">🌙</button><span class="made-india">🇮🇳 Made in India</span><button class="btn btn-ghost btn-sm" onclick="openClaimModal()">Claim Profile</button><button class="btn btn-accent btn-sm" onclick="openBidModal(0)">Place a Bid</button></div>
 </div></nav>
-<button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Toggle light/dark theme">🌙</button>
+
 
 <section class="hero"><div class="container">
   <div class="hero-badge"><div class="live-dot"></div> <span id="onlineCount">347</span> online · <span id="statProfiles">20</span> profiles listed</div>
@@ -400,13 +403,24 @@ function toggleTheme(){
   <div class="section-header">
     <div class="section-title">🏆 Live Leaderboard <span class="badge">LIVE</span></div>
     <div class="tabs">
-      <button class="tab active" onclick="filterCat('"'"'all'"'"',this)">All</button>
-      <button class="tab" onclick="filterCat('"'"'celebrity'"'"',this)">Celebrities</button>
-      <button class="tab" onclick="filterCat('"'"'creator'"'"',this)">Creators</button>
-      <button class="tab" onclick="filterCat('"'"'athlete'"'"',this)">Athletes</button>
-      <button class="tab" onclick="filterCat('"'"'music'"'"',this)">Music</button>
-      <button class="tab" onclick="filterCat('"'"'business'"'"',this)">Business</button>
-      <button class="tab" onclick="filterCat('"'"'indian'"'"',this)">🇮🇳 India</button>
+      <button class="tab active" onclick="filterCat('all',this)">All</button>
+      <button class="tab" onclick="filterCat('celebrity',this)">⭐ Celebrities</button>
+      <button class="tab" onclick="filterCat('creator',this)">🎬 Creators</button>
+      <button class="tab" onclick="filterCat('athlete',this)">🏆 Athletes</button>
+      <button class="tab" onclick="filterCat('music',this)">🎵 Music</button>
+      <button class="tab" onclick="filterCat('business',this)">📈 Business</button>
+      <button class="tab" onclick="filterCat('fashion',this)">👗 Fashion</button>
+      <button class="tab" onclick="filterCat('food',this)">🍕 Food</button>
+      <button class="tab" onclick="filterCat('travel',this)">✈️ Travel</button>
+      <button class="tab" onclick="filterCat('tech',this)">💻 Tech & Gaming</button>
+      <button class="tab" onclick="filterCat('comedy',this)">😂 Comedy</button>
+      <button class="tab" onclick="filterCat('photography',this)">📸 Photography</button>
+      <button class="tab" onclick="filterCat('fitness',this)">💪 Fitness</button>
+      <button class="tab" onclick="filterCat('indian',this)">🇮🇳 India</button>
+      <button class="tab" onclick="filterCat('ai',this)">🤖 AI & Startups</button>
+      <button class="tab" onclick="filterCat('crypto',this)">🪙 Crypto</button>
+      <button class="tab" onclick="filterCat('finance',this)">💰 Finance</button>
+      <button class="tab" onclick="filterCat('education',this)">📚 Education</button>
     </div>
   </div>
   <div class="lb-table" id="lbTable"></div>
