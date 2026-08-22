@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>HypeOutbid — Bid to Own the Top Spot</title>
+<meta name="description" content="The live leaderboard where creators compete for the #1 spot. Outbid anyone. Claim your rank. Get seen."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#06070b;--s1:#0c0e15;--s2:#12151f;--s3:#1a1e2e;--border:#1e2235;--border2:#282d42;--accent:#E1306C;--accent-light:#F56040;--accent-bg:rgba(225,48,108,.12);--accent-border:rgba(225,48,108,.3);--hot:#ff4757;--hot-bg:rgba(255,71,87,.1);--hot-border:rgba(255,71,87,.3);--green:#00d68f;--green-bg:rgba(0,214,143,.1);--yellow:#ffc107;--purple:#833AB4;--text:#edf0f7;--text2:#c4c9d9;--muted:#6b7280;--r:12px;--r-sm:8px;--r-xs:6px;--shadow:0 4px 24px rgba(0,0,0,.4);--font:"Inter",system-ui,sans-serif;--gradient:linear-gradient(135deg,#833AB4,#E1306C,#F56040);}
+*{box-sizing:border-box;margin:0;padding:0;}html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:var(--font);line-height:1.5;-webkit-font-smoothing:antialiased;}
+a{color:var(--accent-light);text-decoration:none;}button{font-family:inherit;}
+.container{max-width:1100px;margin:0 auto;padding:0 1.5rem;}
+.nav{position:sticky;top:0;z-index:100;background:rgba(6,7,11,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);height:60px;display:flex;align-items:center;}
+.nav .container{display:flex;align-items:center;justify-content:space-between;width:100%;}
+.nav-logo{font-size:1.2rem;font-weight:900;letter-spacing:-.5px;display:flex;align-items:center;gap:.5rem;}
+.nav-logo .ig-icon{width:28px;height:28px;background:var(--gradient);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.9rem;}
+.nav-logo .text{background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.nav-links{display:flex;gap:1.75rem;}.nav-links a{color:var(--muted);font-size:.85rem;font-weight:500;text-decoration:none;transition:color .2s;}.nav-links a:hover{color:var(--text);}
+.nav-right{display:flex;align-items:center;gap:.75rem;}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;padding:.5rem 1rem;border-radius:var(--r-xs);font-size:.82rem;font-weight:600;cursor:pointer;border:none;transition:all .15s;text-decoration:none;}
+.btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border);}.btn-ghost:hover{background:var(--s2);}
+.btn-accent{background:var(--gradient);color:#fff;}.btn-accent:hover{filter:brightness(1.15);transform:translateY(-1px);}
+.btn-hot{background:var(--hot);color:#fff;border:none;cursor:pointer;font-weight:600;}.btn-hot:hover{filter:brightness(1.1);transform:translateY(-1px);}
+.btn-sm{padding:.35rem .75rem;font-size:.75rem;}.btn-lg{padding:.65rem 1.5rem;font-size:.95rem;}
+.hero{padding:4rem 0 3rem;text-align:center;position:relative;overflow:hidden;}
+.hero::before{content:"";position:absolute;top:-40%;left:50%;transform:translateX(-50%);width:800px;height:500px;background:radial-gradient(ellipse,rgba(225,48,108,.12) 0%,transparent 70%);pointer-events:none;}
+.hero-badge{display:inline-flex;align-items:center;gap:.5rem;background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:999px;padding:.3rem 1rem;font-size:.73rem;font-weight:700;color:var(--accent);letter-spacing:.06em;text-transform:uppercase;margin-bottom:1.5rem;}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 1.4s ease infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.4)}}
+.hero h1{font-size:clamp(2rem,5vw,3.2rem);font-weight:900;line-height:1.08;letter-spacing:-1.5px;margin-bottom:1rem;}
+.hero h1 .hl{background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero p{color:var(--muted);font-size:1.05rem;max-width:520px;margin:0 auto 2rem;line-height:1.7;}
+.hero-btns{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;}
+.stats-bar{display:flex;justify-content:center;gap:2.5rem;margin-top:2.5rem;flex-wrap:wrap;}
+.stat{text-align:center;}.stat .val{font-size:1.5rem;font-weight:900;}.stat .lbl{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:.15rem;}
+.section{padding:2.5rem 0;}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:.75rem;}
+.section-title{font-size:1.15rem;font-weight:800;display:flex;align-items:center;gap:.5rem;}
+.section-title .badge{background:var(--accent);color:#fff;font-size:.65rem;font-weight:700;padding:.1rem .5rem;border-radius:999px;}
+.tabs{display:flex;gap:.35rem;flex-wrap:wrap;}
+.tab{padding:.3rem .8rem;border-radius:999px;font-size:.75rem;font-weight:600;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--muted);transition:all .2s;}
+.tab:hover,.tab.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+.lb-table{display:flex;flex-direction:column;gap:.6rem;}
+.lb-row{display:flex;align-items:center;gap:1rem;background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:.85rem 1.2rem;transition:all .2s;position:relative;overflow:hidden;}
+.lb-row:hover{border-color:var(--accent);transform:translateX(3px);box-shadow:var(--shadow);}
+.lb-row.top1{border-color:var(--accent-border);background:linear-gradient(90deg,rgba(225,48,108,.08) 0%,var(--s1) 100%);}
+.lb-row.top2{border-color:rgba(0,214,143,.25);}.lb-row.top3{border-color:rgba(255,193,7,.25);}
+.lb-row.flash{animation:flash .7s ease;}
+@keyframes flash{0%{background:rgba(225,48,108,.2)}100%{}}
+.rank-num{font-size:1.1rem;font-weight:900;width:28px;text-align:center;flex-shrink:0;}
+.r1{color:var(--accent);}.r2{color:var(--green);}.r3{color:var(--yellow);}.rn{color:var(--muted);}
+.rank-arrow{font-size:.65rem;font-weight:700;width:16px;text-align:center;flex-shrink:0;}
+.ra-up{color:var(--green);}.ra-dn{color:var(--hot);}.ra-same{color:var(--muted);}
+.user-avatar{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;background:var(--s2);border:2px solid var(--border);}
+.user-avatar.verified{border-color:var(--accent);}
+.user-info{flex:1;min-width:0;}
+.user-name{font-size:.92rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:.35rem;}
+.user-name .verify{color:var(--accent);font-size:.75rem;}
+.user-handle{font-size:.75rem;color:var(--muted);}
+.user-stats{display:flex;gap:.75rem;margin-top:.2rem;}
+.us{font-size:.68rem;color:var(--muted);}.us b{color:var(--text2);}
+.bid-col{text-align:right;flex-shrink:0;}
+.bid-amount{font-size:1.1rem;font-weight:900;color:var(--green);}
+.bid-label{font-size:.65rem;color:var(--muted);}
+.outbid-btn{flex-shrink:0;}
+.top-card{background:linear-gradient(135deg,rgba(225,48,108,.12) 0%,rgba(131,58,180,.08) 100%);border:1px solid var(--accent-border);border-radius:var(--r);padding:1.5rem 2rem;display:flex;align-items:center;gap:1.5rem;margin-bottom:2rem;position:relative;overflow:hidden;}
+.top-card::before{content:"#1";position:absolute;right:1.5rem;top:50%;transform:translateY(-50%);font-size:5rem;font-weight:900;color:rgba(225,48,108,.08);pointer-events:none;}
+.top-avatar{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2.5rem;background:var(--s2);border:3px solid var(--accent);flex-shrink:0;}
+.top-info{flex:1;}.top-badge{display:inline-flex;align-items:center;gap:.3rem;background:var(--gradient);color:#fff;border-radius:999px;padding:.15rem .65rem;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.3rem;}
+.top-name{font-size:1.4rem;font-weight:900;margin-bottom:.1rem;display:flex;align-items:center;gap:.4rem;}.top-name .verify{color:var(--accent);}
+.top-handle{color:var(--muted);font-size:.85rem;margin-bottom:.4rem;}
+.top-metrics{display:flex;gap:1.5rem;flex-wrap:wrap;}.tm{font-size:.78rem;color:var(--muted);}.tm b{color:var(--text);font-weight:700;}
+.top-bid-side{text-align:right;flex-shrink:0;}
+.top-bid-val{font-size:2rem;font-weight:900;color:var(--green);}
+.top-bid-lbl{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;}
+.two-col{display:grid;grid-template-columns:1fr 280px;gap:1.5rem;margin-top:1.5rem;}
+@media(max-width:900px){.two-col{grid-template-columns:1fr;}}
+.feed{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
+.feed-header{padding:.85rem 1.1rem;border-bottom:1px solid var(--border);font-size:.82rem;font-weight:700;display:flex;align-items:center;gap:.5rem;}
+.feed-list{max-height:420px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
+.feed-item{padding:.55rem 1.1rem;border-bottom:1px solid rgba(30,34,53,.7);font-size:.76rem;line-height:1.4;animation:fadeIn .3s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.feed-item b{color:var(--accent);}.feed-item .amt{color:var(--green);font-weight:700;}.feed-item .time{color:var(--muted);font-size:.65rem;float:right;}
+.how-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-top:1.5rem;}
+.how-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:1.3rem 1rem;text-align:center;}
+.how-icon{font-size:1.8rem;margin-bottom:.6rem;}.how-card h3{font-size:.88rem;font-weight:700;margin-bottom:.3rem;}.how-card p{font-size:.75rem;color:var(--muted);line-height:1.5;}
+.cta-section{margin-top:3rem;background:linear-gradient(135deg,rgba(225,48,108,.12) 0%,rgba(131,58,180,.08) 100%);border:1px solid var(--accent-border);border-radius:var(--r);padding:2.5rem 2rem;text-align:center;}
+.cta-section h2{font-size:1.5rem;font-weight:900;margin-bottom:.5rem;}.cta-section p{color:var(--muted);margin-bottom:1.5rem;}
+.footer{border-top:1px solid var(--border);padding:2rem 0;margin-top:3rem;text-align:center;}
+.footer-links{display:flex;gap:1.5rem;justify-content:center;margin-bottom:.75rem;}.footer-links a{color:var(--muted);font-size:.8rem;text-decoration:none;}
+.footer-copy{font-size:.72rem;color:var(--muted);}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);z-index:200;display:none;align-items:center;justify-content:center;padding:1rem;}.overlay.open{display:flex;}
+.modal{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:2rem;max-width:440px;width:100%;position:relative;}
+.modal-close{position:absolute;top:1rem;right:1rem;background:none;border:none;color:var(--muted);font-size:1.2rem;cursor:pointer;}
+.modal h2{font-size:1.2rem;font-weight:800;margin-bottom:.3rem;}.modal .msub{color:var(--muted);font-size:.82rem;margin-bottom:1.25rem;}
+.form-group{margin-bottom:1rem;}.form-group label{display:block;font-size:.75rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.35rem;}
+.form-input{width:100%;padding:.65rem .9rem;background:var(--s2);border:1px solid var(--border);border-radius:var(--r-xs);color:var(--text);font-size:.9rem;font-weight:500;font-family:inherit;}.form-input:focus{outline:none;border-color:var(--accent);}
+.form-note{font-size:.7rem;color:var(--muted);margin-top:.3rem;}
+.target-row{display:flex;align-items:center;gap:.75rem;background:var(--s2);border-radius:var(--r-sm);padding:.75rem;margin-bottom:1.25rem;}
+.target-av{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.3rem;background:var(--s3);}
+.target-info .tn{font-weight:700;font-size:.9rem;}.target-info .tc{font-size:.75rem;color:var(--muted);}
+.toast-wrap{position:fixed;bottom:1.5rem;right:1.5rem;z-index:300;display:flex;flex-direction:column;gap:.5rem;}
+.toast{background:var(--s1);border:1px solid var(--border);border-radius:var(--r-xs);padding:.7rem 1rem;font-size:.83rem;max-width:300px;box-shadow:var(--shadow);animation:ti .3s ease;border-left:3px solid var(--green);}
+.toast.warn{border-left-color:var(--hot);}
+@keyframes ti{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:translateX(0)}}
+@media(max-width:768px){.nav-links{display:none;}.hero h1{font-size:2rem;}.top-card{flex-direction:column;text-align:center;}.top-card::before{display:none;}.top-bid-side{text-align:center;}.top-metrics{justify-content:center;}}
+</style>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+</head>
+<body><nav class="nav"><div class="container">
+  <div class="nav-logo"><div class="ig-icon">📸</div><div class="text">HypeOutbid</div></div>
+  <div class="nav-links"><a href="#leaderboard">Leaderboard</a><a href="#how">How it Works</a><a href="#activity">Live Feed</a></div>
+  <div class="nav-right"><button class="btn btn-ghost btn-sm" onclick="openClaimModal()">Claim Profile</button><button class="btn btn-accent btn-sm" onclick="openBidModal(0)">Place a Bid</button></div>
+</div></nav>
+
+<section class="hero"><div class="container">
+  <div class="hero-badge"><div class="live-dot"></div> Live — Bids Updating in Real Time</div>
+  <h1>The <span class="hl">#1 Spot</span> Goes to<br>the Highest Bidder.</h1>
+  <p>Creators and influencers compete for rank on the most-watched leaderboard. Outbid anyone. Own your position. Get discovered.</p>
+  <div class="hero-btns"><a href="#leaderboard" class="btn btn-accent btn-lg">View Leaderboard</a><button class="btn btn-hot btn-lg" onclick="openBidModal(0)">Place Your Bid</button></div>
+  <div class="stats-bar">
+    <div class="stat"><div class="val" id="statBids">₹0</div><div class="lbl">Total Bids Placed</div></div>
+    <div class="stat"><div class="val" id="statProfiles">20</div><div class="lbl">Profiles Listed</div></div>
+    <div class="stat"><div class="val">Live</div><div class="lbl">Updated in Real Time</div></div>
+    <div class="stat"><div class="val">₹1</div><div class="lbl">Minimum Bid</div></div>
+  </div>
+</div></section>
+
+<main class="container">
+
+<section class="section" id="leaderboard">
+  <div class="top-card" id="topCard">
+    <div class="top-avatar" id="topAv">👑</div>
+    <div class="top-info">
+      <div class="top-badge">👑 #1 — Current Leader</div>
+      <div class="top-name" id="topName">Cristiano Ronaldo <span class="verify">✓</span></div>
+      <div class="top-handle" id="topHandle">@cristiano</div>
+      <div class="top-metrics"><span class="tm"><b>636M</b> followers</span><span class="tm"><b>3.2%</b> engagement</span><span class="tm"><b>Sports</b></span></div>
+    </div>
+    <div class="top-bid-side">
+      <div class="top-bid-lbl">Current Bid</div>
+      <div class="top-bid-val" id="topBid">$2,400</div>
+      <button class="btn btn-hot" style="margin-top:.5rem;padding:.5rem 1.2rem;font-size:.85rem;" onclick="openBidModal(1)">⚔️ Outbid</button>
+    </div>
+  </div>
+
+  <div class="section-header">
+    <div class="section-title">🏆 Live Leaderboard <span class="badge">LIVE</span></div>
+    <div class="tabs">
+      <button class="tab active" onclick="filterCat('"'"'all'"'"',this)">All</button>
+      <button class="tab" onclick="filterCat('"'"'celebrity'"'"',this)">Celebrities</button>
+      <button class="tab" onclick="filterCat('"'"'creator'"'"',this)">Creators</button>
+      <button class="tab" onclick="filterCat('"'"'athlete'"'"',this)">Athletes</button>
+      <button class="tab" onclick="filterCat('"'"'music'"'"',this)">Music</button>
+      <button class="tab" onclick="filterCat('"'"'business'"'"',this)">Business</button>
+      <button class="tab" onclick="filterCat('"'"'indian'"'"',this)">🇮🇳 India</button>
+    </div>
+  </div>
+  <div class="lb-table" id="lbTable"></div>
+</section>
+
+<div class="two-col" id="activity">
+  <div>
+    <section class="section" id="how" style="padding-top:0;">
+      <div class="section-header"><div class="section-title">How HypeOutbid Works</div></div>
+      <div class="how-grid">
+        <div class="how-card"><div class="how-icon">💰</div><h3>Place a Bid</h3><p>Bid any amount on any profile. Higher bid = higher rank on the leaderboard.</p></div>
+        <div class="how-card"><div class="how-icon">⚔️</div><h3>Get Outbid</h3><p>Someone bids more? They take your spot. Rebid to reclaim it.</p></div>
+        <div class="how-card"><div class="how-icon">👑</div><h3>Own the Top</h3><p>The #1 spot gets featured everywhere. Homepage, newsletter, socials.</p></div>
+        <div class="how-card"><div class="how-icon">📈</div><h3>Get Discovered</h3><p>890K people visit monthly. Top profiles get massive exposure.</p></div>
+      </div>
+    </section>
+  </div>
+  <div>
+    <div class="feed">
+      <div class="feed-header"><div class="live-dot"></div> Live Bids</div>
+      <div class="feed-list" id="feedList"></div>
+    </div>
+  </div>
+</div>
+
+<div class="cta-section">
+  <h2>Think You Deserve the Top Spot?</h2>
+  <p>Place your bid now. Outbid the current leader. Get seen by hundreds of thousands.</p>
+  <div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;">
+    <button class="btn btn-accent btn-lg" onclick="openBidModal(0)">Place Your Bid</button>
+    <button class="btn btn-ghost btn-lg" onclick="openClaimModal()">Claim Your Profile</button>
+  </div>
+</div>
+
+</main>
+
+<footer class="footer"><div class="container"><div class="footer-links"><a href="#">About</a><a href="#">Terms</a><a href="#">Privacy</a><a href="#">Contact</a></div><div class="footer-copy">© 2026 HypeOutbid.lol — The live bidding leaderboard for social media.</div></div></footer>
+
+<!-- BID MODAL -->
+<div class="overlay" id="bidOverlay" onclick="if(event.target===this)closeBid()"><div class="modal">
+  <button class="modal-close" onclick="closeBid()">&#x2715;</button>
+  <h2>⚔️ Place Your Bid</h2>
+  <p class="msub" id="bidSub">Outbid the current holder to take their rank</p>
+  <div class="target-row" id="bidTarget"><div class="target-av" id="bidTAv">👤</div><div class="target-info"><div class="tn" id="bidTName">Select a profile</div><div class="tc" id="bidTCur">Current bid: ₹0</div></div></div>
+  <div class="form-group"><label>Your Bid Amount (USD)</label><input class="form-input" type="number" id="bidAmt" placeholder="0" min="1" step="1" style="font-size:1.1rem;font-weight:700;"/><div class="form-note" id="bidNote">Must exceed current bid by at least $1</div></div>
+  <div class="form-group"><label>Your Instagram Handle</label><input class="form-input" type="text" id="bidHandle" placeholder="@yourhandle"/></div>
+  <div class="form-group"><label>Email (for notifications)</label><input class="form-input" type="email" id="bidEmail" placeholder="you@email.com"/></div>
+  <button class="btn btn-accent" id="bidSubmitBtn" style="width:100%;padding:.75rem;font-size:1rem;" onclick="handleBid(event)">Pay &amp; Lock Your Rank →</button>
+  <div class="form-note" style="text-align:center;margin-top:.6rem;">Secure payment via Razorpay. You get notified if outbid.</div>
+</div></div>
+
+<!-- CLAIM MODAL -->
+<div class="overlay" id="claimOverlay" onclick="if(event.target===this)closeClaim()"><div class="modal">
+  <button class="modal-close" onclick="closeClaim()">&#x2715;</button>
+  <h2>🏷️ Claim Your Profile</h2>
+  <p class="msub">Is your account on our leaderboard? Claim it to manage your listing.</p>
+  <div class="form-group"><label>Your Instagram Handle</label><input class="form-input" type="text" id="claimHandle" placeholder="@yourhandle"/></div>
+  <div class="form-group"><label>Your Email</label><input class="form-input" type="email" id="claimEmail" placeholder="you@email.com"/></div>
+  <button class="btn btn-accent" style="width:100%;padding:.7rem;font-size:.95rem;" onclick="submitClaim()">Claim Profile</button>
+  <div class="form-note" style="text-align:center;margin-top:.6rem;">We will verify via DM or email.</div>
+</div></div>
+
+<div class="toast-wrap" id="tw"></div><script>
+// ── DATA (bids will be overwritten from DB) ──
+var P=[
+  {id:1,name:"Cristiano Ronaldo",handle:"@cristiano",av:"⚽",followers:"636M",eng:"3.2%",cat:"athlete",bid_paise:100,verified:true},
+  {id:2,name:"Lionel Messi",handle:"@leomessi",av:"🐐",followers:"504M",eng:"2.8%",cat:"athlete",bid_paise:100,verified:true},
+  {id:3,name:"Kylie Jenner",handle:"@kyliejenner",av:"💄",followers:"399M",eng:"1.9%",cat:"celebrity",bid_paise:100,verified:true},
+  {id:4,name:"Virat Kohli",handle:"@virat.kohli",av:"🏏",followers:"271M",eng:"3.5%",cat:"indian",bid_paise:100,verified:true},
+  {id:5,name:"Taylor Swift",handle:"@taylorswift",av:"🎵",followers:"283M",eng:"2.1%",cat:"music",bid_paise:100,verified:true},
+  {id:6,name:"MrBeast",handle:"@mrbeast",av:"🎬",followers:"245M",eng:"4.2%",cat:"creator",bid_paise:100,verified:true},
+  {id:7,name:"Narendra Modi",handle:"@narendramodi",av:"🇮🇳",followers:"102M",eng:"2.8%",cat:"indian",bid_paise:100,verified:true},
+  {id:8,name:"Khaby Lame",handle:"@khaby00",av:"🤷",followers:"162M",eng:"3.8%",cat:"creator",bid_paise:100,verified:true},
+  {id:9,name:"Dwayne Johnson",handle:"@therock",av:"💪",followers:"395M",eng:"1.5%",cat:"celebrity",bid_paise:100,verified:true},
+  {id:10,name:"Elon Musk",handle:"@elonmusk",av:"🚀",followers:"42M",eng:"5.1%",cat:"business",bid_paise:100,verified:true},
+  {id:11,name:"Priyanka Chopra",handle:"@priyankachopra",av:"⭐",followers:"91M",eng:"2.4%",cat:"indian",bid_paise:100,verified:true},
+  {id:12,name:"Neymar Jr",handle:"@neymarjr",av:"🇧🇷",followers:"228M",eng:"2.9%",cat:"athlete",bid_paise:100,verified:true},
+  {id:13,name:"Shraddha Kapoor",handle:"@shraddhakapoor",av:"🌸",followers:"87M",eng:"4.1%",cat:"indian",bid_paise:100,verified:true},
+  {id:14,name:"Drake",handle:"@champagnepapi",av:"🎤",followers:"146M",eng:"1.8%",cat:"music",bid_paise:100,verified:true},
+  {id:15,name:"PewDiePie",handle:"@pewdiepie",av:"👊",followers:"21M",eng:"6.2%",cat:"creator",bid_paise:100,verified:true},
+  {id:16,name:"Nikhil Kamath",handle:"@nikhil.kamath",av:"📈",followers:"5M",eng:"7.8%",cat:"indian",bid_paise:100,verified:false},
+  {id:17,name:"Billie Eilish",handle:"@billieeilish",av:"🖤",followers:"118M",eng:"2.3%",cat:"music",bid_paise:100,verified:true},
+  {id:18,name:"Gary Vee",handle:"@garyvee",av:"🍷",followers:"16M",eng:"4.5%",cat:"business",bid_paise:100,verified:true},
+  {id:19,name:"Ranveer Singh",handle:"@ranveersingh",av:"🎭",followers:"44M",eng:"3.9%",cat:"indian",bid_paise:100,verified:true},
+  {id:20,name:"Mark Zuckerberg",handle:"@zuck",av:"👓",followers:"14M",eng:"8.1%",cat:"business",bid_paise:100,verified:true},
+];
+
+var curFilter="all", prevR={}, bidTargetId=null, CONFIG=null, sbClient=null;
+
+// paise helpers — all money stored as integer paise, displayed as ₹
+function toRupees(paise){ return paise/100; }
+function toPaise(rupees){ return Math.round(Number(rupees)*100); }
+function fmtINR(paise){ return "₹"+(paise/100).toLocaleString("en-IN"); }
+function nowt(){ var d=new Date(); return d.getHours()+":"+String(d.getMinutes()).padStart(2,"0")+":"+String(d.getSeconds()).padStart(2,"0"); }
+
+function sorted(){ return [...P].sort(function(a,b){ return b.bid_paise - a.bid_paise; }); }
+function filtered(){ var s=sorted(); return curFilter==="all"?s:s.filter(function(p){ return p.cat===curFilter; }); }
+
+// ── INIT ─────────────────────────────────────────────────────
+async function init(){
+  try{
+    var r = await fetch("/api/config");
+    CONFIG = await r.json();
+  } catch(e){ CONFIG = null; }
+
+  if(CONFIG && CONFIG.supabaseUrl){
+    sbClient = window.supabase.createClient(CONFIG.supabaseUrl, CONFIG.supabaseAnonKey);
+    await loadLeaderboard();
+    await loadActivity();
+    subscribeRealtime();
+  } else {
+    sorted().forEach(function(x,i){ prevR[x.id]=i+1; });
+    render(); renderDefaultFeed(); startSimulation();
+  }
+}
+
+// ── LOAD FROM DB ─────────────────────────────────────────────
+async function loadLeaderboard(){
+  try{
+    var res = await fetch("/api/leaderboard");
+    var rows = await res.json();
+    rows.forEach(function(row){
+      var p = P.find(function(x){ return x.id===row.id; });
+      if(p){
+        p.bid_paise = parseInt(row.current_bid_paise) || 100;
+        if(row.current_bidder_handle) p.topBidder = row.current_bidder_handle;
+      }
+    });
+  } catch(e){}
+  sorted().forEach(function(x,i){ prevR[x.id]=i+1; });
+  render();
+  document.getElementById("statBids").textContent = fmtINR(P.reduce(function(s,x){ return s+x.bid_paise; },0));
+  var sp = document.getElementById("statProfiles"); if(sp) sp.textContent = P.length;
+}
+
+async function loadActivity(){
+  try{
+    var res = await fetch("/api/activity");
+    var rows = await res.json();
+    var l = document.getElementById("feedList"); l.innerHTML="";
+    if(rows.length===0){
+      renderDefaultFeed(); return;
+    }
+    rows.forEach(function(row){
+      var name = row.profiles ? row.profiles.handle : row.bidder_handle;
+      l.innerHTML += "<div class=\"feed-item\">⚔️ <b>"+row.bidder_handle+"</b> bid <span class=\"amt\">"+fmtINR(row.amount_paise)+"</span> on <b>"+(row.profiles?row.profiles.handle:"")+"</b><span class=\"time\">"+new Date(row.created_at).toLocaleTimeString()+"</span></div>";
+    });
+  } catch(e){ renderDefaultFeed(); }
+}
+
+// ── SUPABASE REALTIME ─────────────────────────────────────────
+function subscribeRealtime(){
+  if(!sbClient) return;
+
+  // Listen for confirmed payments (profiles table updated)
+  sbClient.channel("profiles-live")
+    .on("postgres_changes", {event:"UPDATE", schema:"public", table:"profiles"},
+      function(payload){
+        var row = payload.new;
+        var p = P.find(function(x){ return x.id===row.id; });
+        if(p){
+          sorted().forEach(function(x,i){ prevR[x.id]=i+1; });
+          p.bid_paise = parseInt(row.current_bid_paise);
+          p.topBidder = row.current_bidder_handle;
+          p._f = true;
+          var nr = sorted().findIndex(function(x){ return x.id===p.id; })+1;
+          document.getElementById("statBids").textContent = fmtINR(P.reduce(function(s,x){ return s+x.bid_paise; },0));
+          render();
+        }
+      }
+    ).subscribe();
+
+  // Listen for new activity
+  sbClient.channel("activity-live")
+    .on("postgres_changes", {event:"INSERT", schema:"public", table:"activity"},
+      function(payload){
+        var row = payload.new;
+        var p = P.find(function(x){ return x.id===row.profile_id; });
+        addFeed("⚔️ <b>"+row.bidder_handle+"</b> bid <span class=\"amt\">"+fmtINR(row.amount_paise)+"</span>"+(p?" on <b>"+p.handle+"</b>":"")+" 🔥");
+      }
+    ).subscribe();
+}
+
+// ── RENDER ────────────────────────────────────────────────────
+function render(){
+  var s=sorted(), top=s[0];
+  document.getElementById("topAv").textContent=top.av;
+  document.getElementById("topName").innerHTML=top.name+" "+(top.verified?"<span class=\"verify\">✓</span>":"");
+  document.getElementById("topHandle").textContent=top.handle;
+  document.getElementById("topBid").textContent=fmtINR(top.bid_paise);
+  document.getElementById("topCard").querySelector(".top-metrics").innerHTML="<span class=\"tm\"><b>"+top.followers+"</b> followers</span><span class=\"tm\"><b>"+top.eng+"</b> engagement</span><span class=\"tm\"><b>"+top.cat+"</b></span>";
+  document.getElementById("topCard").querySelector("button").onclick=function(){ openBidModal(top.id); };
+  var list=filtered(), tb=document.getElementById("lbTable"); tb.innerHTML="";
+  list.forEach(function(p){
+    var gr=s.findIndex(function(x){ return x.id===p.id; })+1;
+    var prev=prevR[p.id];
+    var arrow="<span class=\"rank-arrow ra-same\">—</span>";
+    if(prev!==undefined&&prev>gr) arrow="<span class=\"rank-arrow ra-up\">▲</span>";
+    if(prev!==undefined&&prev<gr) arrow="<span class=\"rank-arrow ra-dn\">▼</span>";
+    var rc=gr===1?"r1":gr===2?"r2":gr===3?"r3":"rn";
+    var rowcls="lb-row"+(gr===1?" top1":gr===2?" top2":gr===3?" top3":"")+(p._f?" flash":"");
+    tb.innerHTML+="<div class=\""+rowcls+"\">"+
+      "<div class=\"rank-num "+rc+"\">"+(gr===1?"👑":gr)+"</div>"+arrow+
+      "<div class=\"user-avatar"+(p.verified?" verified":"")+"\">"+(p.av||"👤")+"</div>"+
+      "<div class=\"user-info\"><div class=\"user-name\">"+p.name+(p.verified?" <span class=\"verify\">✓</span>":"")+"</div>"+
+      "<div class=\"user-handle\">"+p.handle+(p.topBidder?"<span style=\"color:var(--green);font-size:.7rem;margin-left:.5rem;\"> held by "+p.topBidder+"</span>":"")+"</div>"+
+      "<div class=\"user-stats\"><span class=\"us\"><b>"+p.followers+"</b> followers</span><span class=\"us\"><b>"+p.eng+"</b> eng.</span></div></div>"+
+      "<div class=\"bid-col\"><div class=\"bid-amount\">"+fmtINR(p.bid_paise)+"</div><div class=\"bid-label\">current bid</div></div>"+
+      "<div class=\"outbid-btn\"><button class=\"btn btn-hot btn-sm\" onclick=\"openBidModal("+p.id+")\">Outbid</button></div>"+
+    "</div>";
+    if(p._f){ setTimeout(function(){ p._f=false; },800); }
+  });
+}
+
+function filterCat(c,btn){ curFilter=c; document.querySelectorAll(".tab").forEach(function(t){ t.classList.remove("active"); }); btn.classList.add("active"); render(); }
+
+function renderDefaultFeed(){
+  var l=document.getElementById("feedList"); l.innerHTML="";
+  ["🔥 Leaderboard is live — first bids start at <span class=\"amt\">₹1</span>",
+   "⚔️ Be the first to outbid and claim #1!",
+   "💰 All bids start at ₹1 — no ceiling"].forEach(function(msg){
+    l.innerHTML+="<div class=\"feed-item\">"+msg+"<span class=\"time\">just now</span></div>";
+  });
+}
+
+function addFeed(msg){
+  var l=document.getElementById("feedList"),d=document.createElement("div");
+  d.className="feed-item"; d.innerHTML=msg+"<span class=\"time\">"+nowt()+"</span>";
+  l.insertBefore(d,l.firstChild);
+  while(l.children.length>20) l.removeChild(l.lastChild);
+}
+
+// Demo simulation (only when no backend connected)
+function startSimulation(){
+  setInterval(function(){
+    var p=P[Math.floor(Math.random()*P.length)];
+    var bump=Math.floor(Math.random()*500+100); // 100-600 paise = ₹1-₹6
+    sorted().forEach(function(x,i){ prevR[x.id]=i+1; });
+    p.bid_paise+=bump; p._f=true;
+    var nr=sorted().findIndex(function(x){ return x.id===p.id; })+1;
+    addFeed("⚔️ <b>"+p.handle+"</b> bid <span class=\"amt\">"+fmtINR(bump)+"</span> — now <span class=\"amt\">#"+nr+"</span> at <span class=\"amt\">"+fmtINR(p.bid_paise)+"</span>");
+    document.getElementById("statBids").textContent=fmtINR(P.reduce(function(s,x){ return s+x.bid_paise; },0));
+    render();
+  }, 4000+Math.random()*3000);
+}
+
+// ── MODALS ────────────────────────────────────────────────────
+function openBidModal(id){
+  bidTargetId=id;
+  if(id===0){
+    document.getElementById("bidTAv").textContent="👤";
+    document.getElementById("bidTName").textContent="Open bid — choose any rank";
+    document.getElementById("bidTCur").textContent="Bid on any profile or claim an open spot";
+    document.getElementById("bidSub").textContent="Place a bid to enter the leaderboard";
+    document.getElementById("bidAmt").value="1";
+    document.getElementById("bidAmt").min="1";
+    document.getElementById("bidNote").textContent="Minimum bid is ₹1";
+  } else {
+    var p=P.find(function(x){ return x.id===id; });
+    var rank=sorted().findIndex(function(x){ return x.id===id; })+1;
+    var curRupees=toRupees(p.bid_paise);
+    document.getElementById("bidTAv").textContent=p.av;
+    document.getElementById("bidTName").textContent=p.name;
+    document.getElementById("bidTCur").textContent="Current bid: "+fmtINR(p.bid_paise)+" · Rank #"+rank;
+    document.getElementById("bidSub").textContent="Outbid "+p.name+" to take rank #"+rank;
+    document.getElementById("bidAmt").value=curRupees+1;
+    document.getElementById("bidAmt").min=curRupees+1;
+    document.getElementById("bidNote").textContent="Must exceed "+fmtINR(p.bid_paise)+" by at least ₹1";
+  }
+  document.getElementById("bidOverlay").classList.add("open");
+}
+function closeBid(){ document.getElementById("bidOverlay").classList.remove("open"); }
+
+// ── PAYMENT ───────────────────────────────────────────────────
+async function handleBid(e){
+  e.preventDefault();
+  var amount_rupees=parseFloat(document.getElementById("bidAmt").value);
+  var handle=document.getElementById("bidHandle").value.trim();
+  var email=document.getElementById("bidEmail").value.trim();
+
+  if(!amount_rupees||!handle||!email){ toast("Fill in all fields","warn"); return; }
+  if(!handle.startsWith("@")) handle="@"+handle;
+  if(amount_rupees<1){ toast("Minimum bid is ₹1","warn"); return; }
+
+  if(bidTargetId&&bidTargetId!==0){
+    var p=P.find(function(x){ return x.id===bidTargetId; });
+    if(toPaise(amount_rupees)<=p.bid_paise){ toast("Must exceed "+fmtINR(p.bid_paise),"warn"); return; }
+  }
+
+  // Demo mode (local file preview)
+  if(!CONFIG||!CONFIG.razorpayKeyId){
+    sorted().forEach(function(x,i){ prevR[x.id]=i+1; });
+    if(bidTargetId&&bidTargetId!==0){
+      var p=P.find(function(x){ return x.id===bidTargetId; });
+      p.bid_paise=toPaise(amount_rupees); p._f=true;
+    } else {
+      P.push({id:Date.now(),name:handle.replace("@",""),handle:handle,av:"🔥",followers:"—",eng:"—",cat:"creator",bid_paise:toPaise(amount_rupees),verified:false,_f:true});
+    }
+    var target=bidTargetId||P[P.length-1].id;
+    var nr=sorted().findIndex(function(x){ return x.id===target; })+1;
+    addFeed("⚔️ <b>"+handle+"</b> bid <span class=\"amt\">"+fmtINR(toPaise(amount_rupees))+"</span> — now <span class=\"amt\">#"+nr+"</span>");
+    document.getElementById("statBids").textContent=fmtINR(P.reduce(function(s,x){ return s+x.bid_paise; },0));
+    closeBid(); toast("You are now rank #"+nr+"! 🔥","ok"); render();
+    return;
+  }
+
+  // Real payment
+  var btn=document.getElementById("bidSubmitBtn");
+  btn.textContent="Creating order..."; btn.disabled=true;
+
+  try{
+    var res=await fetch("/api/create-order",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({amount_rupees:amount_rupees, profile_id:bidTargetId||0, bidder_handle:handle, bidder_email:email})
+    });
+    var order=await res.json();
+    if(!res.ok){ toast(order.error||"Failed to create order","warn"); return; }
+
+    var rzp=new window.Razorpay({
+      key: CONFIG.razorpayKeyId,
+      order_id: order.order_id,
+      amount: order.amount,
+      currency: order.currency,
+      name: "HypeOutbid",
+      description: "Bid to claim rank #"+(bidTargetId||"?")+" on the leaderboard",
+      handler: function(response){
+        closeBid();
+        toast("Payment confirmed! 🔥 Leaderboard updating in real-time...","ok");
+      },
+      prefill: { email: email },
+      theme: { color: "#E1306C" },
+      modal: { ondismiss: function(){ toast("Payment cancelled","warn"); } }
+    });
+    rzp.open();
+  } catch(err){
+    console.error(err);
+    toast("Something went wrong. Try again.","warn");
+  } finally {
+    btn.textContent="Pay & Lock Your Rank →"; btn.disabled=false;
+  }
+}
+
+function openClaimModal(){ document.getElementById("claimOverlay").classList.add("open"); }
+function closeClaim(){ document.getElementById("claimOverlay").classList.remove("open"); }
+function submitClaim(){
+  var h=document.getElementById("claimHandle").value.trim();
+  var email=document.getElementById("claimEmail").value.trim();
+  if(!h||!email){ toast("Enter handle and email","warn"); return; }
+  closeClaim();
+  toast("Claim submitted for "+h+"! We will verify via DM.","ok");
+}
+
+function toast(msg,type){ var w=document.getElementById("tw"),d=document.createElement("div"); d.className="toast"+(type==="warn"?" warn":""); d.innerHTML=msg; w.appendChild(d); setTimeout(function(){ d.remove(); },4000); }
+
+// Boot
+init();
+</script></body></html>
