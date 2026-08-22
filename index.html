@@ -212,10 +212,10 @@ html{scroll-behavior:smooth;}
 .tab:hover{background:var(--s3);color:var(--text);border-color:var(--accent);transform:translateY(-1px);}
 .tab.active{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:600;}
 .tab.active::after{display:none;}
-.tabs{display:flex;gap:.5rem;overflow-x:auto;padding-bottom:.5rem;scrollbar-width:thin;-ms-overflow-style:none;}
-.tabs::-webkit-scrollbar{height:4px;}
-.tabs::-webkit-scrollbar-track{background:transparent;}
-.tabs::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px;}
+
+
+
+
 
 
 .hero-tagline{font-size:1.1rem;color:var(--text2);font-weight:500;margin-bottom:.5rem;letter-spacing:-.01em;max-width:600px;margin-left:auto;margin-right:auto;}
@@ -312,6 +312,20 @@ body.light .bid-label{color:var(--muted);}
 body.light .dropdown-menu{background:#fff;box-shadow:0 12px 40px rgba(0,0,0,.12);}
 body.light .dd-item:hover{background:rgba(225,48,108,.06);}
 body.light .dropdown-btn{background:#fff;}
+
+
+/* Fix tabs overflow - wrap instead of cut */
+.tabs{display:flex;gap:.5rem;flex-wrap:wrap;padding-bottom:.5rem;}
+
+/* Fix dropdown z-index and overflow */
+.hero{overflow:visible !important;}
+.hero .container{overflow:visible !important;}
+.hero-bid-row{position:relative;z-index:50;overflow:visible;}
+.custom-dropdown{z-index:100;}
+.dropdown-menu{z-index:101;min-width:240px;}
+
+/* Fix section header to not clip */
+.section-header{overflow:visible;}
 
 </style>
 <script src="https://checkout.razorpay.com/v1/checkout.js">
