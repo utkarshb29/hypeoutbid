@@ -204,15 +204,88 @@ html{scroll-behavior:smooth;}
 .stat{cursor:default;transition:transform .2s;}
 .stat:hover{transform:translateY(-2px);}
 
+
+/* Light theme */
+body.light{--bg:#f8f9fc;--s1:#ffffff;--s2:#f0f2f5;--s3:#e4e7ec;--border:#d1d5db;--border2:#b8bcc8;--text:#1a1d26;--text2:#4b5563;--muted:#6b7280;--shadow:0 4px 24px rgba(0,0,0,.08);}
+body.light .nav{background:rgba(255,255,255,.9);border-bottom:1px solid var(--border);}
+body.light .modal{background:#fff;border-color:var(--border);}
+body.light .form-input{background:#fff !important;border-color:var(--border) !important;color:var(--text) !important;}
+body.light .form-input:focus{background:#fff !important;}
+body.light .hero-input{background:#fff;border-color:var(--border);color:var(--text);}
+body.light .hero-select{background:#fff;border-color:var(--border);color:var(--text);}
+body.light .hero-select option{background:#fff;color:var(--text);}
+body.light .lb-row:hover{background:var(--s2);}
+body.light .top-card{background:linear-gradient(135deg,#fff5f7,#fff0f3);border:1px solid #fecdd3;}
+body.light .tab{border-color:var(--border);}
+body.light .tab.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+body.light .footer{background:var(--s2);}
+body.light .toast{background:#fff;border-color:var(--border);}
+body.light .feed{background:#fff;border-color:var(--border);}
+
+/* Theme toggle button */
+.theme-toggle{position:fixed;bottom:1.5rem;left:1.5rem;z-index:200;width:44px;height:44px;border-radius:50%;background:var(--s2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.2rem;transition:all .3s ease;box-shadow:var(--shadow);}
+.theme-toggle:hover{transform:scale(1.1);border-color:var(--accent);}
+
 </style>
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js">
+// ── THEME TOGGLE ──
+function toggleTheme(){
+  var body=document.body;
+  var btn=document.getElementById("themeToggle");
+  if(body.classList.contains("light")){
+    body.classList.remove("light");
+    btn.textContent="🌙";
+    localStorage.setItem("theme","dark");
+  } else {
+    body.classList.add("light");
+    btn.textContent="☀️";
+    localStorage.setItem("theme","light");
+  }
+}
+// Load saved theme
+(function(){
+  var saved=localStorage.getItem("theme");
+  if(saved==="light"){
+    document.body.classList.add("light");
+    var btn=document.getElementById("themeToggle");
+    if(btn) btn.textContent="☀️";
+  }
+})();
+
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js">
+// ── THEME TOGGLE ──
+function toggleTheme(){
+  var body=document.body;
+  var btn=document.getElementById("themeToggle");
+  if(body.classList.contains("light")){
+    body.classList.remove("light");
+    btn.textContent="🌙";
+    localStorage.setItem("theme","dark");
+  } else {
+    body.classList.add("light");
+    btn.textContent="☀️";
+    localStorage.setItem("theme","light");
+  }
+}
+// Load saved theme
+(function(){
+  var saved=localStorage.getItem("theme");
+  if(saved==="light"){
+    document.body.classList.add("light");
+    var btn=document.getElementById("themeToggle");
+    if(btn) btn.textContent="☀️";
+  }
+})();
+
+</script>
 </head>
 <body><nav class="nav"><div class="container">
   <div class="nav-logo"><div class="text">HypeOutbid</div></div>
   <div class="nav-links"><a href="#leaderboard">Leaderboard</a><a href="#how">How it Works</a><a href="#activity">Live Feed</a></div>
   <div class="nav-right"><button class="btn btn-ghost btn-sm" onclick="openClaimModal()">Claim Profile</button><button class="btn btn-accent btn-sm" onclick="openBidModal(0)">Place a Bid</button></div>
 </div></nav>
+<button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Toggle light/dark theme">🌙</button>
 
 <section class="hero"><div class="container">
   <div class="hero-badge"><div class="live-dot"></div> <span id="onlineCount">347</span> online · <span id="statProfiles">20</span> profiles listed</div>
@@ -658,4 +731,29 @@ function toast(msg,type){ var w=document.getElementById("tw"),d=document.createE
 
 // Boot
 init();
+
+// ── THEME TOGGLE ──
+function toggleTheme(){
+  var body=document.body;
+  var btn=document.getElementById("themeToggle");
+  if(body.classList.contains("light")){
+    body.classList.remove("light");
+    btn.textContent="🌙";
+    localStorage.setItem("theme","dark");
+  } else {
+    body.classList.add("light");
+    btn.textContent="☀️";
+    localStorage.setItem("theme","light");
+  }
+}
+// Load saved theme
+(function(){
+  var saved=localStorage.getItem("theme");
+  if(saved==="light"){
+    document.body.classList.add("light");
+    var btn=document.getElementById("themeToggle");
+    if(btn) btn.textContent="☀️";
+  }
+})();
+
 </script></body></html>
