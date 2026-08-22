@@ -106,27 +106,52 @@ a{color:var(--accent-light);text-decoration:none;}button{font-family:inherit;}
 .toast.warn{border-left-color:var(--hot);}
 @keyframes ti{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:translateX(0)}}
 @media(max-width:768px){.nav-links{display:none;}.hero h1{font-size:2rem;}.top-card{flex-direction:column;text-align:center;}.top-card::before{display:none;}.top-bid-side{text-align:center;}.top-metrics{justify-content:center;}}
+
+.hero-bid-row{display:flex;gap:.75rem;max-width:700px;margin:1.5rem auto 0;align-items:center;}
+.hero-input{flex:1;background:var(--s2);border:1px solid var(--border);border-radius:var(--r-sm);padding:.75rem 1rem;color:var(--text);font-size:.95rem;outline:none;transition:border .2s;}
+.hero-input:focus{border-color:var(--accent);}
+.hero-select{background:var(--s2);border:1px solid var(--border);border-radius:var(--r-sm);padding:.75rem 1rem;color:var(--text);font-size:.85rem;cursor:pointer;min-width:180px;outline:none;}
+.hero-select:focus{border-color:var(--accent);}
+.hero-sub{color:var(--text2);font-size:.95rem;margin-top:.5rem;}
+.hero-note{color:var(--muted);font-size:.8rem;margin-top:.75rem;}
+.hl-green{color:var(--green);}
+.tabs{overflow-x:auto;white-space:nowrap;padding-bottom:.5rem;-ms-overflow-style:none;scrollbar-width:thin;}
+#heroPrice{font-size:inherit;color:var(--hot);transition:all .3s ease;}
+#onlineCount{color:var(--green);}
 </style>
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 </head>
 <body><nav class="nav"><div class="container">
-  <div class="nav-logo"><div class="ig-icon">📸</div><div class="text">HypeOutbid</div></div>
+  <div class="nav-logo"><div class="text">HypeOutbid</div></div>
   <div class="nav-links"><a href="#leaderboard">Leaderboard</a><a href="#how">How it Works</a><a href="#activity">Live Feed</a></div>
   <div class="nav-right"><button class="btn btn-ghost btn-sm" onclick="openClaimModal()">Claim Profile</button><button class="btn btn-accent btn-sm" onclick="openBidModal(0)">Place a Bid</button></div>
 </div></nav>
 
 <section class="hero"><div class="container">
-  <div class="hero-badge"><div class="live-dot"></div> Live — Bids Updating in Real Time</div>
-  <h1>The <span class="hl">#1 Spot</span> Goes to<br>the Highest Bidder.</h1>
-  <p>Creators and influencers compete for rank on the most-watched leaderboard. Outbid anyone. Own your position. Get discovered.</p>
-  <div class="hero-btns"><a href="#leaderboard" class="btn btn-accent btn-lg">View Leaderboard</a><button class="btn btn-hot btn-lg" onclick="openBidModal(0)">Place Your Bid</button></div>
-  <div class="stats-bar">
-    <div class="stat"><div class="val" id="statBids">$0</div><div class="lbl">Total Bids Placed</div></div>
-    <div class="stat"><div class="val" id="statProfiles">20</div><div class="lbl">Profiles Listed</div></div>
-    <div class="stat"><div class="val">Live</div><div class="lbl">Updated in Real Time</div></div>
-    <div class="stat"><div class="val">$1</div><div class="lbl">Minimum Bid</div></div>
+  <div class="hero-badge"><div class="live-dot"></div> <span id="onlineCount">0</span> online · <span id="statProfiles">20</span> profiles listed</div>
+  <h1>Claim #1 for <span class="hl" id="heroPrice">$1</span></h1>
+  <p class="hero-sub">New spots start at <span class="hl-green">$1</span>. Paying less than the #1 price still puts you on the board at whatever place that bid can take.</p>
+  <div class="hero-bid-row">
+    <input class="hero-input" type="text" id="heroHandle" placeholder="Your product URL or @handle"/>
+    <select class="hero-select" id="heroCat" onchange="updateHeroPrice()">
+      <option value="all">Choose a category</option>
+      <option value="celebrity">Celebrities</option>
+      <option value="creator">Creators & Influencers</option>
+      <option value="athlete">Athletes & Sports</option>
+      <option value="music">Music & Entertainment</option>
+      <option value="business">Business & Brands</option>
+      <option value="fashion">Fashion & Beauty</option>
+      <option value="food">Food & Travel</option>
+      <option value="tech">Tech & Gaming</option>
+      <option value="comedy">Comedy & Memes</option>
+      <option value="photography">Photography</option>
+      <option value="fitness">Fitness & Health</option>
+      <option value="indian">🇮🇳 India</option>
+    </select>
+    <button class="btn btn-hot btn-lg" onclick="openBidModal(0)">Outbid</button>
   </div>
+  <p class="hero-note">Already on the list? Enter the same @handle and up your bid.</p>
 </div></section>
 
 <main class="container">
@@ -242,6 +267,18 @@ var P=[
   {id:18,name:"Gary Vee",handle:"@garyvee",av:"🍷",followers:"16M",eng:"4.5%",cat:"business",bid_paise:100,verified:true},
   {id:19,name:"Ranveer Singh",handle:"@ranveersingh",av:"🎭",followers:"44M",eng:"3.9%",cat:"indian",bid_paise:100,verified:true},
   {id:20,name:"Mark Zuckerberg",handle:"@zuck",av:"👓",followers:"14M",eng:"8.1%",cat:"business",bid_paise:100,verified:true},
+  {id:21,name:"Chiara Ferragni",handle:"@chiaraferragni",av:"👗",followers:"29M",eng:"2.1%",cat:"fashion",bid_paise:100,verified:true},
+  {id:22,name:"Huda Kattan",handle:"@hudabeauty",av:"💋",followers:"54M",eng:"2.8%",cat:"fashion",bid_paise:100,verified:true},
+  {id:23,name:"Gordon Ramsay",handle:"@gordongram",av:"🧑‍🍳",followers:"19M",eng:"3.4%",cat:"food",bid_paise:100,verified:true},
+  {id:24,name:"Nas Daily",handle:"@nasdaily",av:"🌍",followers:"42M",eng:"4.0%",cat:"food",bid_paise:100,verified:true},
+  {id:25,name:"MKBHD",handle:"@mkbhd",av:"📱",followers:"5M",eng:"6.5%",cat:"tech",bid_paise:100,verified:true},
+  {id:26,name:"Ninja",handle:"@ninja",av:"🎮",followers:"12M",eng:"3.8%",cat:"tech",bid_paise:100,verified:true},
+  {id:27,name:"Lele Pons",handle:"@lelepons",av:"🤣",followers:"53M",eng:"2.2%",cat:"comedy",bid_paise:100,verified:true},
+  {id:28,name:"Zach King",handle:"@zachking",av:"🎩",followers:"78M",eng:"5.1%",cat:"comedy",bid_paise:100,verified:true},
+  {id:29,name:"Chris Burkard",handle:"@chrisburkard",av:"📷",followers:"4M",eng:"7.2%",cat:"photography",bid_paise:100,verified:true},
+  {id:30,name:"Murad Osmann",handle:"@muradosmann",av:"🏔️",followers:"4.5M",eng:"3.9%",cat:"photography",bid_paise:100,verified:true},
+  {id:31,name:"Kayla Itsines",handle:"@kayla_itsines",av:"🏋️",followers:"16M",eng:"3.1%",cat:"fitness",bid_paise:100,verified:true},
+  {id:32,name:"Simeon Panda",handle:"@simeonpanda",av:"💪",followers:"8M",eng:"4.6%",cat:"fitness",bid_paise:100,verified:true},
 ];
 
 var curFilter="all", prevR={}, bidTargetId=null, CONFIG=null, sbClient=null;
@@ -267,9 +304,11 @@ async function init(){
     await loadLeaderboard();
     await loadActivity();
     subscribeRealtime();
+    updateHeroPrice(); startOnlineCounter();
   } else {
     sorted().forEach(function(x,i){ prevR[x.id]=i+1; });
     render(); renderDefaultFeed(); startSimulation();
+  updateHeroPrice(); startOnlineCounter();
   }
 }
 
@@ -371,7 +410,16 @@ function render(){
   });
 }
 
-function filterCat(c,btn){ curFilter=c; document.querySelectorAll(".tab").forEach(function(t){ t.classList.remove("active"); }); btn.classList.add("active"); render(); }
+function filterCat(c,btn){ curFilter=c; document.querySelectorAll(".tab").forEach(function(t){ t.classList.remove("active"); }); btn.classList.add("active"); render(); updateHeroPrice(); }
+
+function updateHeroPrice(){
+  var cat = document.getElementById("heroCat") ? document.getElementById("heroCat").value : curFilter;
+  if(cat==="all"||!cat) cat="all";
+  var list = cat==="all" ? sorted() : sorted().filter(function(p){ return p.cat===cat; });
+  var topBid = list.length>0 ? list[0].bid_paise : 0;
+  var price = topBid>0 ? topBid+100 : 100; // must exceed by $1
+  document.getElementById("heroPrice").textContent = fmtINR(price);
+}
 
 function renderDefaultFeed(){
   var l=document.getElementById("feedList"); l.innerHTML="";
@@ -389,6 +437,16 @@ function addFeed(msg){
   while(l.children.length>20) l.removeChild(l.lastChild);
 }
 
+
+function startOnlineCounter(){
+  var base=Math.floor(Math.random()*200)+300;
+  document.getElementById("onlineCount").textContent=base;
+  setInterval(function(){
+    base+=Math.floor(Math.random()*11)-5;
+    if(base<200)base=200; if(base>800)base=800;
+    document.getElementById("onlineCount").textContent=base;
+  },3000);
+}
 // Demo simulation (only when no backend connected)
 function startSimulation(){
   setInterval(function(){
