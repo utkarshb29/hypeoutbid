@@ -122,10 +122,10 @@ a{color:var(--accent-light);text-decoration:none;}button{font-family:inherit;}
   <p>Creators and influencers compete for rank on the most-watched leaderboard. Outbid anyone. Own your position. Get discovered.</p>
   <div class="hero-btns"><a href="#leaderboard" class="btn btn-accent btn-lg">View Leaderboard</a><button class="btn btn-hot btn-lg" onclick="openBidModal(0)">Place Your Bid</button></div>
   <div class="stats-bar">
-    <div class="stat"><div class="val" id="statBids">₹0</div><div class="lbl">Total Bids Placed</div></div>
+    <div class="stat"><div class="val" id="statBids">$0</div><div class="lbl">Total Bids Placed</div></div>
     <div class="stat"><div class="val" id="statProfiles">20</div><div class="lbl">Profiles Listed</div></div>
     <div class="stat"><div class="val">Live</div><div class="lbl">Updated in Real Time</div></div>
-    <div class="stat"><div class="val">₹1</div><div class="lbl">Minimum Bid</div></div>
+    <div class="stat"><div class="val">$1</div><div class="lbl">Minimum Bid</div></div>
   </div>
 </div></section>
 
@@ -200,7 +200,7 @@ a{color:var(--accent-light);text-decoration:none;}button{font-family:inherit;}
   <button class="modal-close" onclick="closeBid()">&#x2715;</button>
   <h2>⚔️ Place Your Bid</h2>
   <p class="msub" id="bidSub">Outbid the current holder to take their rank</p>
-  <div class="target-row" id="bidTarget"><div class="target-av" id="bidTAv">👤</div><div class="target-info"><div class="tn" id="bidTName">Select a profile</div><div class="tc" id="bidTCur">Current bid: ₹0</div></div></div>
+  <div class="target-row" id="bidTarget"><div class="target-av" id="bidTAv">👤</div><div class="target-info"><div class="tn" id="bidTName">Select a profile</div><div class="tc" id="bidTCur">Current bid: $0</div></div></div>
   <div class="form-group"><label>Your Bid Amount (USD)</label><input class="form-input" type="number" id="bidAmt" placeholder="0" min="1" step="1" style="font-size:1.1rem;font-weight:700;"/><div class="form-note" id="bidNote">Must exceed current bid by at least $1</div></div>
   <div class="form-group"><label>Your Instagram Handle</label><input class="form-input" type="text" id="bidHandle" placeholder="@yourhandle"/></div>
   <div class="form-group"><label>Email (for notifications)</label><input class="form-input" type="email" id="bidEmail" placeholder="you@email.com"/></div>
@@ -246,10 +246,10 @@ var P=[
 
 var curFilter="all", prevR={}, bidTargetId=null, CONFIG=null, sbClient=null;
 
-// paise helpers — all money stored as integer paise, displayed as ₹
+// paise helpers — all money stored as integer paise, displayed as $
 function toRupees(paise){ return paise/100; }
 function toPaise(rupees){ return Math.round(Number(rupees)*100); }
-function fmtINR(paise){ return "₹"+(paise/100).toLocaleString("en-IN"); }
+function fmtINR(paise){ return "$"+(paise/100).toLocaleString("en-US"); }
 function nowt(){ var d=new Date(); return d.getHours()+":"+String(d.getMinutes()).padStart(2,"0")+":"+String(d.getSeconds()).padStart(2,"0"); }
 
 function sorted(){ return [...P].sort(function(a,b){ return b.bid_paise - a.bid_paise; }); }
@@ -375,9 +375,9 @@ function filterCat(c,btn){ curFilter=c; document.querySelectorAll(".tab").forEac
 
 function renderDefaultFeed(){
   var l=document.getElementById("feedList"); l.innerHTML="";
-  ["🔥 Leaderboard is live — first bids start at <span class=\"amt\">₹1</span>",
+  ["🔥 Leaderboard is live — first bids start at <span class=\"amt\">$1</span>",
    "⚔️ Be the first to outbid and claim #1!",
-   "💰 All bids start at ₹1 — no ceiling"].forEach(function(msg){
+   "💰 All bids start at $1 — no ceiling"].forEach(function(msg){
     l.innerHTML+="<div class=\"feed-item\">"+msg+"<span class=\"time\">just now</span></div>";
   });
 }
@@ -393,7 +393,7 @@ function addFeed(msg){
 function startSimulation(){
   setInterval(function(){
     var p=P[Math.floor(Math.random()*P.length)];
-    var bump=Math.floor(Math.random()*500+100); // 100-600 paise = ₹1-₹6
+    var bump=Math.floor(Math.random()*500+100); // 100-600 paise = $1-$6
     sorted().forEach(function(x,i){ prevR[x.id]=i+1; });
     p.bid_paise+=bump; p._f=true;
     var nr=sorted().findIndex(function(x){ return x.id===p.id; })+1;
@@ -413,7 +413,7 @@ function openBidModal(id){
     document.getElementById("bidSub").textContent="Place a bid to enter the leaderboard";
     document.getElementById("bidAmt").value="1";
     document.getElementById("bidAmt").min="1";
-    document.getElementById("bidNote").textContent="Minimum bid is ₹1";
+    document.getElementById("bidNote").textContent="Minimum bid is $1";
   } else {
     var p=P.find(function(x){ return x.id===id; });
     var rank=sorted().findIndex(function(x){ return x.id===id; })+1;
@@ -424,7 +424,7 @@ function openBidModal(id){
     document.getElementById("bidSub").textContent="Outbid "+p.name+" to take rank #"+rank;
     document.getElementById("bidAmt").value=curRupees+1;
     document.getElementById("bidAmt").min=curRupees+1;
-    document.getElementById("bidNote").textContent="Must exceed "+fmtINR(p.bid_paise)+" by at least ₹1";
+    document.getElementById("bidNote").textContent="Must exceed "+fmtINR(p.bid_paise)+" by at least $1";
   }
   document.getElementById("bidOverlay").classList.add("open");
 }
@@ -439,7 +439,7 @@ async function handleBid(e){
 
   if(!amount_rupees||!handle||!email){ toast("Fill in all fields","warn"); return; }
   if(!handle.startsWith("@")) handle="@"+handle;
-  if(amount_rupees<1){ toast("Minimum bid is ₹1","warn"); return; }
+  if(amount_rupees<1){ toast("Minimum bid is $1","warn"); return; }
 
   if(bidTargetId&&bidTargetId!==0){
     var p=P.find(function(x){ return x.id===bidTargetId; });
