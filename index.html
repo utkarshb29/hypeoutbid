@@ -202,22 +202,7 @@ html{scroll-behavior:smooth;}
 .stat:hover{transform:translateY(-2px);}
 
 
-/* Light theme */
-body.light{--bg:#f8f9fc;--s1:#ffffff;--s2:#f0f2f5;--s3:#e4e7ec;--border:#d1d5db;--border2:#b8bcc8;--text:#1a1d26;--text2:#4b5563;--muted:#6b7280;--shadow:0 4px 24px rgba(0,0,0,.08);}
-body.light .nav{background:rgba(255,255,255,.9);border-bottom:1px solid var(--border);}
-body.light .modal{background:#fff;border-color:var(--border);}
-body.light .form-input{background:#fff !important;border-color:var(--border) !important;color:var(--text) !important;}
-body.light .form-input:focus{background:#fff !important;}
-body.light .hero-input{background:#fff;border-color:var(--border);color:var(--text);}
-body.light .hero-select{background:#fff;border-color:var(--border);color:var(--text);}
-body.light .hero-select option{background:#fff;color:var(--text);}
-body.light .lb-row:hover{background:var(--s2);}
-body.light .top-card{background:linear-gradient(135deg,#fff5f7,#fff0f3);border:1px solid #fecdd3;}
-body.light .tab{border-color:var(--border);}
-body.light .tab.active{background:var(--accent);color:#fff;border-color:var(--accent);}
-body.light .footer{background:var(--s2);}
-body.light .toast{background:#fff;border-color:var(--border);}
-body.light .feed{background:#fff;border-color:var(--border);}
+
 
 /* Theme toggle button */
 .theme-toggle{position:fixed;bottom:1.5rem;left:1.5rem;z-index:200;width:44px;height:44px;border-radius:50%;background:var(--s2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.2rem;transition:all .3s ease;box-shadow:var(--shadow);}
@@ -236,6 +221,71 @@ body.light .feed{background:#fff;border-color:var(--border);}
 
 
 .hero-tagline{font-size:1.1rem;color:var(--text2);font-weight:500;margin-bottom:.5rem;letter-spacing:-.01em;max-width:600px;margin-left:auto;margin-right:auto;}
+
+/* Made in India badge */
+.made-india{font-size:.75rem;color:var(--muted);font-weight:500;letter-spacing:.02em;margin-right:.75rem;padding:.3rem .6rem;border:1px solid var(--border);border-radius:var(--r-xs);white-space:nowrap;}
+
+/* Improved Light Theme */
+body.light{--bg:#f5f7fa;--s1:#ffffff;--s2:#f0f2f5;--s3:#e8eaef;--border:#d4d8e0;--border2:#bcc2cc;--accent:#E1306C;--accent-light:#F56040;--accent-bg:rgba(225,48,108,.08);--accent-border:rgba(225,48,108,.2);--hot:#e63946;--hot-bg:rgba(230,57,70,.06);--hot-border:rgba(230,57,70,.2);--green:#059669;--green-bg:rgba(5,150,105,.06);--text:#111827;--text2:#374151;--muted:#6b7280;--shadow:0 2px 12px rgba(0,0,0,.06);}
+body.light{background:var(--bg);color:var(--text);}
+body.light .nav{background:rgba(255,255,255,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);}
+body.light .nav-logo .text{color:var(--text);}
+body.light .nav-links a{color:var(--text2);}
+body.light .nav-links a:hover{color:var(--accent);}
+body.light .hero{background:linear-gradient(180deg,#f0f4ff 0%,var(--bg) 100%);}
+body.light .hero-badge{background:rgba(5,150,105,.08);border-color:rgba(5,150,105,.2);color:#059669;}
+body.light .hero h1{color:var(--text);}
+body.light .hero-tagline{color:var(--text2);}
+body.light .hero-sub{color:var(--text2);}
+body.light .hero-input{background:#fff;border-color:var(--border);color:var(--text);}
+body.light .hero-input::placeholder{color:var(--muted);}
+body.light .hero-select{background:#fff;border-color:var(--border);color:var(--text);}
+body.light .hero-select option{background:#fff;color:var(--text);}
+body.light .top-card{background:linear-gradient(135deg,#fff5f7,#fff8f0);border:1px solid #fecdd3;}
+body.light .top-name{color:var(--text);}
+body.light .top-handle{color:var(--text2);}
+body.light .section-title{color:var(--text);}
+body.light .tab{background:#fff;border-color:var(--border);color:var(--text2);}
+body.light .tab:hover{background:var(--s2);border-color:var(--accent);color:var(--text);}
+body.light .tab.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+body.light .lb-row{background:#fff;border:1px solid var(--border);border-radius:var(--r-sm);margin-bottom:.5rem;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+body.light .lb-row:hover{background:#fafbfc;border-color:var(--accent-border);box-shadow:0 4px 12px rgba(225,48,108,.08);}
+body.light .user-name{color:var(--text);}
+body.light .user-handle{color:var(--text2);}
+body.light .user-stats{color:var(--muted);}
+body.light .bid-amount{color:var(--hot);}
+body.light .modal{background:#fff;border:1px solid var(--border);box-shadow:0 20px 60px rgba(0,0,0,.12);}
+body.light .modal h2{color:var(--text);}
+body.light .modal .msub{color:var(--text2);}
+body.light .modal label{color:var(--text2);}
+body.light .form-input{background:#fff !important;border:1px solid var(--border) !important;color:var(--text) !important;}
+body.light .form-input:focus{border-color:var(--accent) !important;box-shadow:0 0 0 3px var(--accent-bg) !important;background:#fff !important;}
+body.light .form-input::placeholder{color:var(--muted) !important;}
+body.light .form-note{color:var(--muted);}
+body.light .target-row{background:var(--s2);border:1px solid var(--border);}
+body.light .feed{background:#fff;border:1px solid var(--border);}
+body.light .feed-header{color:var(--text);}
+body.light .feed-item{color:var(--text2);}
+body.light .how-card{background:#fff;border:1px solid var(--border);}
+body.light .how-card h3{color:var(--text);}
+body.light .how-card p{color:var(--text2);}
+body.light .cta-section{background:linear-gradient(135deg,#fff5f7,#fff0f6);border:1px solid #fecdd3;}
+body.light .cta-section h2{color:var(--text);}
+body.light .cta-section p{color:var(--text2);}
+body.light .footer{background:var(--s2);border-top:1px solid var(--border);}
+body.light .footer-copy{color:var(--muted);}
+body.light .footer-links a{color:var(--text2);}
+body.light .toast{background:#fff;border-color:var(--border);color:var(--text);}
+body.light .overlay{background:rgba(0,0,0,.4);}
+body.light .theme-toggle{background:#fff;border-color:var(--border);box-shadow:0 2px 8px rgba(0,0,0,.08);}
+body.light .made-india{color:var(--text2);border-color:var(--border);}
+body.light .btn-ghost{color:var(--text);border-color:var(--border);}
+body.light .btn-ghost:hover{background:var(--s2);}
+body.light .stat .val{color:var(--text);}
+body.light .stat .lbl{color:var(--muted);}
+body.light .rank-num{color:var(--text);}
+body.light .bid-label{color:var(--muted);}
+
 </style>
 <script src="https://checkout.razorpay.com/v1/checkout.js">
 // ── THEME TOGGLE ──
@@ -293,7 +343,7 @@ function toggleTheme(){
 <body><nav class="nav"><div class="container">
   <div class="nav-logo"><div class="text">HypeOutbid</div></div>
   <div class="nav-links"><a href="#leaderboard">Leaderboard</a><a href="#how">How it Works</a><a href="#activity">Live Feed</a></div>
-  <div class="nav-right"><button class="btn btn-ghost btn-sm" onclick="openClaimModal()">Claim Profile</button><button class="btn btn-accent btn-sm" onclick="openBidModal(0)">Place a Bid</button></div>
+  <div class="nav-right"><span class="made-india">Made in India 🇮🇳</span><button class="btn btn-ghost btn-sm" onclick="openClaimModal()">Claim Profile</button><button class="btn btn-accent btn-sm" onclick="openBidModal(0)">Place a Bid</button></div>
 </div></nav>
 <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Toggle light/dark theme">🌙</button>
 
