@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HypeOutbid Admin</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#0a0a0f;color:#e0e0e0;padding:2rem;min-height:100vh}
+h1{color:#ff2d75;margin-bottom:.5rem}
+.subtitle{color:#888;margin-bottom:2rem}
+.login-box{max-width:400px;margin:4rem auto;text-align:center}
+.login-box input{width:100%;padding:.8rem;border-radius:8px;border:1px solid #333;background:#1a1a2e;color:#fff;font-size:1rem;margin:.5rem 0}
+.login-box button{width:100%;padding:.8rem;border-radius:8px;border:none;background:linear-gradient(135deg,#ff2d75,#ff6b35);color:#fff;font-size:1rem;font-weight:600;cursor:pointer;margin-top:.5rem}
+.login-box button:hover{opacity:.9}
+.bid-card{background:#1a1a2e;border:1px solid #333;border-radius:12px;padding:1.5rem;margin-bottom:1rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+.bid-info{flex:1}
+.bid-info h3{color:#fff;margin-bottom:.3rem}
+.bid-info p{color:#aaa;font-size:.85rem;margin:.2rem 0}
+.bid-info .utr{color:#ffd700;font-weight:600;font-family:monospace;font-size:.95rem}
+.bid-info .amount{color:#00ff88;font-size:1.2rem;font-weight:700}
+.bid-actions{display:flex;gap:.5rem}
+.btn-approve{padding:.6rem 1.2rem;border-radius:8px;border:none;background:#00c853;color:#fff;font-weight:600;cursor:pointer}
+.btn-reject{padding:.6rem 1.2rem;border-radius:8px;border:none;background:#ff1744;color:#fff;font-weight:600;cursor:pointer}
+.btn-approve:hover{background:#00e676}
+.btn-reject:hover{background:#ff5252}
+.empty{text-align:center;color:#666;padding:3rem;font-size:1.1rem}
+.badge{display:inline-block;padding:.2rem .6rem;border-radius:4px;font-size:.7rem;font-weight:600;text-transform:uppercase}
+.badge-pending{background:#ff980020;color:#ff9800;border:1px solid #ff980040}
+.stats{display:flex;gap:2rem;margin-bottom:2rem;flex-wrap:wrap}
+.stat{background:#1a1a2e;border:1px solid #333;border-radius:8px;padding:1rem 1.5rem}
+.stat .num{font-size:1.5rem;font-weight:700;color:#ff2d75}
+.stat .label{font-size:.8rem;color:#888}
+#bidList{margin-top:1rem}
+</style>
+</head>
+<body>
+
+<div class="login-box" id="loginBox">
+  <h1>HypeOutbid Admin</h1>
+  <p class="subtitle">Enter admin key to manage bids</p>
+  <input type="password" id="adminKeyInput" placeholder="Admin key" onkeydown="if(event.key==='"'"'Enter'"'"')doLogin()">
+  <button onclick="doLogin()">Login</button>
+</div>
+
+<div id="dashboard" style="display:none">
+  <h1>Pending Bids</h1>
+  <p class="subtitle">Verify UTR against your bank statement, then approve or reject.</p>
+  <div class="stats" id="stats"></div>
+  <div id="bidList"></div>
+</div>
+
+<script>
+var ADMIN_KEY = "";
+
+function doLogin(){
+  ADMIN_KEY = document.getElementById("adminKeyInput").value.trim();
+  if(!ADMIN_KEY){alert("Enter admin key");return;}
+  document.getElementById("loginBox").style.display="none";
+  document.getElementById("dashboard").style.display="block";
+  loadPending();
+}
+
+async function loadPending(){
+  var res = await fetch("/api/admin/pending", {headers:{"X-Admin-Key":ADMIN_KEY}});
+  if(res.status===401){alert("Invalid admin key");location.reload();return;}
+  var bids = await res.json();
+  var list = document.getElementById("bidList");
+
+  document.getElementById("stats").innerHTML = 
+    "<div class=\"stat\"><div class=\"num\">"+bids.length+"</div><div class=\"label\">Pending</div></div>";
+
+  if(bids.length===0){
+    list.innerHTML="<div class=\"empty\">No pending bids. All clear!</div>";
+    return;
+  }
+
+  list.innerHTML = bids.map(function(b){
+    var date = new Date(b.created_at).toLocaleString();
+    return "<div class=\"bid-card\" id=\"bid-"+b.id+"\">"+
+      "<div class=\"bid-info\">"+
+        "<h3>"+b.bidder_handle+" <span class=\"badge badge-pending\">pending</span></h3>"+
+        "<p class=\"amount\">₹"+(b.amount_paise/100)+"</p>"+
+        "<p>UTR: <span class=\"utr\">"+b.payment_id+"</span></p>"+
+        "<p>Email: "+b.bidder_email+"</p>"+
+        "<p>Profile: "+(b.profiles?b.profiles.handle:"new profile")+"</p>"+
+        "<p>Time: "+date+"</p>"+
+      "</div>"+
+      "<div class=\"bid-actions\">"+
+        "<button class=\"btn-approve\" onclick=\"approveBid("+b.id+")\">Approve</button>"+
+        "<button class=\"btn-reject\" onclick=\"rejectBid("+b.id+")\">Reject</button>"+
+      "</div>"+
+    "</div>";
+  }).join("");
+}
+
+async function approveBid(id){
+  if(!confirm("Approve this bid? Profile will go live on leaderboard.")) return;
+  var res = await fetch("/api/admin/approve",{method:"POST",headers:{"Content-Type":"application/json","X-Admin-Key":ADMIN_KEY},body:JSON.stringify({bid_id:id})});
+  var d = await res.json();
+  if(d.success){
+    document.getElementById("bid-"+id).style.opacity="0.3";
+    document.getElementById("bid-"+id).innerHTML="<div class=\"bid-info\"><h3 style=\"color:#00c853\">✓ Approved</h3></div>";
+    setTimeout(loadPending, 1000);
+  } else { alert(d.error||"Failed"); }
+}
+
+async function rejectBid(id){
+  if(!confirm("Reject this bid? It will be marked as failed.")) return;
+  var res = await fetch("/api/admin/reject",{method:"POST",headers:{"Content-Type":"application/json","X-Admin-Key":ADMIN_KEY},body:JSON.stringify({bid_id:id})});
+  var d = await res.json();
+  if(d.success){
+    document.getElementById("bid-"+id).style.opacity="0.3";
+    document.getElementById("bid-"+id).innerHTML="<div class=\"bid-info\"><h3 style=\"color:#ff1744\">✗ Rejected</h3></div>";
+    setTimeout(loadPending, 1000);
+  } else { alert(d.error||"Failed"); }
+}
+</script>
+</body>
+</html>
