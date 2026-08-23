@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HypeOutbid - Pay to Rank on the Leaderboard</title>
+<meta name="description" content="Bid real money to rank your profile on the leaderboard. Highest bidder gets #1.">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--bg:#09090b;--surface:#111114;--surface2:#1a1a1f;--border:#27272a;--text:#fafafa;--muted:#71717a;--accent:#8b5cf6;--accent2:#a78bfa;--hot:#ef4444;--hot2:#dc2626;--gold:#eab308;--silver:#a1a1aa;--bronze:#d97706;--green:#10b981;--radius:12px;--shadow:0 8px 32px rgba(0,0,0,.5);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+a{color:var(--accent2);text-decoration:none;}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:.6rem 1.5rem;background:rgba(9,9,11,.85);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;backdrop-filter:blur(16px);}
+.nav-left{display:flex;align-items:center;gap:.6rem;}
+.logo{font-size:1.2rem;font-weight:800;letter-spacing:-.5px;}
+.logo span{color:var(--hot);}
+.nav-right{display:flex;align-items:center;gap:.6rem;}
+.made-india{font-size:.7rem;color:var(--muted);white-space:nowrap;}
+.made-india .heart{color:#ef4444;font-size:.8rem;}
+.currency-wrap{position:relative;}
+.currency-btn{display:flex;align-items:center;gap:.3rem;padding:.35rem .6rem;background:var(--surface2);border:1px solid var(--border);border-radius:8px;cursor:pointer;font-size:.8rem;color:var(--text);transition:border-color .2s;}
+.currency-btn:hover{border-color:var(--accent);}
+.currency-menu{position:absolute;top:110%;right:0;width:180px;max-height:300px;overflow-y:auto;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);display:none;z-index:200;}
+.currency-menu.open{display:block;}
+.currency-opt{padding:.45rem .7rem;cursor:pointer;font-size:.78rem;transition:background .15s;}
+.currency-opt:hover{background:var(--surface2);}
+.currency-opt.active{background:var(--accent);color:#fff;}
+.hero{text-align:center;padding:4rem 1.5rem 2.5rem;max-width:700px;margin:0 auto;}
+.hero-title{font-size:2.5rem;font-weight:700;letter-spacing:-.045em;line-height:1.1;margin-bottom:1rem;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:.5rem .75rem;}
+.bid-stepper{display:inline-flex;align-items:center;gap:.5rem;}
+.stepper-btn{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.1);border:none;color:var(--text);font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s;}
+.stepper-btn:hover{background:rgba(255,255,255,.18);}
+.stepper-btn:active{transform:scale(.92);}
+.stepper-val{min-width:5.25rem;font-size:2.5rem;font-weight:700;color:var(--accent2);cursor:default;user-select:none;font-variant-numeric:tabular-nums;}
+.hero-sub{color:var(--muted);font-size:1rem;line-height:1.5;margin-bottom:1.5rem;max-width:500px;margin-left:auto;margin-right:auto;}
+.hero-cta{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;}
+.btn{display:inline-flex;align-items:center;gap:.4rem;padding:.55rem 1.1rem;border-radius:8px;font-weight:600;font-size:.85rem;cursor:pointer;border:none;transition:transform .12s,box-shadow .12s;text-decoration:none;}
+.btn:hover{transform:translateY(-1px);}
+.btn-accent{background:var(--accent);color:#fff;}
+.btn-hot{background:linear-gradient(135deg,var(--hot),var(--hot2));color:#fff;}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text);}
+.btn-sm{padding:.35rem .7rem;font-size:.78rem;}
+.btn-lg{padding:.7rem 1.4rem;font-size:.95rem;}
+.stats-bar{display:flex;justify-content:center;gap:2rem;padding:.75rem 1.5rem;flex-wrap:wrap;}
+.stat{text-align:center;}
+.stat .sn{font-size:1.3rem;font-weight:800;}
+.stat .sl{font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
+.tabs-wrap{display:flex;gap:.35rem;padding:0 1.5rem;overflow-x:auto;margin-bottom:1rem;scrollbar-width:none;}
+.tabs-wrap::-webkit-scrollbar{display:none;}
+.tab{padding:.35rem .75rem;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:.75rem;cursor:pointer;white-space:nowrap;transition:all .15s;}
+.tab.active,.tab:hover{background:var(--accent);color:#fff;border-color:var(--accent);}
+.main-grid{display:grid;grid-template-columns:1fr 300px;gap:1.25rem;max-width:1100px;margin:0 auto;padding:0 1.5rem 3rem;}
+@media(max-width:900px){.main-grid{grid-template-columns:1fr;}}
+.top-card{display:flex;align-items:center;gap:1rem;padding:1.2rem;background:linear-gradient(135deg,rgba(139,92,246,.08),rgba(239,68,68,.04));border:1px solid var(--accent);border-radius:var(--radius);cursor:pointer;transition:transform .2s;margin-bottom:.75rem;}
+.top-card:hover{transform:scale(1.005);}
+.top-avatar-lg{font-size:2.8rem;}
+.top-info{flex:1;}
+.top-badge{font-size:.65rem;color:var(--gold);font-weight:700;margin-bottom:.15rem;}
+.top-name{font-size:1.05rem;font-weight:700;}
+.top-handle{color:var(--muted);font-size:.8rem;}
+.top-metrics{display:flex;gap:.6rem;margin-top:.2rem;font-size:.7rem;color:var(--muted);}
+.top-bid-side{text-align:right;}
+.top-bid-lbl{font-size:.65rem;color:var(--muted);text-transform:uppercase;}
+.top-bid-val{font-size:1.2rem;font-weight:800;color:var(--green);}
+.lb-row{display:flex;align-items:center;gap:.65rem;padding:.75rem .9rem;border-radius:var(--radius);border:1px solid var(--border);background:var(--surface);margin-bottom:.4rem;cursor:pointer;transition:border-color .15s,transform .12s;}
+.lb-row:hover{border-color:var(--accent);transform:translateX(2px);}
+.lb-row.top1{border-color:var(--gold);background:rgba(234,179,8,.02);}
+.lb-row.top2{border-color:var(--silver);background:rgba(161,161,170,.02);}
+.lb-row.top3{border-color:var(--bronze);background:rgba(217,119,6,.02);}
+.rank-num{width:1.8rem;text-align:center;font-weight:800;font-size:.95rem;}
+.r1{color:var(--gold);}.r2{color:var(--silver);}.r3{color:var(--bronze);}.rn{color:var(--muted);}
+.rank-arrow{font-size:.65rem;color:var(--muted);width:.8rem;text-align:center;}
+.user-avatar{font-size:1.5rem;width:2.2rem;text-align:center;}
+.user-info{flex:1;min-width:0;}
+.user-name{font-weight:600;font-size:.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.user-handle{color:var(--muted);font-size:.72rem;}
+.user-desc{color:var(--muted);font-size:.68rem;margin-top:.1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.verify{color:var(--accent2);font-size:.68rem;}
+.bid-col{text-align:right;min-width:70px;}
+.bid-amount{font-weight:700;font-size:.9rem;color:var(--green);}
+.bid-label{font-size:.6rem;color:var(--muted);}
+.outbid-btn{margin-left:.4rem;}
+.empty-state{text-align:center;padding:3rem 1.5rem;display:none;}
+.empty-state .emoji{font-size:2.5rem;margin-bottom:.6rem;}
+.empty-state h3{font-size:1.1rem;margin-bottom:.3rem;}
+.empty-state p{color:var(--muted);font-size:.85rem;margin-bottom:1rem;}
+.sidebar{display:flex;flex-direction:column;gap:.75rem;}
+.side-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:.9rem;}
+.side-card h3{font-size:.8rem;font-weight:700;margin-bottom:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
+.feed-item{padding:.4rem 0;border-bottom:1px solid var(--border);font-size:.75rem;line-height:1.3;}
+.feed-item:last-child{border:none;}
+.feed-item .amt{color:var(--green);font-weight:600;margin-left:.2rem;}
+.feed-item .time{color:var(--muted);float:right;font-size:.65rem;}
+.how-section{max-width:900px;margin:0 auto;padding:3rem 1.5rem;}
+.how-section h2{text-align:center;font-size:1.6rem;font-weight:800;margin-bottom:.4rem;}
+.how-sub{text-align:center;color:var(--muted);margin-bottom:1.5rem;font-size:.9rem;}
+.how-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.75rem;margin-bottom:1.5rem;}
+.how-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem;text-align:center;}
+.how-card .hicon{font-size:1.8rem;margin-bottom:.4rem;}
+.how-card h4{font-size:.88rem;margin-bottom:.2rem;}
+.how-card p{font-size:.75rem;color:var(--muted);line-height:1.4;}
+.how-steps{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;}
+.how-steps h3{font-size:.95rem;margin-bottom:.75rem;}
+.step{display:flex;gap:.65rem;margin-bottom:.75rem;align-items:flex-start;}
+.step:last-child{margin-bottom:0;}
+.step-num{width:1.8rem;height:1.8rem;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.78rem;flex-shrink:0;}
+.step-text h5{font-size:.8rem;font-weight:600;margin-bottom:.1rem;}
+.step-text p{font-size:.72rem;color:var(--muted);line-height:1.4;}
+.footer{text-align:center;padding:1.5rem;border-top:1px solid var(--border);color:var(--muted);font-size:.75rem;}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;z-index:200;opacity:0;pointer-events:none;transition:opacity .2s;}
+.overlay.open{opacity:1;pointer-events:all;}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.5rem;width:92%;max-width:400px;position:relative;max-height:90vh;overflow-y:auto;}
+.modal-close{position:absolute;top:.6rem;right:.6rem;background:none;border:none;color:var(--muted);font-size:1.1rem;cursor:pointer;}
+.modal h2{font-size:1.1rem;font-weight:800;margin-bottom:.2rem;}
+.msub{color:var(--muted);font-size:.8rem;margin-bottom:.75rem;}
+.form-group{margin-bottom:.6rem;}
+.form-group label{display:block;font-size:.72rem;font-weight:600;color:var(--muted);margin-bottom:.2rem;}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:.5rem .65rem;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:.85rem;outline:none;transition:border-color .2s;}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--accent);}
+.form-group textarea{resize:vertical;min-height:50px;}
+.bid-target{display:flex;align-items:center;gap:.5rem;padding:.5rem;background:var(--surface2);border-radius:8px;margin-bottom:.6rem;}
+.bid-target .bta{font-size:1.4rem;}
+.bid-target .bti{font-size:.75rem;color:var(--muted);}
+#bidNote{font-size:.7rem;color:var(--muted);margin-bottom:.4rem;}
+.qr-step{display:none;text-align:center;}
+.qr-step.active{display:block;}
+.details-step.hidden{display:none;}
+.qr-img-wrap{margin:1rem auto;width:200px;height:200px;border-radius:12px;overflow:hidden;border:2px solid var(--border);background:#fff;}
+.qr-img-wrap img{width:100%;height:100%;object-fit:cover;}
+.qr-amount{font-size:1.5rem;font-weight:800;color:var(--accent2);margin:.5rem 0;}
+.qr-instructions{font-size:.78rem;color:var(--muted);line-height:1.5;margin-bottom:.75rem;}
+.qr-instructions ol{text-align:left;padding-left:1.2rem;}
+.qr-instructions li{margin-bottom:.3rem;}
+#tw{position:fixed;top:4.5rem;right:1rem;z-index:999;display:flex;flex-direction:column;gap:.4rem;}
+.toast{padding:.5rem .9rem;border-radius:8px;font-size:.8rem;font-weight:500;animation:slidein .3s;color:#fff;}
+.toast.ok{background:var(--green);}
+.toast.warn{background:var(--hot);}
+@keyframes slidein{from{transform:translateX(100%);opacity:0;}to{transform:translateX(0);opacity:1;}}
+@media(max-width:768px){.hero-title{font-size:1.8rem;}.stepper-val{font-size:1.8rem;min-width:4rem;}.stats-bar{gap:1rem;}.stat .sn{font-size:1.1rem;}.top-card{flex-direction:column;text-align:center;gap:.6rem;}.top-bid-side{text-align:center;}.lb-row{flex-wrap:wrap;}.outbid-btn{width:100%;margin-left:0;margin-top:.4rem;}.outbid-btn .btn{width:100%;justify-content:center;}}
+@media(max-width:480px){.nav{padding:.4rem .75rem;}.hero{padding:2.5rem 1rem 1.5rem;}.hero-title{font-size:1.5rem;}.stepper-val{font-size:1.5rem;min-width:3.5rem;}.main-grid{padding:0 .75rem 2rem;}.how-section{padding:2rem .75rem;}}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <div class="nav-left"><div class="logo">Hype<span>Outbid</span></div></div>
+  <div class="nav-right">
+    <span class="made-india">Made in India with <span class="heart">&#10084;</span></span>
+    <div class="currency-wrap">
+      <div class="currency-btn" onclick="toggleCurrMenu()">
+        <span id="currFlag">IN</span>
+        <span id="currLabel">INR</span>
+        <span>&#9662;</span>
+      </div>
+      <div class="currency-menu" id="currMenu"></div>
+    </div>
+  </div>
+</nav>
+<section class="hero">
+  <h1 class="hero-title">
+    <span>Claim #1 for</span>
+    <span class="bid-stepper">
+      <button class="stepper-btn" onclick="stepBid(-10)" aria-label="Decrease">&#8722;</button>
+      <span class="stepper-val" id="heroAmount">&#8377;50</span>
+      <button class="stepper-btn" onclick="stepBid(10)" aria-label="Increase">&#43;</button>
+    </span>
+  </h1>
+  <p class="hero-sub">Bid real money. Highest bidder gets #1. Everyone sees your profile. No algorithms, no tricks.</p>
+  <div class="hero-cta">
+    <button class="btn btn-hot btn-lg" onclick="openBidModal(0)">&#9876;&#65039; Place Your Bid</button>
+    <a href="#how" class="btn btn-ghost btn-lg">How it works</a>
+  </div>
+</section>
+<div class="stats-bar">
+  <div class="stat"><div class="sn" id="statProfiles">0</div><div class="sl">Profiles</div></div>
+  <div class="stat"><div class="sn" id="statBids">&#8377;0</div><div class="sl">Total Bids</div></div>
+  <div class="stat"><div class="sn" id="statClicks">0</div><div class="sl">Clicks</div></div>
+  <div class="stat"><div class="sn" id="onlineCount">0</div><div class="sl">Online</div></div>
+</div>
+<div class="tabs-wrap" id="tabsWrap"></div>
+<div class="main-grid">
+  <div class="left-col">
+    <div id="topCardWrap"></div>
+    <div class="empty-state" id="emptyState">
+      <div class="emoji">&#127942;</div>
+      <h3>Leaderboard is empty!</h3>
+      <p>Be the first to bid and claim #1. Your profile gets maximum visibility.</p>
+      <button class="btn btn-hot btn-lg" onclick="openBidModal(0)">&#9876;&#65039; Be the First</button>
+    </div>
+    <div id="lbTable"></div>
+  </div>
+  <aside class="sidebar">
+    <div class="side-card">
+      <h3>&#9889; Live Activity</h3>
+      <div id="feedList">
+        <div class="feed-item" style="text-align:center;padding:1.5rem;color:var(--muted);">Waiting for the first bid...</div>
+      </div>
+    </div>
+    <div class="side-card">
+      <h3>&#128161; Quick Tips</h3>
+      <div class="feed-item">Higher bid = higher rank. Simple.</div>
+      <div class="feed-item">Add website + Instagram for max clicks.</div>
+      <div class="feed-item">Outbid anyone to take their spot.</div>
+      <div class="feed-item">Payments via UPI QR. Instant.</div>
+    </div>
+  </aside>
+</div>
+<section class="how-section" id="how">
+  <h2>How It Works</h2>
+  <p class="how-sub">A transparent, pay-to-rank leaderboard. Real money. Real visibility.</p>
+  <div class="how-cards">
+    <div class="how-card"><div class="hicon">&#128176;</div><h4>Choose Amount</h4><p>Pick your bid (min &#8377;10). Higher bid = higher rank on the public leaderboard.</p></div>
+    <div class="how-card"><div class="hicon">&#128242;</div><h4>Scan QR &amp; Pay</h4><p>Scan the UPI QR code with any app (GPay, PhonePe, Paytm). Enter exact amount.</p></div>
+    <div class="how-card"><div class="hicon">&#9989;</div><h4>Enter UTR</h4><p>After payment, paste your UTR/transaction reference as proof of payment.</p></div>
+    <div class="how-card"><div class="hicon">&#128640;</div><h4>Go Live</h4><p>Your profile instantly appears on the leaderboard ranked by bid amount.</p></div>
+  </div>
+  <div class="how-steps">
+    <h3>Step-by-Step</h3>
+    <div class="step"><div class="step-num">1</div><div class="step-text"><h5>Click "Place Your Bid"</h5><p>Open the bid form from hero or by clicking Outbid on any profile.</p></div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-text"><h5>Fill Your Details</h5><p>Instagram handle, email, optional website, short bio, and category.</p></div></div>
+    <div class="step"><div class="step-num">3</div><div class="step-text"><h5>Set Amount &amp; Continue</h5><p>Enter bid amount in INR. Must exceed current bid if outbidding someone.</p></div></div>
+    <div class="step"><div class="step-num">4</div><div class="step-text"><h5>Scan QR &amp; Pay</h5><p>A QR code appears. Open any UPI app, scan, and pay the exact amount.</p></div></div>
+    <div class="step"><div class="step-num">5</div><div class="step-text"><h5>Paste UTR &amp; Submit</h5><p>Copy 12-digit UTR from UPI app, paste it, and hit confirm. You are live!</p></div></div>
+  </div>
+</section>
+<footer class="footer">
+  <p>&copy; 2025 HypeOutbid. Made with &#10084;&#65039; in India. Payments via UPI.</p>
+  <p style="margin-top:.3rem;">Display currency is for reference only. All payments in INR.</p>
+</footer>
+<div class="overlay" id="bidOverlay" onclick="if(event.target===this)closeBid()">
+  <div class="modal">
+    <button class="modal-close" onclick="closeBid()">&#10005;</button>
+    <div class="details-step" id="bidStep1">
+      <h2>&#9876;&#65039; Place Your Bid</h2>
+      <p class="msub">Fill details, then pay via UPI QR</p>
+      <div class="bid-target" id="bidTarget" style="display:none;">
+        <span class="bta" id="bidTAv"></span>
+        <div><div id="bidTName" style="font-weight:600;font-size:.85rem;"></div><div id="bidTCur" class="bti"></div></div>
+      </div>
+      <div class="form-group"><label>Instagram Handle *</label><input id="bidHandle" placeholder="@yourhandle" required></div>
+      <div class="form-group"><label>Email *</label><input id="bidEmail" type="email" placeholder="you@email.com" required></div>
+      <div class="form-group"><label>Website (optional)</label><input id="bidWebsite" placeholder="https://yoursite.com"></div>
+      <div class="form-group"><label>Short Bio (optional)</label><textarea id="bidDesc" placeholder="What you do in one line..."></textarea></div>
+      <div class="form-group"><label>Category</label><select id="bidCategory"><option value="creator">Creator</option><option value="business">Business</option><option value="tech">Tech</option><option value="music">Music</option><option value="fashion">Fashion</option><option value="fitness">Fitness</option><option value="education">Education</option><option value="finance">Finance</option><option value="food">Food</option><option value="travel">Travel</option><option value="other">Other</option></select></div>
+      <div class="form-group"><label>Bid Amount (&#8377;) *</label><input id="bidAmt" type="number" min="10" step="1" placeholder="50" required></div>
+      <p id="bidNote">Minimum &#8377;10. Higher bid = higher rank.</p>
+      <button type="button" class="btn btn-hot btn-lg" id="bidNextBtn" style="width:100%;justify-content:center;margin-top:.4rem;" onclick="goToQRStep()">Continue to Payment &#8594;</button>
+    </div>
+    <div class="qr-step" id="bidStep2">
+      <h2>&#128242; Scan &amp; Pay</h2>
+      <p class="msub">Pay via any UPI app</p>
+      <div class="qr-amount" id="qrAmountDisplay">&#8377;50</div>
+      <div class="qr-img-wrap"><img src="/qr-pay.jpg" alt="UPI QR Code"></div>
+      <div class="qr-instructions">
+        <ol>
+          <li>Open GPay / PhonePe / Paytm</li>
+          <li>Scan this QR code</li>
+          <li>Enter <b>exact amount</b> shown above</li>
+          <li>Complete payment &amp; copy <b>UTR</b> (12 digits)</li>
+        </ol>
+      </div>
+      <div class="form-group">
+        <label>UTR / Transaction Reference *</label>
+        <input id="bidUTR" placeholder="e.g. 412345678901" required>
+      </div>
+      <button type="button" class="btn btn-hot btn-lg" id="bidSubmitBtn" style="width:100%;justify-content:center;" onclick="submitBid()">&#9989; Confirm Payment</button>
+      <button type="button" class="btn btn-ghost btn-sm" style="width:100%;justify-content:center;margin-top:.4rem;" onclick="backToDetails()">&#8592; Back</button>
+    </div>
+  </div>
+</div>
+<div id="tw"></div>
+<script>
+var CURRENCIES=[{code:"INR",symbol:"\u20b9",flag:"\ud83c\uddee\ud83c\uddf3",rate:1},{code:"USD",symbol:"$",flag:"\ud83c\uddfa\ud83c\uddf8",rate:0.012},{code:"EUR",symbol:"\u20ac",flag:"\ud83c\uddea\ud83c\uddfa",rate:0.011},{code:"GBP",symbol:"\u00a3",flag:"\ud83c\uddec\ud83c\udde7",rate:0.0095},{code:"AED",symbol:"AED",flag:"\ud83c\udde6\ud83c\uddea",rate:0.044},{code:"SAR",symbol:"SAR",flag:"\ud83c\uddf8\ud83c\udde6",rate:0.045},{code:"CAD",symbol:"C$",flag:"\ud83c\udde8\ud83c\udde6",rate:0.016},{code:"AUD",symbol:"A$",flag:"\ud83c\udde6\ud83c\uddfa",rate:0.018},{code:"JPY",symbol:"\u00a5",flag:"\ud83c\uddef\ud83c\uddf5",rate:1.78},{code:"CNY",symbol:"\u00a5",flag:"\ud83c\udde8\ud83c\uddf3",rate:0.087},{code:"SGD",symbol:"S$",flag:"\ud83c\uddf8\ud83c\uddec",rate:0.016},{code:"MYR",symbol:"RM",flag:"\ud83c\uddf2\ud83c\uddfe",rate:0.053},{code:"THB",symbol:"\u0e3f",flag:"\ud83c\uddf9\ud83c\udded",rate:0.41},{code:"IDR",symbol:"Rp",flag:"\ud83c\uddee\ud83c\udde9",rate:189},{code:"PHP",symbol:"\u20b1",flag:"\ud83c\uddf5\ud83c\udded",rate:0.67},{code:"BDT",symbol:"BDT",flag:"\ud83c\udde7\ud83c\udde9",rate:1.43},{code:"PKR",symbol:"Rs",flag:"\ud83c\uddf5\ud83c\uddf0",rate:3.34},{code:"LKR",symbol:"Rs",flag:"\ud83c\uddf1\ud83c\uddf0",rate:3.6},{code:"NPR",symbol:"Rs",flag:"\ud83c\uddf3\ud83c\uddf5",rate:1.6},{code:"KRW",symbol:"\u20a9",flag:"\ud83c\uddf0\ud83c\uddf7",rate:16.2},{code:"BRL",symbol:"R$",flag:"\ud83c\udde7\ud83c\uddf7",rate:0.069},{code:"MXN",symbol:"MX$",flag:"\ud83c\uddf2\ud83c\uddfd",rate:0.21},{code:"ZAR",symbol:"R",flag:"\ud83c\uddff\ud83c\udde6",rate:0.22},{code:"NGN",symbol:"\u20a6",flag:"\ud83c\uddf3\ud83c\uddec",rate:18.5},{code:"KES",symbol:"KSh",flag:"\ud83c\uddf0\ud83c\uddea",rate:1.55},{code:"EGP",symbol:"EGP",flag:"\ud83c\uddea\ud83c\uddec",rate:0.59},{code:"TRY",symbol:"\u20ba",flag:"\ud83c\uddf9\ud83c\uddf7",rate:0.41},{code:"RUB",symbol:"\u20bd",flag:"\ud83c\uddf7\ud83c\uddfa",rate:1.07},{code:"CHF",symbol:"Fr",flag:"\ud83c\udde8\ud83c\udded",rate:0.0106},{code:"SEK",symbol:"kr",flag:"\ud83c\uddf8\ud83c\uddea",rate:0.124},{code:"NZD",symbol:"NZ$",flag:"\ud83c\uddf3\ud83c\uddff",rate:0.02}];
+var P=[],curFilter="all",bidTargetId=null,CONFIG=null,sbClient=null,curCurrency=CURRENCIES[0],heroAmt=50;
+function fmtMoney(paise){var a=(paise/100)*curCurrency.rate;if(curCurrency.code==="INR")return curCurrency.symbol+Math.round(a).toLocaleString("en-IN");if(curCurrency.rate>10)return curCurrency.symbol+Math.round(a).toLocaleString();return curCurrency.symbol+a.toFixed(a<10?2:0);}
+function toast(m,t){var e=document.createElement("div");e.className="toast "+(t||"ok");e.textContent=m;document.getElementById("tw").appendChild(e);setTimeout(function(){e.remove();},4000);}
+function stepBid(d){heroAmt=Math.max(10,heroAmt+d);document.getElementById("heroAmount").textContent="\u20b9"+heroAmt;}
+function buildCurrencyMenu(){var menu=document.getElementById("currMenu");menu.innerHTML="";CURRENCIES.forEach(function(c){var el=document.createElement("div");el.className="currency-opt"+(c.code===curCurrency.code?" active":"");el.textContent=c.flag+" "+c.code;el.onclick=function(){setCurrency(c.code);};menu.appendChild(el);});}
+function toggleCurrMenu(){document.getElementById("currMenu").classList.toggle("open");}
+function setCurrency(code){curCurrency=CURRENCIES.find(function(c){return c.code===code;})||CURRENCIES[0];document.getElementById("currFlag").textContent=curCurrency.flag;document.getElementById("currLabel").textContent=curCurrency.code;document.getElementById("currMenu").classList.remove("open");buildCurrencyMenu();render();updateStats();localStorage.setItem("currency",code);}
+document.addEventListener("click",function(e){if(!e.target.closest(".currency-wrap"))document.getElementById("currMenu").classList.remove("open");});
+function sorted(){return[...P].sort(function(a,b){return b.bid_paise-a.bid_paise;});}
+function filtered(){var s=sorted();return curFilter==="all"?s:s.filter(function(p){return p.cat===curFilter;});}
+async function init(){var saved=localStorage.getItem('currency');if(saved)setCurrency(saved);buildCurrencyMenu();try{var r=await fetch('/api/config');CONFIG=await r.json();}catch(e){CONFIG=null;}if(CONFIG&&CONFIG.supabaseUrl){sbClient=window.supabase.createClient(CONFIG.supabaseUrl,CONFIG.supabaseAnonKey);await loadLeaderboard();await loadActivity();subscribeRealtime();}render();updateStats();buildCategoryTabs();}
+async function loadLeaderboard(){try{var res=await fetch('/api/leaderboard');if(!res.ok)return;var rows=await res.json();P=rows.map(function(row){return{id:row.id,name:row.name||row.handle.replace('@',''),handle:row.handle,av:row.avatar||'\ud83d\udc64',cat:row.category||'other',url:row.instagram_url||'',website:row.website_url||'',desc:row.description||'',bid_paise:parseInt(row.current_bid_paise)||0,verified:row.verified||false,topBidder:row.top_bidder_handle||'',_clicks:row.click_count||0};});}catch(e){}}
+async function loadActivity(){try{var res=await fetch('/api/activity');if(!res.ok)return;var rows=await res.json();var l=document.getElementById('feedList');l.innerHTML='';if(!rows.length){l.innerHTML='<div class="feed-item" style="text-align:center;padding:1.5rem;color:var(--muted);">Waiting for the first bid...</div>';return;}rows.forEach(function(row){l.innerHTML+='<div class="feed-item">\u2694\uFE0F <b>'+(row.bidder_handle||'someone')+'</b> bid <span class="amt">'+fmtMoney(row.amount_paise)+'</span><span class="time">'+new Date(row.created_at).toLocaleTimeString()+'</span></div>';});}catch(e){}}
+function subscribeRealtime(){if(!sbClient)return;sbClient.channel('bids-live').on('postgres_changes',{event:'INSERT',schema:'public',table:'bids'},function(){loadLeaderboard().then(function(){render();updateStats();buildCategoryTabs();loadActivity();});}).subscribe();}
+function render(){var s=sorted();var tw=document.getElementById('topCardWrap');var em=document.getElementById('emptyState');var tb=document.getElementById('lbTable');if(s.length===0){tw.innerHTML='';tb.innerHTML='';em.style.display='block';return;}em.style.display='none';var top=s[0];tw.innerHTML='<div class="top-card" onclick="visitProfile('+top.id+')"><div class="top-avatar-lg">'+top.av+'</div><div class="top-info"><div class="top-badge">\ud83d\udc51 #1 Current Leader</div><div class="top-name">'+top.name+(top.verified?' <span class="verify">\u2713</span>':'')+'</div><div class="top-handle">'+top.handle+'</div><div class="top-metrics"><span>'+top.cat+'</span>'+(top._clicks?'<span>\u2022 '+top._clicks+' clicks</span>':'')+'</div></div><div class="top-bid-side"><div class="top-bid-lbl">Current Bid</div><div class="top-bid-val">'+fmtMoney(top.bid_paise)+'</div><button class="btn btn-hot btn-sm" style="margin-top:.3rem;" onclick="event.stopPropagation();openBidModal('+top.id+')">\u2694\uFE0F Outbid</button></div></div>';var list=filtered();tb.innerHTML='';list.forEach(function(p){var gr=s.findIndex(function(x){return x.id===p.id;})+1;var rc=gr===1?'r1':gr===2?'r2':gr===3?'r3':'rn';var cls='lb-row'+(gr===1?' top1':gr===2?' top2':gr===3?' top3':'');tb.innerHTML+='<div class="'+cls+'" onclick="visitProfile('+p.id+')"><div class="rank-num '+rc+'">'+(gr===1?'\ud83d\udc51':gr)+'</div><div class="rank-arrow">\u2014</div><div class="user-avatar">'+p.av+'</div><div class="user-info"><div class="user-name">'+p.name+(p.verified?' <span class="verify">\u2713</span>':'')+'</div><div class="user-handle">'+p.handle+'</div>'+(p.desc?'<div class="user-desc">'+p.desc+'</div>':'')+'</div><div class="bid-col"><div class="bid-amount">'+fmtMoney(p.bid_paise)+'</div><div class="bid-label">current bid</div></div><div class="outbid-btn"><button class="btn btn-hot btn-sm" onclick="event.stopPropagation();openBidModal('+p.id+')">Outbid</button></div></div>';});}
+function updateStats(){var s=sorted();document.getElementById('statProfiles').textContent=s.length;document.getElementById('onlineCount').textContent=s.length;document.getElementById('statBids').textContent=fmtMoney(s.reduce(function(sum,x){return sum+x.bid_paise;},0));document.getElementById('statClicks').textContent=s.reduce(function(sum,x){return sum+(x._clicks||0);},0);}
+function buildCategoryTabs(){if(P.length===0)return;var cats={};P.forEach(function(p){if(p.cat)cats[p.cat]=true;});var wrap=document.getElementById('tabsWrap');var labels={creator:'Creators',business:'Business',tech:'Tech',music:'Music',fashion:'Fashion',fitness:'Fitness',education:'Education',finance:'Finance',food:'Food',travel:'Travel',other:'Other'};wrap.innerHTML='<button class="tab'+(curFilter==='all'?' active':'')+'" onclick="filterCat(\'all\',this)">All</button>';Object.keys(cats).forEach(function(c){wrap.innerHTML+='<button class="tab'+(curFilter===c?' active':'')+'" onclick="filterCat(\''+c+'\',this)">'+(labels[c]||c)+'</button>';});}
+function filterCat(c,btn){curFilter=c;document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});if(btn)btn.classList.add('active');render();}
+function visitProfile(id){var p=P.find(function(x){return x.id===id;});if(!p)return;fetch('/api/track-click',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({profile_id:id})}).catch(function(){});if(p.website&&p.website.trim()&&p.url&&p.url.trim()){showLinkChoice(p);}else if(p.website&&p.website.trim()){window.open(p.website,'_blank');}else if(p.url&&p.url.trim()){window.open(p.url,'_blank');}}
+function showLinkChoice(p){var ex=document.getElementById('lcOv');if(ex)ex.remove();var ov=document.createElement('div');ov.id='lcOv';ov.className='overlay open';ov.style.zIndex='300';ov.onclick=function(e){if(e.target===ov)ov.remove();};var b=document.createElement('div');b.className='modal';b.style.maxWidth='300px';b.style.textAlign='center';b.innerHTML='<button class="modal-close" onclick="document.getElementById(\\'lcOv\\').remove()">\u2715</button><h2 style="margin-bottom:.4rem;">Where to?</h2><p class="msub">'+p.name+'</p><div style="display:flex;flex-direction:column;gap:.4rem;"><a href="'+p.website+'" target="_blank" class="btn btn-accent btn-lg" style="width:100%;" onclick="document.getElementById(\\'lcOv\\').remove()">\ud83c\udf10 Website</a><a href="'+p.url+'" target="_blank" class="btn btn-ghost btn-lg" style="width:100%;" onclick="document.getElementById(\\'lcOv\\').remove()">\ud83d\udcf8 Instagram</a></div>';ov.appendChild(b);document.body.appendChild(ov);}
+function openBidModal(id){bidTargetId=id;document.getElementById('bidStep1').className='details-step';document.getElementById('bidStep2').className='qr-step';var tr=document.getElementById('bidTarget');if(id&&id!==0){var p=P.find(function(x){return x.id===id;});if(p){tr.style.display='flex';document.getElementById('bidTAv').textContent=p.av;document.getElementById('bidTName').textContent=p.name+' '+p.handle;document.getElementById('bidTCur').textContent='Current: '+fmtMoney(p.bid_paise);document.getElementById('bidNote').textContent='Must exceed '+fmtMoney(p.bid_paise);document.getElementById('bidAmt').value=Math.ceil(p.bid_paise/100)+10;}}else{tr.style.display='none';document.getElementById('bidNote').textContent='Minimum \u20b910. Higher bid = higher rank.';document.getElementById('bidAmt').value=heroAmt;}document.getElementById('bidOverlay').classList.add('open');}
+function closeBid(){document.getElementById('bidOverlay').classList.remove('open');}
+function goToQRStep(){var amount=parseFloat(document.getElementById('bidAmt').value);var handle=document.getElementById('bidHandle').value.trim();var email=document.getElementById('bidEmail').value.trim();if(!amount||!handle||!email){toast('Fill all required fields','warn');return;}if(!handle.startsWith('@'))handle='@'+handle;if(amount<10){toast('Minimum bid is \u20b910','warn');return;}if(bidTargetId&&bidTargetId!==0){var p=P.find(function(x){return x.id===bidTargetId;});if(p&&Math.round(amount*100)<=p.bid_paise){toast('Must exceed current bid','warn');return;}}document.getElementById('qrAmountDisplay').textContent='\u20b9'+amount;document.getElementById('bidStep1').className='details-step hidden';document.getElementById('bidStep2').className='qr-step active';}
+function backToDetails(){document.getElementById('bidStep1').className='details-step';document.getElementById('bidStep2').className='qr-step';}
+async function submitBid(){var utr=document.getElementById('bidUTR').value.trim();if(!utr){toast('Enter your UTR / Transaction ID','warn');return;}if(utr.length<8){toast('UTR seems too short','warn');return;}var btn=document.getElementById('bidSubmitBtn');btn.textContent='Submitting...';btn.disabled=true;var amount=parseFloat(document.getElementById('bidAmt').value);var handle=document.getElementById('bidHandle').value.trim();if(!handle.startsWith('@'))handle='@'+handle;var email=document.getElementById('bidEmail').value.trim();var website=document.getElementById('bidWebsite').value.trim();var desc=document.getElementById('bidDesc').value.trim();var category=document.getElementById('bidCategory').value;try{var res=await fetch('/api/submit-bid',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({amount_paise:Math.round(amount*100),handle:handle,email:email,website:website,description:desc,category:category,utr:utr,profile_id:bidTargetId||0})});var data=await res.json();if(res.ok&&data.success){toast('Bid submitted! You are on the leaderboard.','ok');closeBid();document.getElementById('bidUTR').value='';setTimeout(function(){loadLeaderboard().then(function(){render();updateStats();buildCategoryTabs();loadActivity();});},1000);}else{toast(data.error||'Something went wrong','warn');}}catch(e){toast('Network error. Try again.','warn');}btn.textContent='\u2705 Confirm Payment';btn.disabled=false;}
+init();
+
+</script>
+</body>
+</html>
