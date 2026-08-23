@@ -336,7 +336,7 @@ body.light .user-desc{color:var(--muted);}
 body.light .lb-row:hover .user-desc{color:var(--text2);}
 
 </style>
-<script src="https://checkout.razorpay.com/v1/checkout.js">
+<!-- Instamojo: no external script needed, payment via redirect -->
 // ── THEME TOGGLE ──
 function toggleTheme(){
   var body=document.body;
@@ -580,13 +580,13 @@ P.forEach(function(p){ p._clicks = Math.floor(Math.random()*2000)+50; });
   <h2>⚔️ Place Your Bid</h2>
   <p class="msub" id="bidSub">Outbid the current holder to take their rank</p>
   <div class="target-row" id="bidTarget"><div class="target-av" id="bidTAv">👤</div><div class="target-info"><div class="tn" id="bidTName">Select a profile</div><div class="tc" id="bidTCur">Current bid: $0</div></div></div>
-  <div class="form-group"><label>Your Bid Amount (USD)</label><input class="form-input" type="number" id="bidAmt" placeholder="0" min="1" step="1" style="font-size:1.1rem;font-weight:700;"/><div class="form-note" id="bidNote">Must exceed current bid by at least $1</div></div>
+  <div class="form-group"><label>Your Bid Amount (INR ₹)</label><input class="form-input" type="number" id="bidAmt" placeholder="0" min="1" step="1" style="font-size:1.1rem;font-weight:700;"/><div class="form-note" id="bidNote">Must exceed current bid by at least ₹10</div></div>
   <div class="form-group"><label>Your Instagram Handle</label><input class="form-input" type="text" id="bidHandle" placeholder="@yourhandle"/></div>
   <div class="form-group"><label>Website URL <span style="color:var(--muted);font-weight:400;">(optional)</span></label><input class="form-input" type="url" id="bidWebsite" placeholder="https://yoursite.com"/></div>
   <div class="form-group"><label>Short Intro <span style="color:var(--muted);font-weight:400;">(optional, max 120 chars)</span></label><input class="form-input" type="text" id="bidDesc" placeholder="What do you do? Tell the world..." maxlength="120"/></div>
   <div class="form-group"><label>Email (for notifications)</label><input class="form-input" type="email" id="bidEmail" placeholder="you@email.com"/></div>
   <button class="btn btn-accent" id="bidSubmitBtn" style="width:100%;padding:.75rem;font-size:1rem;" onclick="handleBid(event)">Pay &amp; Lock Your Rank →</button>
-  <div class="form-note" style="text-align:center;margin-top:.6rem;">Secure payment via Razorpay. You get notified if outbid.</div>
+  <div class="form-note" style="text-align:center;margin-top:.6rem;">Secure payment via Instamojo. You get notified if outbid.</div>
 </div></div>
 
 <!-- CLAIM MODAL -->
@@ -604,94 +604,94 @@ P.forEach(function(p){ p._clicks = Math.floor(Math.random()*2000)+50; });
 // ── DATA (bids will be overwritten from DB) ──
 var P=[
   // Celebrities
-  {id:1,name:"Cristiano Ronaldo",handle:"@cristiano",av:"⚽",followers:"636M",eng:"3.2%",cat:"celebrity",url:"https://instagram.com/cristiano",desc:"Football legend. 5x Ballon d'Or winner. Most followed person on Instagram.",bid_paise:100,verified:true},
-  {id:2,name:"Kylie Jenner",handle:"@kyliejenner",av:"💄",followers:"399M",eng:"1.9%",cat:"celebrity",url:"https://instagram.com/kyliejenner",desc:"Founder of Kylie Cosmetics. Reality TV star & beauty mogul.",bid_paise:100,verified:true},
-  {id:3,name:"Dwayne Johnson",handle:"@therock",av:"💪",followers:"395M",eng:"1.5%",cat:"celebrity",url:"https://instagram.com/therock",desc:"Actor, producer & former WWE champion. Highest-paid actor in Hollywood.",bid_paise:100,verified:true},
-  {id:4,name:"Kim Kardashian",handle:"@kimkardashian",av:"✨",followers:"364M",eng:"1.7%",cat:"celebrity",url:"https://instagram.com/kimkardashian",desc:"",bid_paise:100,verified:true},
+  {id:1,name:"Cristiano Ronaldo",handle:"@cristiano",av:"⚽",followers:"636M",eng:"3.2%",cat:"celebrity",url:"https://instagram.com/cristiano",desc:"Football legend. 5x Ballon d'Or winner. Most followed person on Instagram.",bid_paise:1000,verified:true},
+  {id:2,name:"Kylie Jenner",handle:"@kyliejenner",av:"💄",followers:"399M",eng:"1.9%",cat:"celebrity",url:"https://instagram.com/kyliejenner",desc:"Founder of Kylie Cosmetics. Reality TV star & beauty mogul.",bid_paise:1000,verified:true},
+  {id:3,name:"Dwayne Johnson",handle:"@therock",av:"💪",followers:"395M",eng:"1.5%",cat:"celebrity",url:"https://instagram.com/therock",desc:"Actor, producer & former WWE champion. Highest-paid actor in Hollywood.",bid_paise:1000,verified:true},
+  {id:4,name:"Kim Kardashian",handle:"@kimkardashian",av:"✨",followers:"364M",eng:"1.7%",cat:"celebrity",url:"https://instagram.com/kimkardashian",desc:"",bid_paise:1000,verified:true},
   // Creators & Influencers
-  {id:5,name:"MrBeast",handle:"@mrbeast",av:"🎬",followers:"245M",eng:"4.2%",cat:"creator",url:"https://instagram.com/mrbeast",desc:"YouTube's biggest creator. Philanthropist. Building the future of content.",bid_paise:100,verified:true},
-  {id:6,name:"Khaby Lame",handle:"@khaby00",av:"🤷",followers:"162M",eng:"3.8%",cat:"creator",url:"https://instagram.com/khaby00",desc:"",bid_paise:100,verified:true},
-  {id:7,name:"PewDiePie",handle:"@pewdiepie",av:"👊",followers:"21M",eng:"6.2%",cat:"creator",url:"https://instagram.com/pewdiepie",desc:"",bid_paise:100,verified:true},
-  {id:8,name:"Emma Chamberlain",handle:"@emmachamberlain",av:"☕",followers:"16M",eng:"5.5%",cat:"creator",url:"https://instagram.com/emmachamberlain",desc:"",bid_paise:100,verified:true},
+  {id:5,name:"MrBeast",handle:"@mrbeast",av:"🎬",followers:"245M",eng:"4.2%",cat:"creator",url:"https://instagram.com/mrbeast",desc:"YouTube's biggest creator. Philanthropist. Building the future of content.",bid_paise:1000,verified:true},
+  {id:6,name:"Khaby Lame",handle:"@khaby00",av:"🤷",followers:"162M",eng:"3.8%",cat:"creator",url:"https://instagram.com/khaby00",desc:"",bid_paise:1000,verified:true},
+  {id:7,name:"PewDiePie",handle:"@pewdiepie",av:"👊",followers:"21M",eng:"6.2%",cat:"creator",url:"https://instagram.com/pewdiepie",desc:"",bid_paise:1000,verified:true},
+  {id:8,name:"Emma Chamberlain",handle:"@emmachamberlain",av:"☕",followers:"16M",eng:"5.5%",cat:"creator",url:"https://instagram.com/emmachamberlain",desc:"",bid_paise:1000,verified:true},
   // Athletes & Sports
-  {id:9,name:"Lionel Messi",handle:"@leomessi",av:"🐐",followers:"504M",eng:"2.8%",cat:"athlete",url:"https://instagram.com/leomessi",desc:"8x Ballon d'Or. Inter Miami CF. The greatest of all time.",bid_paise:100,verified:true},
-  {id:10,name:"Virat Kohli",handle:"@virat.kohli",av:"🏏",followers:"271M",eng:"3.5%",cat:"athlete",url:"https://instagram.com/virat.kohli",desc:"India's cricket king. Record-breaking batsman. Global sports icon.",bid_paise:100,verified:true},
-  {id:11,name:"Neymar Jr",handle:"@neymarjr",av:"🇧🇷",followers:"228M",eng:"2.9%",cat:"athlete",url:"https://instagram.com/neymarjr",desc:"",bid_paise:100,verified:true},
-  {id:12,name:"LeBron James",handle:"@kingjames",av:"🏀",followers:"159M",eng:"2.1%",cat:"athlete",url:"https://instagram.com/kingjames",desc:"",bid_paise:100,verified:true},
+  {id:9,name:"Lionel Messi",handle:"@leomessi",av:"🐐",followers:"504M",eng:"2.8%",cat:"athlete",url:"https://instagram.com/leomessi",desc:"8x Ballon d'Or. Inter Miami CF. The greatest of all time.",bid_paise:1000,verified:true},
+  {id:10,name:"Virat Kohli",handle:"@virat.kohli",av:"🏏",followers:"271M",eng:"3.5%",cat:"athlete",url:"https://instagram.com/virat.kohli",desc:"India's cricket king. Record-breaking batsman. Global sports icon.",bid_paise:1000,verified:true},
+  {id:11,name:"Neymar Jr",handle:"@neymarjr",av:"🇧🇷",followers:"228M",eng:"2.9%",cat:"athlete",url:"https://instagram.com/neymarjr",desc:"",bid_paise:1000,verified:true},
+  {id:12,name:"LeBron James",handle:"@kingjames",av:"🏀",followers:"159M",eng:"2.1%",cat:"athlete",url:"https://instagram.com/kingjames",desc:"",bid_paise:1000,verified:true},
   // Music & Entertainment
-  {id:13,name:"Taylor Swift",handle:"@taylorswift",av:"🎵",followers:"283M",eng:"2.1%",cat:"music",url:"https://instagram.com/taylorswift",desc:"Grammy-winning artist. Eras Tour broke every record in music history.",bid_paise:100,verified:true},
-  {id:14,name:"Drake",handle:"@champagnepapi",av:"🎤",followers:"146M",eng:"1.8%",cat:"music",url:"https://instagram.com/champagnepapi",desc:"",bid_paise:100,verified:true},
-  {id:15,name:"Billie Eilish",handle:"@billieeilish",av:"🖤",followers:"118M",eng:"2.3%",cat:"music",url:"https://instagram.com/billieeilish",desc:"",bid_paise:100,verified:true},
-  {id:16,name:"Bad Bunny",handle:"@badbunnypr",av:"🐰",followers:"95M",eng:"3.1%",cat:"music",url:"https://instagram.com/badbunnypr",desc:"",bid_paise:100,verified:true},
+  {id:13,name:"Taylor Swift",handle:"@taylorswift",av:"🎵",followers:"283M",eng:"2.1%",cat:"music",url:"https://instagram.com/taylorswift",desc:"Grammy-winning artist. Eras Tour broke every record in music history.",bid_paise:1000,verified:true},
+  {id:14,name:"Drake",handle:"@champagnepapi",av:"🎤",followers:"146M",eng:"1.8%",cat:"music",url:"https://instagram.com/champagnepapi",desc:"",bid_paise:1000,verified:true},
+  {id:15,name:"Billie Eilish",handle:"@billieeilish",av:"🖤",followers:"118M",eng:"2.3%",cat:"music",url:"https://instagram.com/billieeilish",desc:"",bid_paise:1000,verified:true},
+  {id:16,name:"Bad Bunny",handle:"@badbunnypr",av:"🐰",followers:"95M",eng:"3.1%",cat:"music",url:"https://instagram.com/badbunnypr",desc:"",bid_paise:1000,verified:true},
   // Business & Brands
-  {id:17,name:"Elon Musk",handle:"@elonmusk",av:"🚀",followers:"42M",eng:"5.1%",cat:"business",url:"https://instagram.com/elonmusk",desc:"CEO of Tesla, SpaceX, xAI. Building the future of humanity.",bid_paise:100,verified:true},
-  {id:18,name:"Gary Vee",handle:"@garyvee",av:"🍷",followers:"16M",eng:"4.5%",cat:"business",url:"https://instagram.com/garyvee",desc:"",bid_paise:100,verified:true},
-  {id:19,name:"Mark Zuckerberg",handle:"@zuck",av:"👓",followers:"14M",eng:"8.1%",cat:"business",url:"https://instagram.com/zuck",desc:"",bid_paise:100,verified:true},
-  {id:20,name:"Nikhil Kamath",handle:"@nikhil.kamath",av:"📈",followers:"5M",eng:"7.8%",cat:"business",url:"https://instagram.com/nikhil.kamath",desc:"",bid_paise:100,verified:false},
+  {id:17,name:"Elon Musk",handle:"@elonmusk",av:"🚀",followers:"42M",eng:"5.1%",cat:"business",url:"https://instagram.com/elonmusk",desc:"CEO of Tesla, SpaceX, xAI. Building the future of humanity.",bid_paise:1000,verified:true},
+  {id:18,name:"Gary Vee",handle:"@garyvee",av:"🍷",followers:"16M",eng:"4.5%",cat:"business",url:"https://instagram.com/garyvee",desc:"",bid_paise:1000,verified:true},
+  {id:19,name:"Mark Zuckerberg",handle:"@zuck",av:"👓",followers:"14M",eng:"8.1%",cat:"business",url:"https://instagram.com/zuck",desc:"",bid_paise:1000,verified:true},
+  {id:20,name:"Nikhil Kamath",handle:"@nikhil.kamath",av:"📈",followers:"5M",eng:"7.8%",cat:"business",url:"https://instagram.com/nikhil.kamath",desc:"",bid_paise:1000,verified:false},
   // Fashion & Beauty
-  {id:21,name:"Chiara Ferragni",handle:"@chiaraferragni",av:"👗",followers:"29M",eng:"2.1%",cat:"fashion",url:"https://instagram.com/chiaraferragni",desc:"",bid_paise:100,verified:true},
-  {id:22,name:"Huda Kattan",handle:"@hudabeauty",av:"💋",followers:"54M",eng:"2.8%",cat:"fashion",url:"https://instagram.com/hudabeauty",desc:"Beauty mogul. Built a billion-dollar cosmetics brand from a blog.",bid_paise:100,verified:true},
-  {id:23,name:"Camila Coelho",handle:"@camilacoelho",av:"👠",followers:"10M",eng:"3.2%",cat:"fashion",url:"https://instagram.com/camilacoelho",desc:"",bid_paise:100,verified:true},
-  {id:24,name:"Jeffree Star",handle:"@jeffreestar",av:"💅",followers:"13M",eng:"3.9%",cat:"fashion",url:"https://instagram.com/jeffreestar",desc:"",bid_paise:100,verified:true},
+  {id:21,name:"Chiara Ferragni",handle:"@chiaraferragni",av:"👗",followers:"29M",eng:"2.1%",cat:"fashion",url:"https://instagram.com/chiaraferragni",desc:"",bid_paise:1000,verified:true},
+  {id:22,name:"Huda Kattan",handle:"@hudabeauty",av:"💋",followers:"54M",eng:"2.8%",cat:"fashion",url:"https://instagram.com/hudabeauty",desc:"Beauty mogul. Built a billion-dollar cosmetics brand from a blog.",bid_paise:1000,verified:true},
+  {id:23,name:"Camila Coelho",handle:"@camilacoelho",av:"👠",followers:"10M",eng:"3.2%",cat:"fashion",url:"https://instagram.com/camilacoelho",desc:"",bid_paise:1000,verified:true},
+  {id:24,name:"Jeffree Star",handle:"@jeffreestar",av:"💅",followers:"13M",eng:"3.9%",cat:"fashion",url:"https://instagram.com/jeffreestar",desc:"",bid_paise:1000,verified:true},
   // Food & Travel
-  {id:25,name:"Gordon Ramsay",handle:"@gordongram",av:"👨‍🍳",followers:"19M",eng:"3.4%",cat:"food",url:"https://instagram.com/gordongram",desc:"Michelin-starred chef. TV personality. Restaurant empire worldwide.",bid_paise:100,verified:true},
-  {id:26,name:"Burak Ozdemir",handle:"@aborznaborurkaborozdemir",av:"🥩",followers:"51M",eng:"3.5%",cat:"food",url:"https://instagram.com/aborznaborurkaborozdemir",desc:"",bid_paise:100,verified:true},
-  {id:27,name:"Salt Bae",handle:"@nuaboreu_saltbae",av:"🧂",followers:"51M",eng:"2.6%",cat:"food",url:"https://instagram.com/nuaboreu_saltbae",desc:"",bid_paise:100,verified:true},
-  {id:28,name:"Nusret Gokce",handle:"@nusr_et",av:"🍖",followers:"53M",eng:"2.9%",cat:"food",url:"https://instagram.com/nusr_et",desc:"",bid_paise:100,verified:true},
+  {id:25,name:"Gordon Ramsay",handle:"@gordongram",av:"👨‍🍳",followers:"19M",eng:"3.4%",cat:"food",url:"https://instagram.com/gordongram",desc:"Michelin-starred chef. TV personality. Restaurant empire worldwide.",bid_paise:1000,verified:true},
+  {id:26,name:"Burak Ozdemir",handle:"@aborznaborurkaborozdemir",av:"🥩",followers:"51M",eng:"3.5%",cat:"food",url:"https://instagram.com/aborznaborurkaborozdemir",desc:"",bid_paise:1000,verified:true},
+  {id:27,name:"Salt Bae",handle:"@nuaboreu_saltbae",av:"🧂",followers:"51M",eng:"2.6%",cat:"food",url:"https://instagram.com/nuaboreu_saltbae",desc:"",bid_paise:1000,verified:true},
+  {id:28,name:"Nusret Gokce",handle:"@nusr_et",av:"🍖",followers:"53M",eng:"2.9%",cat:"food",url:"https://instagram.com/nusr_et",desc:"",bid_paise:1000,verified:true},
   // Tech & Gaming
-  {id:29,name:"MKBHD",handle:"@mkbhd",av:"📱",followers:"5M",eng:"6.5%",cat:"tech",url:"https://instagram.com/mkbhd",desc:"Tech reviewer with the highest production quality on YouTube.",bid_paise:100,verified:true},
-  {id:30,name:"Ninja",handle:"@ninja",av:"🎮",followers:"12M",eng:"3.8%",cat:"tech",url:"https://instagram.com/ninja",desc:"Pro gamer turned content creator. Pioneered gaming on mainstream media.",bid_paise:100,verified:true},
-  {id:31,name:"Linus Tech",handle:"@linustech",av:"💻",followers:"4M",eng:"5.2%",cat:"tech",url:"https://instagram.com/linustech",desc:"",bid_paise:100,verified:true},
-  {id:32,name:"Pokimane",handle:"@pokimanelol",av:"🎧",followers:"7M",eng:"4.8%",cat:"tech",url:"https://instagram.com/pokimanelol",desc:"",bid_paise:100,verified:true},
+  {id:29,name:"MKBHD",handle:"@mkbhd",av:"📱",followers:"5M",eng:"6.5%",cat:"tech",url:"https://instagram.com/mkbhd",desc:"Tech reviewer with the highest production quality on YouTube.",bid_paise:1000,verified:true},
+  {id:30,name:"Ninja",handle:"@ninja",av:"🎮",followers:"12M",eng:"3.8%",cat:"tech",url:"https://instagram.com/ninja",desc:"Pro gamer turned content creator. Pioneered gaming on mainstream media.",bid_paise:1000,verified:true},
+  {id:31,name:"Linus Tech",handle:"@linustech",av:"💻",followers:"4M",eng:"5.2%",cat:"tech",url:"https://instagram.com/linustech",desc:"",bid_paise:1000,verified:true},
+  {id:32,name:"Pokimane",handle:"@pokimanelol",av:"🎧",followers:"7M",eng:"4.8%",cat:"tech",url:"https://instagram.com/pokimanelol",desc:"",bid_paise:1000,verified:true},
   // Comedy & Memes
-  {id:33,name:"Zach King",handle:"@zachking",av:"🎩",followers:"78M",eng:"5.1%",cat:"comedy",url:"https://instagram.com/zachking",desc:"Digital magician. 78M followers watching impossible visual tricks.",bid_paise:100,verified:true},
-  {id:34,name:"Lele Pons",handle:"@lelepons",av:"🤣",followers:"53M",eng:"2.2%",cat:"comedy",url:"https://instagram.com/lelepons",desc:"",bid_paise:100,verified:true},
-  {id:35,name:"Matt Rife",handle:"@mattrife",av:"😂",followers:"19M",eng:"6.1%",cat:"comedy",url:"https://instagram.com/mattrife",desc:"",bid_paise:100,verified:true},
-  {id:36,name:"Bhuvan Bam",handle:"@bfrhanmainan",av:"🎭",followers:"18M",eng:"5.4%",cat:"comedy",url:"https://instagram.com/bfrhanmainan",desc:"",bid_paise:100,verified:true},
+  {id:33,name:"Zach King",handle:"@zachking",av:"🎩",followers:"78M",eng:"5.1%",cat:"comedy",url:"https://instagram.com/zachking",desc:"Digital magician. 78M followers watching impossible visual tricks.",bid_paise:1000,verified:true},
+  {id:34,name:"Lele Pons",handle:"@lelepons",av:"🤣",followers:"53M",eng:"2.2%",cat:"comedy",url:"https://instagram.com/lelepons",desc:"",bid_paise:1000,verified:true},
+  {id:35,name:"Matt Rife",handle:"@mattrife",av:"😂",followers:"19M",eng:"6.1%",cat:"comedy",url:"https://instagram.com/mattrife",desc:"",bid_paise:1000,verified:true},
+  {id:36,name:"Bhuvan Bam",handle:"@bfrhanmainan",av:"🎭",followers:"18M",eng:"5.4%",cat:"comedy",url:"https://instagram.com/bfrhanmainan",desc:"",bid_paise:1000,verified:true},
   // Photography
-  {id:37,name:"Chris Burkard",handle:"@chrisburkard",av:"📷",followers:"4M",eng:"7.2%",cat:"photography",url:"https://instagram.com/chrisburkard",desc:"Adventure photographer. National Geographic. Capturing Earth's raw beauty.",bid_paise:100,verified:true},
-  {id:38,name:"Murad Osmann",handle:"@muradosmann",av:"🏔️",followers:"4.5M",eng:"3.9%",cat:"photography",url:"https://instagram.com/muradosmann",desc:"",bid_paise:100,verified:true},
-  {id:39,name:"Brandon Woelfel",handle:"@brandonwoelfel",av:"🌃",followers:"3M",eng:"6.8%",cat:"photography",url:"https://instagram.com/brandonwoelfel",desc:"",bid_paise:100,verified:true},
-  {id:40,name:"Peter McKinnon",handle:"@petermckinnon",av:"📸",followers:"3.5M",eng:"5.5%",cat:"photography",url:"https://instagram.com/petermckinnon",desc:"",bid_paise:100,verified:true},
+  {id:37,name:"Chris Burkard",handle:"@chrisburkard",av:"📷",followers:"4M",eng:"7.2%",cat:"photography",url:"https://instagram.com/chrisburkard",desc:"Adventure photographer. National Geographic. Capturing Earth's raw beauty.",bid_paise:1000,verified:true},
+  {id:38,name:"Murad Osmann",handle:"@muradosmann",av:"🏔️",followers:"4.5M",eng:"3.9%",cat:"photography",url:"https://instagram.com/muradosmann",desc:"",bid_paise:1000,verified:true},
+  {id:39,name:"Brandon Woelfel",handle:"@brandonwoelfel",av:"🌃",followers:"3M",eng:"6.8%",cat:"photography",url:"https://instagram.com/brandonwoelfel",desc:"",bid_paise:1000,verified:true},
+  {id:40,name:"Peter McKinnon",handle:"@petermckinnon",av:"📸",followers:"3.5M",eng:"5.5%",cat:"photography",url:"https://instagram.com/petermckinnon",desc:"",bid_paise:1000,verified:true},
   // Fitness & Health
-  {id:41,name:"Kayla Itsines",handle:"@kayla_itsines",av:"🏋️",followers:"16M",eng:"3.1%",cat:"fitness",url:"https://instagram.com/kayla_itsines",desc:"",bid_paise:100,verified:true},
-  {id:42,name:"Simeon Panda",handle:"@simeonpanda",av:"💪",followers:"8M",eng:"4.6%",cat:"fitness",url:"https://instagram.com/simeonpanda",desc:"",bid_paise:100,verified:true},
-  {id:43,name:"Chloe Ting",handle:"@chloe_t",av:"🧘",followers:"5M",eng:"5.3%",cat:"fitness",url:"https://instagram.com/chloe_t",desc:"",bid_paise:100,verified:true},
-  {id:44,name:"David Laid",handle:"@davidlaid",av:"🏆",followers:"4M",eng:"6.7%",cat:"fitness",url:"https://instagram.com/davidlaid",desc:"",bid_paise:100,verified:true},
+  {id:41,name:"Kayla Itsines",handle:"@kayla_itsines",av:"🏋️",followers:"16M",eng:"3.1%",cat:"fitness",url:"https://instagram.com/kayla_itsines",desc:"",bid_paise:1000,verified:true},
+  {id:42,name:"Simeon Panda",handle:"@simeonpanda",av:"💪",followers:"8M",eng:"4.6%",cat:"fitness",url:"https://instagram.com/simeonpanda",desc:"",bid_paise:1000,verified:true},
+  {id:43,name:"Chloe Ting",handle:"@chloe_t",av:"🧘",followers:"5M",eng:"5.3%",cat:"fitness",url:"https://instagram.com/chloe_t",desc:"",bid_paise:1000,verified:true},
+  {id:44,name:"David Laid",handle:"@davidlaid",av:"🏆",followers:"4M",eng:"6.7%",cat:"fitness",url:"https://instagram.com/davidlaid",desc:"",bid_paise:1000,verified:true},
   // India
-  {id:45,name:"Narendra Modi",handle:"@narendramodi",av:"🇮🇳",followers:"102M",eng:"2.8%",cat:"indian",url:"https://instagram.com/narendramodi",desc:"",bid_paise:100,verified:true},
-  {id:46,name:"Priyanka Chopra",handle:"@priyankachopra",av:"⭐",followers:"91M",eng:"2.4%",cat:"indian",url:"https://instagram.com/priyankachopra",desc:"",bid_paise:100,verified:true},
-  {id:47,name:"Shraddha Kapoor",handle:"@shraddhakapoor",av:"🌸",followers:"87M",eng:"4.1%",cat:"indian",url:"https://instagram.com/shraddhakapoor",desc:"",bid_paise:100,verified:true},
-  {id:48,name:"Ranveer Singh",handle:"@ranveersingh",av:"🎭",followers:"44M",eng:"3.9%",cat:"indian",url:"https://instagram.com/ranveersingh",desc:"",bid_paise:100,verified:true},
+  {id:45,name:"Narendra Modi",handle:"@narendramodi",av:"🇮🇳",followers:"102M",eng:"2.8%",cat:"indian",url:"https://instagram.com/narendramodi",desc:"",bid_paise:1000,verified:true},
+  {id:46,name:"Priyanka Chopra",handle:"@priyankachopra",av:"⭐",followers:"91M",eng:"2.4%",cat:"indian",url:"https://instagram.com/priyankachopra",desc:"",bid_paise:1000,verified:true},
+  {id:47,name:"Shraddha Kapoor",handle:"@shraddhakapoor",av:"🌸",followers:"87M",eng:"4.1%",cat:"indian",url:"https://instagram.com/shraddhakapoor",desc:"",bid_paise:1000,verified:true},
+  {id:48,name:"Ranveer Singh",handle:"@ranveersingh",av:"🎭",followers:"44M",eng:"3.9%",cat:"indian",url:"https://instagram.com/ranveersingh",desc:"",bid_paise:1000,verified:true},
   // AI & Startups
-  {id:49,name:"Sam Altman",handle:"@sama",av:"🧠",followers:"3M",eng:"9.2%",cat:"ai",url:"https://instagram.com/sama",desc:"CEO of OpenAI. Building safe AGI for the benefit of humanity.",bid_paise:100,verified:true},
-  {id:50,name:"Aravind Srinivas",handle:"@AravSrinivas",av:"🔍",followers:"800K",eng:"11%",cat:"ai",url:"https://instagram.com/AravSrinivas",desc:"",bid_paise:100,verified:true},
-  {id:51,name:"Dario Amodei",handle:"@daboramodei",av:"🤖",followers:"500K",eng:"8.5%",cat:"ai",url:"https://instagram.com/daboramodei",desc:"",bid_paise:100,verified:false},
-  {id:52,name:"Emmett Shear",handle:"@eshear",av:"💡",followers:"400K",eng:"7.8%",cat:"ai",url:"https://instagram.com/eshear",desc:"",bid_paise:100,verified:false},
-  {id:53,name:"Alexandr Wang",handle:"@alexandr_wang",av:"📊",followers:"300K",eng:"9.1%",cat:"ai",url:"https://instagram.com/alexandr_wang",desc:"",bid_paise:100,verified:false},
-  {id:54,name:"Pieter Levels",handle:"@levelsio",av:"🛫",followers:"600K",eng:"12%",cat:"ai",url:"https://instagram.com/levelsio",desc:"Indie maker. Built 40+ startups. $3M ARR solo founder.",bid_paise:100,verified:true},
+  {id:49,name:"Sam Altman",handle:"@sama",av:"🧠",followers:"3M",eng:"9.2%",cat:"ai",url:"https://instagram.com/sama",desc:"CEO of OpenAI. Building safe AGI for the benefit of humanity.",bid_paise:1000,verified:true},
+  {id:50,name:"Aravind Srinivas",handle:"@AravSrinivas",av:"🔍",followers:"800K",eng:"11%",cat:"ai",url:"https://instagram.com/AravSrinivas",desc:"",bid_paise:1000,verified:true},
+  {id:51,name:"Dario Amodei",handle:"@daboramodei",av:"🤖",followers:"500K",eng:"8.5%",cat:"ai",url:"https://instagram.com/daboramodei",desc:"",bid_paise:1000,verified:false},
+  {id:52,name:"Emmett Shear",handle:"@eshear",av:"💡",followers:"400K",eng:"7.8%",cat:"ai",url:"https://instagram.com/eshear",desc:"",bid_paise:1000,verified:false},
+  {id:53,name:"Alexandr Wang",handle:"@alexandr_wang",av:"📊",followers:"300K",eng:"9.1%",cat:"ai",url:"https://instagram.com/alexandr_wang",desc:"",bid_paise:1000,verified:false},
+  {id:54,name:"Pieter Levels",handle:"@levelsio",av:"🛫",followers:"600K",eng:"12%",cat:"ai",url:"https://instagram.com/levelsio",desc:"Indie maker. Built 40+ startups. $3M ARR solo founder.",bid_paise:1000,verified:true},
   // Crypto & Web3
-  {id:55,name:"Vitalik Buterin",handle:"@vaborikbuterin",av:"💎",followers:"5M",eng:"6.3%",cat:"crypto",url:"https://instagram.com/vaborikbuterin",desc:"Co-founder of Ethereum. Decentralizing the world's infrastructure.",bid_paise:100,verified:true},
-  {id:56,name:"CZ Binance",handle:"@caborz",av:"🪙",followers:"12M",eng:"4.1%",cat:"crypto",url:"https://instagram.com/caborz",desc:"",bid_paise:100,verified:true},
-  {id:57,name:"Brian Armstrong",handle:"@brian_armstrong",av:"🏦",followers:"2M",eng:"5.5%",cat:"crypto",url:"https://instagram.com/brian_armstrong",desc:"",bid_paise:100,verified:true},
-  {id:58,name:"Balaji Srinivasan",handle:"@balaborijis",av:"🌐",followers:"1.5M",eng:"7.2%",cat:"crypto",url:"https://instagram.com/balaborijis",desc:"",bid_paise:100,verified:true},
+  {id:55,name:"Vitalik Buterin",handle:"@vaborikbuterin",av:"💎",followers:"5M",eng:"6.3%",cat:"crypto",url:"https://instagram.com/vaborikbuterin",desc:"Co-founder of Ethereum. Decentralizing the world's infrastructure.",bid_paise:1000,verified:true},
+  {id:56,name:"CZ Binance",handle:"@caborz",av:"🪙",followers:"12M",eng:"4.1%",cat:"crypto",url:"https://instagram.com/caborz",desc:"",bid_paise:1000,verified:true},
+  {id:57,name:"Brian Armstrong",handle:"@brian_armstrong",av:"🏦",followers:"2M",eng:"5.5%",cat:"crypto",url:"https://instagram.com/brian_armstrong",desc:"",bid_paise:1000,verified:true},
+  {id:58,name:"Balaji Srinivasan",handle:"@balaborijis",av:"🌐",followers:"1.5M",eng:"7.2%",cat:"crypto",url:"https://instagram.com/balaborijis",desc:"",bid_paise:1000,verified:true},
   // Finance & Investing
-  {id:59,name:"Ankur Warikoo",handle:"@waaborikoo",av:"📖",followers:"4M",eng:"6.8%",cat:"finance",url:"https://instagram.com/waaborikoo",desc:"Entrepreneur & educator. Making personal finance simple for India.",bid_paise:100,verified:true},
-  {id:60,name:"Zerodha Nithin",handle:"@nitaborhin0dha",av:"📉",followers:"2M",eng:"5.9%",cat:"finance",url:"https://instagram.com/nitaborhin0dha",desc:"",bid_paise:100,verified:true},
-  {id:61,name:"Graham Stephan",handle:"@graaborhamstephan",av:"🏠",followers:"4M",eng:"5.1%",cat:"finance",url:"https://instagram.com/graaborhamstephan",desc:"",bid_paise:100,verified:true},
-  {id:62,name:"Sharan Hegde",handle:"@financewithsharan",av:"💸",followers:"3M",eng:"7.5%",cat:"finance",url:"https://instagram.com/financewithsharan",desc:"",bid_paise:100,verified:true},
+  {id:59,name:"Ankur Warikoo",handle:"@waaborikoo",av:"📖",followers:"4M",eng:"6.8%",cat:"finance",url:"https://instagram.com/waaborikoo",desc:"Entrepreneur & educator. Making personal finance simple for India.",bid_paise:1000,verified:true},
+  {id:60,name:"Zerodha Nithin",handle:"@nitaborhin0dha",av:"📉",followers:"2M",eng:"5.9%",cat:"finance",url:"https://instagram.com/nitaborhin0dha",desc:"",bid_paise:1000,verified:true},
+  {id:61,name:"Graham Stephan",handle:"@graaborhamstephan",av:"🏠",followers:"4M",eng:"5.1%",cat:"finance",url:"https://instagram.com/graaborhamstephan",desc:"",bid_paise:1000,verified:true},
+  {id:62,name:"Sharan Hegde",handle:"@financewithsharan",av:"💸",followers:"3M",eng:"7.5%",cat:"finance",url:"https://instagram.com/financewithsharan",desc:"",bid_paise:1000,verified:true},
   // Education & Coaching
-  {id:63,name:"Ali Abdaal",handle:"@aliabdaal",av:"🎓",followers:"5M",eng:"5.8%",cat:"education",url:"https://instagram.com/aliabdaal",desc:"Doctor turned productivity YouTuber. Teaching millions to work smarter.",bid_paise:100,verified:true},
-  {id:64,name:"Jay Shetty",handle:"@jayshetty",av:"🧘",followers:"15M",eng:"3.4%",cat:"education",url:"https://instagram.com/jayshetty",desc:"",bid_paise:100,verified:true},
-  {id:65,name:"Thomas Frank",handle:"@thomaborasfrank",av:"📝",followers:"2M",eng:"6.2%",cat:"education",url:"https://instagram.com/thomaborasfrank",desc:"",bid_paise:100,verified:true},
-  {id:66,name:"Ranveer Allahbadia",handle:"@beerbiceps",av:"🎙️",followers:"9M",eng:"5.6%",cat:"education",url:"https://instagram.com/beerbiceps",desc:"",bid_paise:100,verified:true},
+  {id:63,name:"Ali Abdaal",handle:"@aliabdaal",av:"🎓",followers:"5M",eng:"5.8%",cat:"education",url:"https://instagram.com/aliabdaal",desc:"Doctor turned productivity YouTuber. Teaching millions to work smarter.",bid_paise:1000,verified:true},
+  {id:64,name:"Jay Shetty",handle:"@jayshetty",av:"🧘",followers:"15M",eng:"3.4%",cat:"education",url:"https://instagram.com/jayshetty",desc:"",bid_paise:1000,verified:true},
+  {id:65,name:"Thomas Frank",handle:"@thomaborasfrank",av:"📝",followers:"2M",eng:"6.2%",cat:"education",url:"https://instagram.com/thomaborasfrank",desc:"",bid_paise:1000,verified:true},
+  {id:66,name:"Ranveer Allahbadia",handle:"@beerbiceps",av:"🎙️",followers:"9M",eng:"5.6%",cat:"education",url:"https://instagram.com/beerbiceps",desc:"",bid_paise:1000,verified:true},
   // Travel & Adventure
-  {id:67,name:"Nas Daily",handle:"@nasdaily",av:"🌍",followers:"42M",eng:"4.0%",cat:"travel",url:"https://instagram.com/nasdaily",desc:"1000+ videos in 1000 days. Telling human stories across 60 countries.",bid_paise:100,verified:true},
-  {id:68,name:"Jack Morris",handle:"@doyoutravel",av:"✈️",followers:"3M",eng:"5.8%",cat:"travel",url:"https://instagram.com/doyoutravel",desc:"",bid_paise:100,verified:true},
-  {id:69,name:"Lexie Alford",handle:"@lexielimitless",av:"🗺️",followers:"2M",eng:"7.1%",cat:"travel",url:"https://instagram.com/lexielimitless",desc:"",bid_paise:100,verified:true},
-  {id:70,name:"Drew Binsky",handle:"@drewbinsky",av:"🎒",followers:"3.5M",eng:"5.4%",cat:"travel",url:"https://instagram.com/drewbinsky",desc:"",bid_paise:100,verified:true},
-  {id:71,name:"Kara & Nate",handle:"@karaandnate",av:"🌏",followers:"1.5M",eng:"6.3%",cat:"travel",url:"https://instagram.com/karaandnate",desc:"",bid_paise:100,verified:true},
-  {id:72,name:"Travellingdesi",handle:"@travellingdesi_",av:"🧳",followers:"1M",eng:"8.2%",cat:"travel",url:"https://instagram.com/travellingdesi_",desc:"",bid_paise:100,verified:false},
+  {id:67,name:"Nas Daily",handle:"@nasdaily",av:"🌍",followers:"42M",eng:"4.0%",cat:"travel",url:"https://instagram.com/nasdaily",desc:"1000+ videos in 1000 days. Telling human stories across 60 countries.",bid_paise:1000,verified:true},
+  {id:68,name:"Jack Morris",handle:"@doyoutravel",av:"✈️",followers:"3M",eng:"5.8%",cat:"travel",url:"https://instagram.com/doyoutravel",desc:"",bid_paise:1000,verified:true},
+  {id:69,name:"Lexie Alford",handle:"@lexielimitless",av:"🗺️",followers:"2M",eng:"7.1%",cat:"travel",url:"https://instagram.com/lexielimitless",desc:"",bid_paise:1000,verified:true},
+  {id:70,name:"Drew Binsky",handle:"@drewbinsky",av:"🎒",followers:"3.5M",eng:"5.4%",cat:"travel",url:"https://instagram.com/drewbinsky",desc:"",bid_paise:1000,verified:true},
+  {id:71,name:"Kara & Nate",handle:"@karaandnate",av:"🌏",followers:"1.5M",eng:"6.3%",cat:"travel",url:"https://instagram.com/karaandnate",desc:"",bid_paise:1000,verified:true},
+  {id:72,name:"Travellingdesi",handle:"@travellingdesi_",av:"🧳",followers:"1M",eng:"8.2%",cat:"travel",url:"https://instagram.com/travellingdesi_",desc:"",bid_paise:1000,verified:false},
 ];
 
 var curFilter="all", prevR={}, bidTargetId=null, CONFIG=null, sbClient=null;
@@ -699,7 +699,7 @@ var curFilter="all", prevR={}, bidTargetId=null, CONFIG=null, sbClient=null;
 // paise helpers — all money stored as integer paise, displayed as $
 function toRupees(paise){ return paise/100; }
 function toPaise(rupees){ return Math.round(Number(rupees)*100); }
-function fmtINR(paise){ return "$"+(paise/100).toLocaleString("en-US"); }
+function fmtINR(paise){ return "₹"+(paise/100).toLocaleString("en-IN"); }
 function nowt(){ var d=new Date(); return d.getHours()+":"+String(d.getMinutes()).padStart(2,"0")+":"+String(d.getSeconds()).padStart(2,"0"); }
 
 function sorted(){ return [...P].sort(function(a,b){ return b.bid_paise - a.bid_paise; }); }
@@ -833,7 +833,7 @@ function updateHeroPrice(){
   if(cat==="all"||!cat) cat="all";
   var list = cat==="all" ? sorted() : sorted().filter(function(p){ return p.cat===cat; });
   var topBid = list.length>0 ? list[0].bid_paise : 0;
-  var price = topBid>0 ? topBid+100 : 100; // must exceed by $1
+  var price = topBid>0 ? topBid+1000 : 1000; // must exceed by $1
   var el=document.getElementById("heroPrice"); el.textContent = fmtINR(price); el.classList.remove("price-bounce"); void el.offsetWidth; el.classList.add("price-bounce");
 }
 
@@ -867,7 +867,7 @@ function startOnlineCounter(){
 function startSimulation(){
   setInterval(function(){
     var p=P[Math.floor(Math.random()*P.length)];
-    var bump=Math.floor(Math.random()*500+100); // 100-600 paise = $1-$6
+    var bump=Math.floor(Math.random()*5000+1000); // 100-600 paise = $1-$6
     sorted().forEach(function(x,i){ prevR[x.id]=i+1; });
     p.bid_paise+=bump; p._f=true;
     var nr=sorted().findIndex(function(x){ return x.id===p.id; })+1;
@@ -913,7 +913,7 @@ async function handleBid(e){
 
   if(!amount_rupees||!handle||!email){ toast("Fill in all fields","warn"); return; }
   if(!handle.startsWith("@")) handle="@"+handle;
-  if(amount_rupees<1){ toast("Minimum bid is $1","warn"); return; }
+  if(amount_rupees<10){ toast("Minimum bid is ₹10","warn"); return; }
 
   if(bidTargetId&&bidTargetId!==0){
     var p=P.find(function(x){ return x.id===bidTargetId; });
@@ -921,7 +921,7 @@ async function handleBid(e){
   }
 
   // Demo mode (local file preview)
-  if(!CONFIG||!CONFIG.razorpayKeyId){
+  if(!CONFIG||!CONFIG.paymentEnabled){
     sorted().forEach(function(x,i){ prevR[x.id]=i+1; });
     if(bidTargetId&&bidTargetId!==0){
       var p=P.find(function(x){ return x.id===bidTargetId; });
@@ -937,39 +937,33 @@ async function handleBid(e){
     return;
   }
 
-  // Real payment
+  // Real payment via Instamojo
   var btn=document.getElementById("bidSubmitBtn");
-  btn.textContent="Creating order..."; btn.disabled=true;
+  btn.textContent="Redirecting to payment..."; btn.disabled=true;
+  var website=document.getElementById("bidWebsite").value.trim();
+  var desc=document.getElementById("bidDesc").value.trim();
+  var purpose="Bid on leaderboard|ProfileID:"+(bidTargetId||0)+"|Bidder:"+handle+(website?"|Website:"+website:"")+(desc?"|Desc:"+desc:"");
 
   try{
-    var res=await fetch("/api/create-order",{
+    var res=await fetch("/api/create-payment",{
       method:"POST",
       headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({amount_rupees:amount_rupees, profile_id:bidTargetId||0, bidder_handle:handle, bidder_email:email})
+      body:JSON.stringify({
+        amount: amount_rupees.toString(),
+        purpose: purpose,
+        buyer_name: handle.replace("@",""),
+        email: email,
+        profile_id: bidTargetId||0,
+        bidder_handle: handle
+      })
     });
-    var order=await res.json();
-    if(!res.ok){ toast(order.error||"Failed to create order","warn"); return; }
-
-    var rzp=new window.Razorpay({
-      key: CONFIG.razorpayKeyId,
-      order_id: order.order_id,
-      amount: order.amount,
-      currency: order.currency,
-      name: "HypeOutbid",
-      description: "Bid to claim rank #"+(bidTargetId||"?")+" on the leaderboard",
-      handler: function(response){
-        closeBid();
-        toast("Payment confirmed! 🔥 Leaderboard updating in real-time...","ok");
-      },
-      prefill: { email: email },
-      theme: { color: "#E1306C" },
-      modal: { ondismiss: function(){ toast("Payment cancelled","warn"); } }
-    });
-    rzp.open();
+    var data=await res.json();
+    if(!res.ok||!data.success){ toast(data.error||"Failed to create payment","warn"); btn.textContent="Pay & Lock Your Rank →"; btn.disabled=false; return; }
+    // Redirect to Instamojo payment page
+    window.location.href = data.payment_url;
   } catch(err){
     console.error(err);
     toast("Something went wrong. Try again.","warn");
-  } finally {
     btn.textContent="Pay & Lock Your Rank →"; btn.disabled=false;
   }
 }
@@ -987,7 +981,25 @@ function submitClaim(){
 function toast(msg,type){ var w=document.getElementById("tw"),d=document.createElement("div"); d.className="toast"+(type==="warn"?" warn":""); d.innerHTML=msg; w.appendChild(d); setTimeout(function(){ d.remove(); },4000); }
 
 // Boot
+
+// Check for payment result in URL (redirect from Instamojo)
+function checkPaymentResult(){
+  var params = new URLSearchParams(window.location.search);
+  var payment = params.get("payment");
+  if(payment === "success"){
+    var amount = params.get("amount");
+    toast("Payment confirmed! \u20b9" + (amount||"") + " \ud83d\udd25 Leaderboard updating...","ok");
+    // Clean URL
+    window.history.replaceState({}, document.title, "/");
+  } else if(payment === "failed"){
+    var reason = params.get("reason") || "unknown";
+    toast("Payment failed: " + reason + ". Please try again.","warn");
+    window.history.replaceState({}, document.title, "/");
+  }
+}
+
 init();
+checkPaymentResult();
 
 // ── THEME TOGGLE ──
 function toggleTheme(){
