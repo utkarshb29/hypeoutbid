@@ -3,6 +3,6 @@ module.exports = (req, res) => {
   res.json({
     supabaseUrl: process.env.SUPABASE_URL,
     supabaseAnonKey: process.env.SUPABASE_ANON_KEY,
-    razorpayKeyId: process.env.RAZORPAY_KEY_ID,
+    paymentEnabled: !!(process.env.INSTAMOJO_API_KEY),
   });
 };
