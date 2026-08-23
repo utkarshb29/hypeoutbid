@@ -528,7 +528,7 @@ body.light .lb-row:hover .user-desc{color:var(--text2);}
     <div style="color:#888;font-size:.85rem;margin-top:.3rem;">Since Launch</div>
   </div>
   <div style="min-width:200px;">
-    <div id="totalEarned" style="font-size:2.2rem;font-weight:800;color:#00ff88;">\u20b90</div>
+    <div id="totalEarned" style="font-size:2.2rem;font-weight:800;color:#00ff88;">₹0</div>
     <div style="color:#888;font-size:.85rem;margin-top:.3rem;">Total Earned</div>
   </div>
   <div style="min-width:200px;">
@@ -844,7 +844,7 @@ async function handleBid(e){
   }
 
   // Show QR payment step
-  document.getElementById("qrAmtShow").textContent="\u20b9"+amount_rupees;
+  document.getElementById("qrAmtShow").textContent="₹"+amount_rupees;
   var modal=document.getElementById("bidOverlay").querySelector(".modal");
   Array.from(modal.children).forEach(function(c){if(c.id!=="qrPayStep"&&c.className!=="modal-close")c.style.display="none";});
   document.getElementById("qrPayStep").style.display="block";
@@ -1045,7 +1045,7 @@ updateLaunchTimer();
 
 function updateEarnedCounter(){
   var total = P.reduce(function(s,x){ return s + x.bid_paise; }, 0);
-  document.getElementById("totalEarned").textContent = "\u20b9" + (total/100);
+  document.getElementById("totalEarned").textContent = "₹" + (total/100);
   document.getElementById("totalBids").textContent = P.length;
 }
 
