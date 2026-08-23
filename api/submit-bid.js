@@ -26,9 +26,7 @@ module.exports = async (req, res) => {
   const igUrl = "https://instagram.com/" + cleanHandle.replace("@", "");
 
   try {
-    let targetProfileId = profile_id;
-
-    // Check if this UTR was already used (prevent double-submission)
+    // Check if this UTR was already used
     const { data: existingBid } = await supabase
       .from("bids")
       .select("id")
@@ -38,79 +36,51 @@ module.exports = async (req, res) => {
       return res.status(400).json({ error: "This UTR was already used", success: false });
     }
 
-    if (!profile_id || profile_id === 0) {
-      // New bidder - check if handle exists
-      const { data: existing } = await supabase
-        .from("profiles")
-        .select("id, current_bid_paise")
-        .eq("handle", cleanHandle)
-        .limit(1);
-
-      if (existing && existing.length > 0) {
-        targetProfileId = existing[0].id;
-        // Must exceed current bid
-        if (amount_paise <= existing[0].current_bid_paise) {
-          return res.status(400).json({ 
-            error: "Must exceed your current bid of " + (existing[0].current_bid_paise/100) + " INR", 
-            success: false 
-          });
-        }
-      } else {
-        // Create new profile
-        const { data: created, error: createErr } = await supabase
-          .from("profiles")
-          .insert({
-            handle: cleanHandle,
-            name: cleanHandle.replace("@", ""),
-            category: category || "other",
-            instagram_url: igUrl,
-            website_url: website || null,
-            description: description || null,
-            current_bid_paise: 0,
-            top_bidder_handle: cleanHandle
-          })
-          .select("id")
-          .single();
-        if (createErr) {
-          return res.status(500).json({ error: "Failed to create profile: " + createErr.message, success: false });
-        }
-        targetProfileId = created.id;
-      }
-    } else {
-      // Outbidding existing profile - check if it exists
+    // If outbidding someone, check minimum amount
+    if (profile_id && profile_id !== 0) {
       const { data: target } = await supabase
         .from("profiles")
-        .select("current_bid_paise, handle")
+        .select("current_bid_paise")
         .eq("id", profile_id)
         .single();
-      if (target) {
-        if (amount_paise <= target.current_bid_paise) {
-          return res.status(400).json({ error: "Must exceed current bid", success: false });
-        }
-      } else {
-        // Profile doesn't exist yet (fresh DB) - create it
-        const { data: created, error: createErr } = await supabase
-          .from("profiles")
-          .insert({
-            handle: cleanHandle,
-            name: cleanHandle.replace("@", ""),
-            category: category || "other",
-            instagram_url: igUrl,
-            website_url: website || null,
-            description: description || null,
-            current_bid_paise: 0,
-            top_bidder_handle: cleanHandle
-          })
-          .select("id")
-          .single();
-        if (createErr) {
-          return res.status(500).json({ error: "Failed to create profile: " + createErr.message, success: false });
-        }
-        targetProfileId = created.id;
+      if (target && amount_paise <= target.current_bid_paise) {
+        return res.status(400).json({ error: "Must exceed current bid of " + (target.current_bid_paise/100) + " INR", success: false });
       }
     }
 
-    // Record the bid
+    // Always find or create the BIDDER OWN profile (by handle)
+    let targetProfileId;
+    const { data: existing } = await supabase
+      .from("profiles")
+      .select("id, current_bid_paise")
+      .eq("handle", cleanHandle)
+      .limit(1);
+
+    if (existing && existing.length > 0) {
+      targetProfileId = existing[0].id;
+    } else {
+      // Create new profile for this bidder
+      const { data: created, error: createErr } = await supabase
+        .from("profiles")
+        .insert({
+          handle: cleanHandle,
+          name: cleanHandle.replace("@", ""),
+          category: category || "other",
+          instagram_url: igUrl,
+          website_url: website || null,
+          description: description || null,
+          current_bid_paise: 0,
+          top_bidder_handle: cleanHandle
+        })
+        .select("id")
+        .single();
+      if (createErr) {
+        return res.status(500).json({ error: "Failed to create profile: " + createErr.message, success: false });
+      }
+      targetProfileId = created.id;
+    }
+
+    // Record the bid against the bidder own profile
     const { data: bid, error: bidErr } = await supabase
       .from("bids")
       .insert({
@@ -130,10 +100,6 @@ module.exports = async (req, res) => {
     if (bidErr) {
       return res.status(500).json({ error: "Failed to record bid: " + bidErr.message, success: false });
     }
-
-    // Profile will be updated when admin approves the bid
-
-    // Activity will be recorded when admin approves
 
     return res.status(200).json({ success: true, message: "Bid submitted! Will appear after payment verification." });
   } catch(e) {
