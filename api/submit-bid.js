@@ -66,7 +66,7 @@ module.exports = async (req, res) => {
             instagram_url: igUrl,
             website_url: website || null,
             description: description || null,
-            current_bid_paise: amount_paise,
+            current_bid_paise: 0,
             top_bidder_handle: cleanHandle
           })
           .select("id")
@@ -98,7 +98,7 @@ module.exports = async (req, res) => {
             instagram_url: igUrl,
             website_url: website || null,
             description: description || null,
-            current_bid_paise: amount_paise,
+            current_bid_paise: 0,
             top_bidder_handle: cleanHandle
           })
           .select("id")
@@ -123,7 +123,7 @@ module.exports = async (req, res) => {
         website_url: website || null,
         description: description || null,
         category: category || "other",
-        status: "confirmed"
+        status: "pending"
       })
       .select("id")
       .single();
@@ -131,32 +131,11 @@ module.exports = async (req, res) => {
       return res.status(500).json({ error: "Failed to record bid: " + bidErr.message, success: false });
     }
 
-    // Update profile with new highest bid
-    await supabase
-      .from("profiles")
-      .update({
-        current_bid_paise: amount_paise,
-        top_bidder_handle: cleanHandle,
-        website_url: website || undefined,
-        description: description || undefined,
-        instagram_url: igUrl,
-        category: category || undefined,
-        updated_at: new Date().toISOString()
-      })
-      .eq("id", targetProfileId)
-      .lt("current_bid_paise", amount_paise + 1);
+    // Profile will be updated when admin approves the bid
 
-    // Record activity
-    await supabase
-      .from("activity")
-      .insert({
-        profile_id: targetProfileId,
-        bidder_handle: cleanHandle,
-        amount_paise: amount_paise,
-        bid_id: bid.id
-      });
+    // Activity will be recorded when admin approves
 
-    return res.status(200).json({ success: true, message: "Bid recorded!" });
+    return res.status(200).json({ success: true, message: "Bid submitted! Will appear after payment verification." });
   } catch(e) {
     return res.status(500).json({ error: "Server error: " + e.message, success: false });
   }
