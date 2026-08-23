@@ -105,7 +105,65 @@ a{color:var(--accent-light);text-decoration:none;}button{font-family:inherit;}
 .toast{background:var(--s1);border:1px solid var(--border);border-radius:var(--r-xs);padding:.7rem 1rem;font-size:.83rem;max-width:300px;box-shadow:var(--shadow);animation:ti .3s ease;border-left:3px solid var(--green);}
 .toast.warn{border-left-color:var(--hot);}
 @keyframes ti{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:translateX(0)}}
-@media(max-width:768px){.nav-links{display:none;}.hero h1{font-size:2rem;}.top-card{flex-direction:column;text-align:center;}.top-card::before{display:none;}.top-bid-side{text-align:center;}.top-metrics{justify-content:center;}}
+@media(max-width:768px){
+  .nav-links{display:none;}
+  .nav-right .btn-ghost{display:none;}
+  .nav .container{padding:0 .75rem;}
+  .hero{padding:2.5rem 0 2rem;}
+  .hero h1{font-size:1.6rem;letter-spacing:-.8px;}
+  .hero p{font-size:.9rem;}
+  .hero-btns{flex-direction:column;align-items:center;}
+  .stats-bar{gap:1.2rem;}
+  .stat .val{font-size:1.1rem;}
+  .top-card{flex-direction:column;text-align:center;padding:1.2rem 1rem;gap:1rem;}
+  .top-card::before{display:none;}
+  .top-avatar{width:52px;height:52px;font-size:2rem;}
+  .top-bid-side{text-align:center;}
+  .top-metrics{justify-content:center;}
+  .top-name{font-size:1.1rem;justify-content:center;}
+  .top-bid-val{font-size:1.5rem;}
+  .section-header{flex-direction:column;align-items:flex-start;}
+  .tabs{overflow-x:auto;flex-wrap:nowrap;padding-bottom:.5rem;-webkit-overflow-scrolling:touch;}
+  .tab{white-space:nowrap;flex-shrink:0;}
+  .lb-row{flex-wrap:wrap;padding:.75rem .8rem;gap:.5rem .75rem;}
+  .rank-num{font-size:.9rem;width:22px;}
+  .rank-arrow{width:14px;}
+  .user-avatar{width:36px;height:36px;font-size:1.2rem;}
+  .user-info{min-width:0;flex:1;}
+  .user-name{font-size:.82rem;}
+  .user-handle{font-size:.68rem;}
+  .user-desc{font-size:.68rem;-webkit-line-clamp:1;}
+  .user-stats{gap:.5rem;}
+  .us{font-size:.62rem;}
+  .bid-col{position:absolute;top:.75rem;right:.8rem;}
+  .bid-amount{font-size:.9rem;}
+  .bid-label{font-size:.58rem;}
+  .outbid-btn{position:absolute;bottom:.75rem;right:.8rem;}
+  .outbid-btn .btn{padding:.25rem .6rem;font-size:.7rem;}
+  .lb-row{position:relative;padding-right:5.5rem;min-height:4.5rem;}
+  .how-grid{grid-template-columns:1fr 1fr;gap:.75rem;}
+  .how-card{padding:1rem .75rem;}
+  .two-col{grid-template-columns:1fr;}
+  .feed{max-height:300px;}
+  .modal{padding:1.5rem 1.2rem;margin:.5rem;}
+  .cta-section{padding:1.5rem 1rem;}
+  .cta-section h2{font-size:1.2rem;}
+  .container{padding:0 1rem;}
+  .hero-select-wrap{width:100%;}
+  .hero-select-wrap .dropdown-toggle{width:100%;}
+}
+@media(max-width:380px){
+  .lb-row{padding:.6rem .6rem .6rem .5rem;padding-right:5rem;}
+  .rank-num{font-size:.8rem;width:18px;}
+  .user-avatar{width:30px;height:30px;font-size:1rem;}
+  .user-name{font-size:.78rem;}
+  .bid-amount{font-size:.82rem;}
+  .how-grid{grid-template-columns:1fr;}
+  .top-card{padding:1rem .8rem;}
+  .stats-bar{gap:.8rem;}
+  .stat .val{font-size:.95rem;}
+  .hero h1{font-size:1.35rem;}
+}
 
 /* ── INTERACTIVE & POLISH ── */
 .hero-bid-row{display:flex;gap:.75rem;max-width:700px;margin:1.5rem auto 0;align-items:center;}
@@ -337,119 +395,8 @@ body.light .lb-row:hover .user-desc{color:var(--text2);}
 
 </style>
 <!-- Instamojo: no external script needed, payment via redirect -->
-// ── THEME TOGGLE ──
-function toggleTheme(){
-  var body=document.body;
-  var btn=document.getElementById("themeToggle");
-  if(body.classList.contains("light")){
-    body.classList.remove("light");
-    btn.textContent="🌙";
-    localStorage.setItem("theme","dark");
-  } else {
-    body.classList.add("light");
-    btn.textContent="☀️";
-    localStorage.setItem("theme","light");
-  }
-}
-// Load saved theme
-(function(){
-  var saved=localStorage.getItem("theme");
-  if(saved==="light"){
-    document.body.classList.add("light");
-    var btn=document.getElementById("themeToggle");
-    if(btn) btn.textContent="☀️";
-  }
-})();
 
-
-// ── CUSTOM DROPDOWN ──
-var heroCatValue = "all";
-function toggleDropdown(){
-  document.getElementById("heroCatWrap").classList.toggle("open");
-}
-function selectCat(el){
-  var val = el.getAttribute("data-val");
-  var text = el.textContent.trim();
-  var icon = el.querySelector(".dd-i-icon").textContent;
-  heroCatValue = val;
-  document.getElementById("heroCatBtn").querySelector(".dd-text").textContent = text;
-  document.getElementById("heroCatBtn").querySelector(".dd-icon").textContent = icon;
-  document.querySelectorAll(".dd-item").forEach(function(i){ i.classList.remove("selected"); });
-  el.classList.add("selected");
-  document.getElementById("heroCatWrap").classList.remove("open");
-  updateHeroPrice();
-}
-// Close dropdown on outside click
-document.addEventListener("click", function(e){
-  var dd = document.getElementById("heroCatWrap");
-  if(dd && !dd.contains(e.target)) dd.classList.remove("open");
-});
-
-
-// ── VISIT PROFILE (click row → open their link) ──
-// (visitProfile moved to bottom)
-
-// Assign random click counts to profiles
-P.forEach(function(p){ p._clicks = Math.floor(Math.random()*2000)+50; });
-
-</script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js">
-// ── THEME TOGGLE ──
-function toggleTheme(){
-  var body=document.body;
-  var btn=document.getElementById("themeToggle");
-  if(body.classList.contains("light")){
-    body.classList.remove("light");
-    btn.textContent="🌙";
-    localStorage.setItem("theme","dark");
-  } else {
-    body.classList.add("light");
-    btn.textContent="☀️";
-    localStorage.setItem("theme","light");
-  }
-}
-// Load saved theme
-(function(){
-  var saved=localStorage.getItem("theme");
-  if(saved==="light"){
-    document.body.classList.add("light");
-    var btn=document.getElementById("themeToggle");
-    if(btn) btn.textContent="☀️";
-  }
-})();
-
-
-// ── CUSTOM DROPDOWN ──
-var heroCatValue = "all";
-function toggleDropdown(){
-  document.getElementById("heroCatWrap").classList.toggle("open");
-}
-function selectCat(el){
-  var val = el.getAttribute("data-val");
-  var text = el.textContent.trim();
-  var icon = el.querySelector(".dd-i-icon").textContent;
-  heroCatValue = val;
-  document.getElementById("heroCatBtn").querySelector(".dd-text").textContent = text;
-  document.getElementById("heroCatBtn").querySelector(".dd-icon").textContent = icon;
-  document.querySelectorAll(".dd-item").forEach(function(i){ i.classList.remove("selected"); });
-  el.classList.add("selected");
-  document.getElementById("heroCatWrap").classList.remove("open");
-  updateHeroPrice();
-}
-// Close dropdown on outside click
-document.addEventListener("click", function(e){
-  var dd = document.getElementById("heroCatWrap");
-  if(dd && !dd.contains(e.target)) dd.classList.remove("open");
-});
-
-
-// ── VISIT PROFILE (click row → open their link) ──
-// (visitProfile moved to bottom)
-
-// Assign random click counts to profiles
-P.forEach(function(p){ p._clicks = Math.floor(Math.random()*2000)+50; });
-
-</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 </head>
 <body><nav class="nav"><div class="container">
   <div class="nav-logo"><div class="text">HypeOutbid</div></div>
@@ -461,8 +408,8 @@ P.forEach(function(p){ p._clicks = Math.floor(Math.random()*2000)+50; });
 <section class="hero"><div class="container">
   <div class="hero-badge"><div class="live-dot"></div> <span id="onlineCount">347</span> online · <span id="statProfiles">20</span> profiles listed</div>
   <p class="hero-tagline">Where the next billion-dollar founders and viral creators fight for the #1 spot.</p>
-  <h1>Claim #1 for <span class="hl" id="heroPrice">$1</span></h1>
-  <p class="hero-sub">New spots start at <span class="hl-green">$1</span>. Paying less than the #1 price still puts you on the board at whatever place that bid can take.</p>
+  <h1>Claim #1 for <span class="hl" id="heroPrice">₹10</span></h1>
+  <p class="hero-sub">New spots start at <span class="hl-green">₹10</span>. Paying less than the #1 price still puts you on the board at whatever place that bid can take.</p>
   <div class="hero-bid-row">
     <input class="hero-input" type="text" id="heroHandle" placeholder="Your product URL or @handle"/>
     <div class="custom-dropdown" id="heroCatWrap">
@@ -510,7 +457,7 @@ P.forEach(function(p){ p._clicks = Math.floor(Math.random()*2000)+50; });
     </div>
     <div class="top-bid-side">
       <div class="top-bid-lbl">Current Bid</div>
-      <div class="top-bid-val" id="topBid">$2,400</div>
+      <div class="top-bid-val" id="topBid">₹10</div>
       <button class="btn btn-hot" style="margin-top:.5rem;padding:.5rem 1.2rem;font-size:.85rem;" onclick="openBidModal(1)">⚔️ Outbid</button>
     </div>
   </div>
@@ -579,7 +526,7 @@ P.forEach(function(p){ p._clicks = Math.floor(Math.random()*2000)+50; });
   <button class="modal-close" onclick="closeBid()">&#x2715;</button>
   <h2>⚔️ Place Your Bid</h2>
   <p class="msub" id="bidSub">Outbid the current holder to take their rank</p>
-  <div class="target-row" id="bidTarget"><div class="target-av" id="bidTAv">👤</div><div class="target-info"><div class="tn" id="bidTName">Select a profile</div><div class="tc" id="bidTCur">Current bid: $0</div></div></div>
+  <div class="target-row" id="bidTarget"><div class="target-av" id="bidTAv">👤</div><div class="target-info"><div class="tn" id="bidTName">Select a profile</div><div class="tc" id="bidTCur">Current bid: ₹0</div></div></div>
   <div class="form-group"><label>Your Bid Amount (INR ₹)</label><input class="form-input" type="number" id="bidAmt" placeholder="0" min="1" step="1" style="font-size:1.1rem;font-weight:700;"/><div class="form-note" id="bidNote">Must exceed current bid by at least ₹10</div></div>
   <div class="form-group"><label>Your Instagram Handle</label><input class="form-input" type="text" id="bidHandle" placeholder="@yourhandle"/></div>
   <div class="form-group"><label>Website URL <span style="color:var(--muted);font-weight:400;">(optional)</span></label><input class="form-input" type="url" id="bidWebsite" placeholder="https://yoursite.com"/></div>
@@ -833,15 +780,15 @@ function updateHeroPrice(){
   if(cat==="all"||!cat) cat="all";
   var list = cat==="all" ? sorted() : sorted().filter(function(p){ return p.cat===cat; });
   var topBid = list.length>0 ? list[0].bid_paise : 0;
-  var price = topBid>0 ? topBid+1000 : 1000; // must exceed by $1
+  var price = topBid>0 ? topBid+1000 : 1000;
   var el=document.getElementById("heroPrice"); el.textContent = fmtINR(price); el.classList.remove("price-bounce"); void el.offsetWidth; el.classList.add("price-bounce");
 }
 
 function renderDefaultFeed(){
   var l=document.getElementById("feedList"); l.innerHTML="";
-  ["🔥 Leaderboard is live — first bids start at <span class=\"amt\">$1</span>",
+  ["🔥 Leaderboard is live — first bids start at <span class=\"amt\">₹10</span>",
    "⚔️ Be the first to outbid and claim #1!",
-   "💰 All bids start at $1 — no ceiling"].forEach(function(msg){
+   "💰 All bids start at ₹10 — no ceiling"].forEach(function(msg){
     l.innerHTML+="<div class=\"feed-item\">"+msg+"<span class=\"time\">just now</span></div>";
   });
 }
@@ -867,7 +814,7 @@ function startOnlineCounter(){
 function startSimulation(){
   setInterval(function(){
     var p=P[Math.floor(Math.random()*P.length)];
-    var bump=Math.floor(Math.random()*5000+1000); // 100-600 paise = $1-$6
+    var bump=Math.floor(Math.random()*5000+1000); // 1000-6000 paise = ₹10-₹60
     sorted().forEach(function(x,i){ prevR[x.id]=i+1; });
     p.bid_paise+=bump; p._f=true;
     var nr=sorted().findIndex(function(x){ return x.id===p.id; })+1;
@@ -887,7 +834,7 @@ function openBidModal(id){
     document.getElementById("bidSub").textContent="Place a bid to enter the leaderboard";
     document.getElementById("bidAmt").value="1";
     document.getElementById("bidAmt").min="1";
-    document.getElementById("bidNote").textContent="Minimum bid is $1";
+    document.getElementById("bidNote").textContent="Minimum bid is ₹10";
   } else {
     var p=P.find(function(x){ return x.id===id; });
     var rank=sorted().findIndex(function(x){ return x.id===id; })+1;
@@ -898,7 +845,7 @@ function openBidModal(id){
     document.getElementById("bidSub").textContent="Outbid "+p.name+" to take rank #"+rank;
     document.getElementById("bidAmt").value=curRupees+1;
     document.getElementById("bidAmt").min=curRupees+1;
-    document.getElementById("bidNote").textContent="Must exceed "+fmtINR(p.bid_paise)+" by at least $1";
+    document.getElementById("bidNote").textContent="Must exceed "+fmtINR(p.bid_paise)+" by at least ₹10";
   }
   document.getElementById("bidOverlay").classList.add("open");
 }
