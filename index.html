@@ -519,6 +519,24 @@ body.light .lb-row:hover .user-desc{color:var(--text2);}
 
 </main>
 
+
+<!-- LIVE COUNTER -->
+<section class="counter-section" style="padding:2rem 0;background:linear-gradient(135deg,#0d0d1a,#1a0a2e);border-top:1px solid #ffffff10;">
+<div class="container" style="display:flex;justify-content:center;gap:3rem;flex-wrap:wrap;text-align:center;">
+  <div style="min-width:200px;">
+    <div id="launchTimer" style="font-size:2.2rem;font-weight:800;background:linear-gradient(135deg,#ff2d75,#ff6b35);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">00h 00m</div>
+    <div style="color:#888;font-size:.85rem;margin-top:.3rem;">Since Launch</div>
+  </div>
+  <div style="min-width:200px;">
+    <div id="totalEarned" style="font-size:2.2rem;font-weight:800;color:#00ff88;">\u20b90</div>
+    <div style="color:#888;font-size:.85rem;margin-top:.3rem;">Total Earned</div>
+  </div>
+  <div style="min-width:200px;">
+    <div id="totalBids" style="font-size:2.2rem;font-weight:800;color:#ffd700;">0</div>
+    <div style="color:#888;font-size:.85rem;margin-top:.3rem;">Bids Placed</div>
+  </div>
+</div>
+</section>
 <footer class="footer"><div class="container"><div class="footer-links"><a href="#">About</a><a href="#">Terms</a><a href="#">Privacy</a><a href="#">Contact</a></div><div class="footer-copy">© 2026 HypeOutbid.lol — The live bidding leaderboard for social media.</div></div></footer>
 
 <!-- BID MODAL -->
@@ -623,6 +641,7 @@ async function loadLeaderboard(){
   render();
   document.getElementById("statBids").textContent = fmtINR(P.reduce(function(s,x){ return s+x.bid_paise; },0));
   var sp = document.getElementById("statProfiles"); if(sp) sp.textContent = P.length;
+  if(typeof updateEarnedCounter==="function") updateEarnedCounter();
 }
 async function loadActivity(){
   try{
@@ -677,7 +696,7 @@ function render(){
   var s=sorted();
   if(s.length===0){
     document.getElementById("topCard").style.display="none";
-    document.getElementById("lbTable").innerHTML="<div style="text-align:center;padding:3rem;color:var(--muted);"><h3>No profiles yet</h3><p>Be the first to place a bid and claim the #1 spot!</p></div>";
+    document.getElementById('lbTable').innerHTML='<div style="text-align:center;padding:3rem;color:var(--muted)"><h3>No profiles yet</h3><p>Be the first to place a bid and claim the #1 spot!</p></div>';
     return;
   }
   document.getElementById("topCard").style.display="";
@@ -1008,5 +1027,26 @@ function showLinkChoice(p){
 
 // Assign random click counts to profiles
 P.forEach(function(p){ p._clicks = Math.floor(Math.random()*2000)+50; });
+
+
+// Launch counter
+var LAUNCH_TIME = new Date("2026-08-23T12:00:00+05:30").getTime();
+function updateLaunchTimer(){
+  var now = Date.now();
+  var diff = now - LAUNCH_TIME;
+  if(diff < 0) diff = 0;
+  var hrs = Math.floor(diff/3600000);
+  var mins = Math.floor((diff%3600000)/60000);
+  var secs = Math.floor((diff%60000)/1000);
+  document.getElementById("launchTimer").textContent = hrs+"h "+mins+"m "+secs+"s";
+}
+setInterval(updateLaunchTimer, 1000);
+updateLaunchTimer();
+
+function updateEarnedCounter(){
+  var total = P.reduce(function(s,x){ return s + x.bid_paise; }, 0);
+  document.getElementById("totalEarned").textContent = "\u20b9" + (total/100);
+  document.getElementById("totalBids").textContent = P.length;
+}
 
 </script></body></html>
