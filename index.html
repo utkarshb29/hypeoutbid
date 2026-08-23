@@ -387,17 +387,7 @@ document.addEventListener("click", function(e){
 
 
 // ── VISIT PROFILE (click row → open their link) ──
-function visitProfile(id){
-  var p = P.find(function(x){ return x.id===id; });
-  if(p && p.url){
-    // Track click
-    if(!p._clicks) p._clicks=Math.floor(Math.random()*500)+10;
-    p._clicks++;
-    window.open(p.url + "?utm_source=hypeoutbid", "_blank");
-  } else {
-    openBidModal(id);
-  }
-}
+// (visitProfile moved to bottom)
 
 // Assign random click counts to profiles
 P.forEach(function(p){ p._clicks = Math.floor(Math.random()*2000)+50; });
@@ -454,17 +444,7 @@ document.addEventListener("click", function(e){
 
 
 // ── VISIT PROFILE (click row → open their link) ──
-function visitProfile(id){
-  var p = P.find(function(x){ return x.id===id; });
-  if(p && p.url){
-    // Track click
-    if(!p._clicks) p._clicks=Math.floor(Math.random()*500)+10;
-    p._clicks++;
-    window.open(p.url + "?utm_source=hypeoutbid", "_blank");
-  } else {
-    openBidModal(id);
-  }
-}
+// (visitProfile moved to bottom)
 
 // Assign random click counts to profiles
 P.forEach(function(p){ p._clicks = Math.floor(Math.random()*2000)+50; });
@@ -821,6 +801,8 @@ function render(){
   document.getElementById("topBid").textContent=fmtINR(top.bid_paise);
   document.getElementById("topCard").querySelector(".top-metrics").innerHTML="<span class=\"tm\"><b>"+top.followers+"</b> followers</span><span class=\"tm\"><b>"+top.eng+"</b> engagement</span><span class=\"tm\"><b>"+top.cat+"</b></span>";
   document.getElementById("topCard").querySelector("button").onclick=function(){ openBidModal(top.id); };
+  document.getElementById("topCard").onclick=function(e){ if(e.target.tagName!=="BUTTON" && !e.target.closest("button")) visitProfile(top.id); };
+  document.getElementById("topCard").style.cursor="pointer";
   var list=filtered(), tb=document.getElementById("lbTable"); tb.innerHTML="";
   list.forEach(function(p){
     var gr=s.findIndex(function(x){ return x.id===p.id; })+1;
@@ -1059,14 +1041,70 @@ document.addEventListener("click", function(e){
 // ── VISIT PROFILE (click row → open their link) ──
 function visitProfile(id){
   var p = P.find(function(x){ return x.id===id; });
-  if(p && p.url){
-    // Track click
-    if(!p._clicks) p._clicks=Math.floor(Math.random()*500)+10;
-    p._clicks++;
+  if(!p) return;
+  if(!p._clicks) p._clicks=Math.floor(Math.random()*500)+10;
+  p._clicks++;
+  var hasWebsite = p.website && p.website.trim();
+  var hasInsta = p.url && p.url.trim();
+  if(hasWebsite && hasInsta){
+    showLinkChoice(p);
+  } else if(hasWebsite){
+    window.open(p.website, "_blank");
+  } else if(hasInsta){
     window.open(p.url + "?utm_source=hypeoutbid", "_blank");
   } else {
     openBidModal(id);
   }
+}
+
+function showLinkChoice(p){
+  var ex = document.getElementById("linkChoiceOverlay");
+  if(ex) ex.remove();
+  var ov = document.createElement("div");
+  ov.id = "linkChoiceOverlay";
+  ov.className = "overlay open";
+  ov.style.zIndex = "300";
+  ov.onclick = function(e){ if(e.target===ov) ov.remove(); };
+  var box = document.createElement("div");
+  box.className = "modal";
+  box.style.maxWidth = "340px";
+  box.style.textAlign = "center";
+  box.style.padding = "1.5rem 2rem";
+  var closeBtn = document.createElement("button");
+  closeBtn.className = "modal-close";
+  closeBtn.innerHTML = "\u2715";
+  closeBtn.onclick = function(){ ov.remove(); };
+  var h2 = document.createElement("h2");
+  h2.style.cssText = "font-size:1.1rem;margin-bottom:.3rem;";
+  h2.textContent = "Where do you want to go?";
+  var sub = document.createElement("p");
+  sub.className = "msub";
+  sub.style.marginBottom = "1.25rem";
+  sub.innerHTML = "Choose a destination for <b>" + p.name + "</b>";
+  var btns = document.createElement("div");
+  btns.style.cssText = "display:flex;flex-direction:column;gap:.6rem;";
+  var webBtn = document.createElement("a");
+  webBtn.href = p.website;
+  webBtn.target = "_blank";
+  webBtn.className = "btn btn-accent btn-lg";
+  webBtn.style.width = "100%";
+  webBtn.textContent = "\ud83c\udf10 Visit Website";
+  webBtn.onclick = function(){ ov.remove(); };
+  var igBtn = document.createElement("a");
+  igBtn.href = p.url + "?utm_source=hypeoutbid";
+  igBtn.target = "_blank";
+  igBtn.className = "btn btn-ghost btn-lg";
+  igBtn.style.width = "100%";
+  igBtn.textContent = "\ud83d\udcf8 Open Instagram";
+  igBtn.onclick = function(){ ov.remove(); };
+  btns.appendChild(webBtn);
+  btns.appendChild(igBtn);
+  box.appendChild(closeBtn);
+  box.appendChild(h2);
+  box.appendChild(sub);
+  box.appendChild(btns);
+  ov.appendChild(box);
+  document.body.appendChild(ov);
 }
 
 // Assign random click counts to profiles
