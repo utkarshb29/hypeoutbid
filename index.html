@@ -3,7 +3,17 @@
 <head>
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>HypeOutbid — Bid to Own the Top Spot</title>
-<meta name="description" content="The live leaderboard where creators compete for the #1 spot. Outbid anyone. Claim your rank. Get seen."/>
+<meta name="description" content="India's live creator leaderboard. Outbid anyone. Claim your rank. Get seen by thousands."/>
+<meta property="og:title" content="HypeOutbid — Bid to Own the #1 Spot in India" />
+<meta property="og:description" content="India's live creator leaderboard. Outbid anyone. Claim your rank. Get seen by thousands." />
+<meta property="og:image" content="https://hypeoutbid.lol/og-image.jpg" />
+<meta property="og:url" content="https://www.hypeoutbid.lol" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="HypeOutbid — Bid to Own the #1 Spot" />
+<meta name="twitter:description" content="India's live bidding leaderboard for creators and founders. Real bids. Real rankings. Real eyeballs." />
+<meta name="twitter:image" content="https://hypeoutbid.lol/og-image.jpg" />
+
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
 <style>
@@ -407,11 +417,11 @@ body.light .lb-row:hover .user-desc{color:var(--text2);}
 
 <section class="hero"><div class="container">
   <div class="hero-badge"><div class="live-dot"></div> <span id="launchTimerTop">0h 0m</span> live · <span id="statProfiles">0</span> profiles · <span id="statBidsTop">₹0</span> earned</div>
-  <p class="hero-tagline">Where the next billion-dollar founders and viral creators fight for the #1 spot.</p>
-  <h1>Claim #1 for <span class="hl" id="heroPrice">₹10</span></h1>
-  <p class="hero-sub">New spots start at <span class="hl-green">₹10</span>. Paying less than the #1 price still puts you on the board at whatever place that bid can take.</p>
+  <p class="hero-tagline">India's live bidding leaderboard for creators and founders. Real bids. Real rankings. Real eyeballs.</p>
+  <h1>Claim #1 for <span class="hl" id="heroPrice">₹199</span></h1>
+  <p class="hero-sub">New spots start at <span class="hl-green">₹199</span>. Outbid the leader by ₹50 to claim #1, or bid any amount to take the rank your bid can get.</p>
   <div class="hero-bid-row">
-    <input class="hero-input" type="text" id="heroHandle" placeholder="Your product URL or @handle"/>
+    <input class="hero-input" type="text" id="heroHandle" placeholder="Your Instagram @handle"/>
     <div class="custom-dropdown" id="heroCatWrap">
       <button class="dropdown-btn" id="heroCatBtn" onclick="toggleDropdown()">
         <span class="dd-icon">📂</span>
@@ -457,7 +467,7 @@ body.light .lb-row:hover .user-desc{color:var(--text2);}
     </div>
     <div class="top-bid-side">
       <div class="top-bid-lbl">Current Bid</div>
-      <div class="top-bid-val" id="topBid">₹10</div>
+      <div class="top-bid-val" id="topBid">₹199</div>
       <button class="btn btn-hot" style="margin-top:.5rem;padding:.5rem 1.2rem;font-size:.85rem;" onclick="openBidModal(1)">⚔️ Outbid</button>
     </div>
   </div>
@@ -545,7 +555,7 @@ body.light .lb-row:hover .user-desc{color:var(--text2);}
   <h2>⚔️ Place Your Bid</h2>
   <p class="msub" id="bidSub">Outbid the current holder to take their rank</p>
   <div class="target-row" id="bidTarget"><div class="target-av" id="bidTAv">👤</div><div class="target-info"><div class="tn" id="bidTName">Select a profile</div><div class="tc" id="bidTCur">Current bid: ₹0</div></div></div>
-  <div class="form-group"><label>Your Bid Amount (INR ₹)</label><input class="form-input" type="number" id="bidAmt" placeholder="0" min="1" step="1" style="font-size:1.1rem;font-weight:700;"/><div class="form-note" id="bidNote">Must exceed current bid by at least ₹10</div></div>
+  <div class="form-group"><label>Your Bid Amount (INR ₹)</label><input class="form-input" type="number" id="bidAmt" placeholder="0" min="1" step="1" style="font-size:1.1rem;font-weight:700;"/><div class="form-note" id="bidNote">Must exceed current bid by at least ₹50</div></div>
   <div class="form-group"><label>Your Instagram Handle</label><input class="form-input" type="text" id="bidHandle" placeholder="@yourhandle"/></div>
   <div class="form-group"><label>Website URL <span style="color:var(--muted);font-weight:400;">(optional)</span></label><input class="form-input" type="url" id="bidWebsite" placeholder="https://yoursite.com"/></div>
   <div class="form-group"><label>Short Intro <span style="color:var(--muted);font-weight:400;">(optional, max 120 chars)</span></label><input class="form-input" type="text" id="bidDesc" placeholder="What do you do? Tell the world..." maxlength="120"/></div>
@@ -644,6 +654,7 @@ async function loadLeaderboard(){
   document.getElementById("statBids").textContent = fmtINR(P.reduce(function(s,x){ return s+x.bid_paise; },0));
   var sp = document.getElementById("statProfiles"); if(sp) sp.textContent = P.length;
   if(typeof updateEarnedCounter==="function") updateEarnedCounter();
+  updateHeroPrice();
 }
 async function loadActivity(){
   try{
@@ -741,15 +752,15 @@ function updateHeroPrice(){
   if(cat==="all"||!cat) cat="all";
   var list = cat==="all" ? sorted() : sorted().filter(function(p){ return p.cat===cat; });
   var topBid = list.length>0 ? list[0].bid_paise : 0;
-  var price = topBid>0 ? topBid+1000 : 1000;
+  var price = topBid>0 ? topBid+5000 : 19900;
   var el=document.getElementById("heroPrice"); el.textContent = fmtINR(price); el.classList.remove("price-bounce"); void el.offsetWidth; el.classList.add("price-bounce");
 }
 
 function renderDefaultFeed(){
   var l=document.getElementById("feedList"); l.innerHTML="";
-  ["🔥 Leaderboard is live — first bids start at <span class=\"amt\">₹10</span>",
+  ["🔥 Leaderboard is live — bids start at <span class=\"amt\">₹199</span>",
    "⚔️ Be the first to outbid and claim #1!",
-   "💰 All bids start at ₹10 — no ceiling"].forEach(function(msg){
+   "💰 All bids start at ₹199 — no ceiling"].forEach(function(msg){
     l.innerHTML+="<div class=\"feed-item\">"+msg+"<span class=\"time\">just now</span></div>";
   });
 }
@@ -804,7 +815,7 @@ function openBidModal(id){
     document.getElementById("bidSub").textContent="Place a bid to enter the leaderboard";
     document.getElementById("bidAmt").value="1";
     document.getElementById("bidAmt").min="1";
-    document.getElementById("bidNote").textContent="Minimum bid is ₹10";
+    document.getElementById("bidNote").textContent="Minimum bid is ₹199";
   } else {
     var p=P.find(function(x){ return x.id===id; });
     var rank=sorted().findIndex(function(x){ return x.id===id; })+1;
@@ -815,7 +826,7 @@ function openBidModal(id){
     document.getElementById("bidSub").textContent="Outbid "+p.name+" to take rank #"+rank;
     document.getElementById("bidAmt").value=curRupees+1;
     document.getElementById("bidAmt").min=curRupees+1;
-    document.getElementById("bidNote").textContent="Must exceed "+fmtINR(p.bid_paise)+" by at least ₹10";
+    document.getElementById("bidNote").textContent="Must exceed "+fmtINR(p.bid_paise)+" by at least ₹50";
   }
   document.getElementById("bidOverlay").classList.add("open");
 }
@@ -830,7 +841,7 @@ async function handleBid(e){
 
   if(!amount_rupees||!handle||!email){ toast("Fill in all fields","warn"); return; }
   if(!handle.startsWith("@")) handle="@"+handle;
-  if(amount_rupees<10){ toast("Minimum bid is ₹10","warn"); return; }
+  if(amount_rupees<199){ toast("Minimum bid is ₹199","warn"); return; }
 
   if(bidTargetId&&bidTargetId!==0){
     var p=P.find(function(x){ return x.id===bidTargetId; });

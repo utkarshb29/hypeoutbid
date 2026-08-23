@@ -14,8 +14,8 @@ module.exports = async (req, res) => {
   if (!amount_paise || !handle || !email || !utr) {
     return res.status(400).json({ error: "Missing required fields", success: false });
   }
-  if (amount_paise < 1000) {
-    return res.status(400).json({ error: "Minimum bid is 10 INR", success: false });
+  if (amount_paise < 19900) {
+    return res.status(400).json({ error: "Minimum bid is 199 INR", success: false });
   }
   if (utr.length < 8) {
     return res.status(400).json({ error: "Invalid UTR", success: false });
@@ -43,8 +43,8 @@ module.exports = async (req, res) => {
         .select("current_bid_paise")
         .eq("id", profile_id)
         .single();
-      if (target && amount_paise <= target.current_bid_paise) {
-        return res.status(400).json({ error: "Must exceed current bid of " + (target.current_bid_paise/100) + " INR", success: false });
+      if (target && amount_paise < target.current_bid_paise + 5000) {
+        return res.status(400).json({ error: "Must exceed current bid by at least ₹50. Minimum: ₹" + ((target.current_bid_paise + 5000)/100), success: false });
       }
     }
 
