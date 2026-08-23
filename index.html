@@ -416,7 +416,7 @@ body.light .lb-row:hover .user-desc{color:var(--text2);}
 
 
 <section class="hero"><div class="container">
-  <div class="hero-badge"><div class="live-dot"></div> <span id="launchTimerTop">0h 0m</span> live · <span id="statProfiles">0</span> profiles · <span id="statBidsTop">₹0</span> earned</div>
+  <div class="hero-badge"><div class="live-dot"></div> <span id="launchTimerTop">0h 0m</span> live · <span id="statProfiles">0</span> profiles · <span id="statBidsTop">₹0</span> earned · <span id="statVisitors">0</span> visitors</div>
   <p class="hero-tagline">India's live bidding leaderboard for creators and founders. Real bids. Real rankings. Real eyeballs.</p>
   <h1>Claim #1 for <span class="hl" id="heroPrice">₹199</span></h1>
   <p class="hero-sub">New spots start at <span class="hl-green">₹199</span>. Outbid the leader by ₹50 to claim #1, or bid any amount to take the rank your bid can get.</p>
@@ -718,7 +718,7 @@ function render(){
   document.getElementById("topName").innerHTML=top.name+" "+(top.verified?"<span class=\"verify\">✓</span>":"");
   document.getElementById("topHandle").textContent=top.handle;
   document.getElementById("topBid").textContent=fmtINR(top.bid_paise);
-  document.getElementById("topCard").querySelector(".top-metrics").innerHTML="<span class=\"tm\"><b>"+top.followers+"</b> followers</span><span class=\"tm\"><b>"+top.eng+"</b> engagement</span><span class=\"tm\"><b>"+top.cat+"</b></span>";
+  document.getElementById("topCard").querySelector(".top-metrics").innerHTML="<span class=\"tm\">\ud83d\udc41 "+(top._clicks||0)+" clicks</span><span class=\"tm\">"+top.cat+"</span>";
   document.getElementById("topCard").querySelector("button").onclick=function(){ openBidModal(top.id); };
   document.getElementById("topCard").onclick=function(e){ if(e.target.tagName!=="BUTTON" && !e.target.closest("button")) visitProfile(top.id); };
   document.getElementById("topCard").style.cursor="pointer";
@@ -737,7 +737,7 @@ function render(){
       "<div class=\"user-info\"><div class=\"user-name\">"+p.name+(p.verified?" <span class=\"verify\">✓</span>":"")+"</div>"+
       "<div class=\"user-handle\">"+p.handle+(p.topBidder?"<span style=\"color:var(--green);font-size:.7rem;margin-left:.5rem;\"> held by "+p.topBidder+"</span>":"")+"</div>"+
       (p.desc?"<div class=\"user-desc\">"+p.desc+"</div>":"")+
-      "<div class=\"user-stats\"><span class=\"us\"><b>"+p.followers+"</b> followers</span><span class=\"us\"><b>"+p.eng+"</b> eng.</span>"+(p._clicks?"<span class=\"us clicks\">● "+p._clicks+" clicks</span>":"")+"</div></div>"+
+      "<div class=\"user-stats\"><span class=\"us clicks\">\ud83d\udc41 "+(p._clicks||0)+" clicks</span></div></div>"+
       "<div class=\"bid-col\"><div class=\"bid-amount\">"+fmtINR(p.bid_paise)+"</div><div class=\"bid-label\">current bid</div></div>"+
       "<div class=\"outbid-btn\"><button class=\"btn btn-hot btn-sm\" onclick=\"event.stopPropagation();openBidModal("+p.id+")\">Outbid</button></div>"+
     "</div>";
@@ -983,8 +983,10 @@ document.addEventListener("click", function(e){
 function visitProfile(id){
   var p = P.find(function(x){ return x.id===id; });
   if(!p) return;
-  if(!p._clicks) p._clicks=0
+  if(!p._clicks) p._clicks=0;
   p._clicks++;
+  render();
+  fetch("/api/track-click",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({profile_id:id})}).catch(function(){});
   var hasWebsite = p.website && p.website.trim();
   var hasInsta = p.url && p.url.trim();
   if(hasWebsite && hasInsta){
@@ -1071,5 +1073,15 @@ function updateEarnedCounter(){
   document.getElementById("totalEarned").textContent = "₹" + (total/100);
   document.getElementById("totalBids").textContent = P.length;
 }
+
+
+// ── VISITOR TRACKING ────────────────────────────────────────
+(function(){
+  fetch("/api/track-visit",{method:"POST"}).catch(function(){});
+  fetch("/api/track-visit").then(function(r){return r.json();}).then(function(d){
+    var el=document.getElementById("statVisitors");
+    if(el && d.count) el.textContent=d.count.toLocaleString();
+  }).catch(function(){});
+})();
 
 </script></body></html>
