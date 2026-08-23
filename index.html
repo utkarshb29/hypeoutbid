@@ -603,6 +603,7 @@ async function init(){
     sbClient = window.supabase.createClient(CONFIG.supabaseUrl, CONFIG.supabaseAnonKey);
     await loadLeaderboard();
     await loadActivity();
+    setInterval(function(){ loadLeaderboard(); }, 30000);
     subscribeRealtime();
     updateHeroPrice(); startOnlineCounter();
   } else {
@@ -633,7 +634,7 @@ async function loadLeaderboard(){
           bid_paise: parseInt(row.current_bid_paise) || 0,
           topBidder: row.top_bidder_handle || "",
           verified: row.verified || false,
-          clicks: row.click_count || 0
+          _clicks: row.click_count || 0
         };
       });
     }
@@ -762,8 +763,9 @@ function addFeed(msg){
 
 
 function startOnlineCounter(){
+  var lt=new Date("2026-08-23T12:00:00+05:30").getTime();
   function upTop(){
-    var now=Date.now(),diff=now-LAUNCH_TIME;if(diff<0)diff=0;
+    var now=Date.now(),diff=now-lt;if(diff<0)diff=0;
     var h=Math.floor(diff/3600000),m=Math.floor((diff%3600000)/60000);
     var el=document.getElementById("launchTimerTop");
     if(el) el.textContent=h+"h "+m+"m";
@@ -771,8 +773,12 @@ function startOnlineCounter(){
     if(sp) sp.textContent=P.length;
     var sb=document.getElementById("statBidsTop");
     if(sb) sb.textContent="₹"+(P.reduce(function(s,x){return s+x.bid_paise;},0)/100);
+    var te=document.getElementById("totalEarned");
+    if(te) te.textContent="₹"+(P.reduce(function(s,x){return s+x.bid_paise;},0)/100);
+    var tb=document.getElementById("totalBids");
+    if(tb) tb.textContent=P.length;
   }
-  upTop(); setInterval(upTop, 10000);
+  upTop(); setInterval(upTop, 5000);
 }
 // Demo simulation (only when no backend connected)
 function startSimulation(){
@@ -873,7 +879,7 @@ async function confirmQRPayment(){
     if(res.ok&&d.success){
       toast("Bid submitted! Will appear after payment verification.","ok");
       closeBid();backFromQR();document.getElementById("bidUTR").value="";
-      await loadLeaderboard();
+      try{await loadLeaderboard();}catch(e){}
     }else{toast(d.error||"Failed","warn");}
   }catch(e){toast("Network error","warn");}
   btn.textContent="\u2705 Confirm Payment";btn.disabled=false;
@@ -911,6 +917,7 @@ function checkPaymentResult(){
 
 init();
 checkPaymentResult();
+setTimeout(function(){try{startOnlineCounter();}catch(e){}},2000);
 
 // ── THEME TOGGLE ──
 function toggleTheme(){
@@ -965,7 +972,7 @@ document.addEventListener("click", function(e){
 function visitProfile(id){
   var p = P.find(function(x){ return x.id===id; });
   if(!p) return;
-  if(!p._clicks) p._clicks=Math.floor(Math.random()*500)+10;
+  if(!p._clicks) p._clicks=0
   p._clicks++;
   var hasWebsite = p.website && p.website.trim();
   var hasInsta = p.url && p.url.trim();
@@ -1031,7 +1038,7 @@ function showLinkChoice(p){
 }
 
 // Assign random click counts to profiles
-P.forEach(function(p){ p._clicks = Math.floor(Math.random()*2000)+50; });
+// clicks loaded from DB
 
 
 // Launch counter
