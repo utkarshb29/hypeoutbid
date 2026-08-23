@@ -847,7 +847,7 @@ async function confirmQRPayment(){
     var res=await fetch("/api/submit-bid",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({amount_paise:bid.amount_paise,handle:bid.handle,email:bid.email,website:bid.website,description:bid.desc,category:"creator",utr:utr,profile_id:bid.profile_id})});
     var d=await res.json();
     if(res.ok&&d.success){
-      toast("Bid confirmed! You are on the leaderboard.","ok");
+      toast("Bid submitted! Will appear after payment verification.","ok");
       closeBid();backFromQR();document.getElementById("bidUTR").value="";
       await loadLeaderboard();
     }else{toast(d.error||"Failed","warn");}
