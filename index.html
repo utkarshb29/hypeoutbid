@@ -1,303 +1,1086 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HypeOutbid - Pay to Rank on the Leaderboard</title>
-<meta name="description" content="Bid real money to rank your profile on the leaderboard. Highest bidder gets #1.">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>HypeOutbid — Bid to Own the Top Spot</title>
+<meta name="description" content="The live leaderboard where creators compete for the #1 spot. Outbid anyone. Claim your rank. Get seen."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
 <style>
-:root{--bg:#09090b;--surface:#111114;--surface2:#1a1a1f;--border:#27272a;--text:#fafafa;--muted:#71717a;--accent:#8b5cf6;--accent2:#a78bfa;--hot:#ef4444;--hot2:#dc2626;--gold:#eab308;--silver:#a1a1aa;--bronze:#d97706;--green:#10b981;--radius:12px;--shadow:0 8px 32px rgba(0,0,0,.5);}
-*{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
-a{color:var(--accent2);text-decoration:none;}
-.nav{display:flex;align-items:center;justify-content:space-between;padding:.6rem 1.5rem;background:rgba(9,9,11,.85);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;backdrop-filter:blur(16px);}
-.nav-left{display:flex;align-items:center;gap:.6rem;}
-.logo{font-size:1.2rem;font-weight:800;letter-spacing:-.5px;}
-.logo span{color:var(--hot);}
-.nav-right{display:flex;align-items:center;gap:.6rem;}
-.made-india{font-size:.7rem;color:var(--muted);white-space:nowrap;}
-.made-india .heart{color:#ef4444;font-size:.8rem;}
-.currency-wrap{position:relative;}
-.currency-btn{display:flex;align-items:center;gap:.3rem;padding:.35rem .6rem;background:var(--surface2);border:1px solid var(--border);border-radius:8px;cursor:pointer;font-size:.8rem;color:var(--text);transition:border-color .2s;}
-.currency-btn:hover{border-color:var(--accent);}
-.currency-menu{position:absolute;top:110%;right:0;width:180px;max-height:300px;overflow-y:auto;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);display:none;z-index:200;}
-.currency-menu.open{display:block;}
-.currency-opt{padding:.45rem .7rem;cursor:pointer;font-size:.78rem;transition:background .15s;}
-.currency-opt:hover{background:var(--surface2);}
-.currency-opt.active{background:var(--accent);color:#fff;}
-.hero{text-align:center;padding:4rem 1.5rem 2.5rem;max-width:700px;margin:0 auto;}
-.hero-title{font-size:2.5rem;font-weight:700;letter-spacing:-.045em;line-height:1.1;margin-bottom:1rem;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:.5rem .75rem;}
-.bid-stepper{display:inline-flex;align-items:center;gap:.5rem;}
-.stepper-btn{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.1);border:none;color:var(--text);font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s;}
-.stepper-btn:hover{background:rgba(255,255,255,.18);}
-.stepper-btn:active{transform:scale(.92);}
-.stepper-val{min-width:5.25rem;font-size:2.5rem;font-weight:700;color:var(--accent2);cursor:default;user-select:none;font-variant-numeric:tabular-nums;}
-.hero-sub{color:var(--muted);font-size:1rem;line-height:1.5;margin-bottom:1.5rem;max-width:500px;margin-left:auto;margin-right:auto;}
-.hero-cta{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;}
-.btn{display:inline-flex;align-items:center;gap:.4rem;padding:.55rem 1.1rem;border-radius:8px;font-weight:600;font-size:.85rem;cursor:pointer;border:none;transition:transform .12s,box-shadow .12s;text-decoration:none;}
-.btn:hover{transform:translateY(-1px);}
-.btn-accent{background:var(--accent);color:#fff;}
-.btn-hot{background:linear-gradient(135deg,var(--hot),var(--hot2));color:#fff;}
-.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text);}
-.btn-sm{padding:.35rem .7rem;font-size:.78rem;}
-.btn-lg{padding:.7rem 1.4rem;font-size:.95rem;}
-.stats-bar{display:flex;justify-content:center;gap:2rem;padding:.75rem 1.5rem;flex-wrap:wrap;}
-.stat{text-align:center;}
-.stat .sn{font-size:1.3rem;font-weight:800;}
-.stat .sl{font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
-.tabs-wrap{display:flex;gap:.35rem;padding:0 1.5rem;overflow-x:auto;margin-bottom:1rem;scrollbar-width:none;}
-.tabs-wrap::-webkit-scrollbar{display:none;}
-.tab{padding:.35rem .75rem;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:.75rem;cursor:pointer;white-space:nowrap;transition:all .15s;}
-.tab.active,.tab:hover{background:var(--accent);color:#fff;border-color:var(--accent);}
-.main-grid{display:grid;grid-template-columns:1fr 300px;gap:1.25rem;max-width:1100px;margin:0 auto;padding:0 1.5rem 3rem;}
-@media(max-width:900px){.main-grid{grid-template-columns:1fr;}}
-.top-card{display:flex;align-items:center;gap:1rem;padding:1.2rem;background:linear-gradient(135deg,rgba(139,92,246,.08),rgba(239,68,68,.04));border:1px solid var(--accent);border-radius:var(--radius);cursor:pointer;transition:transform .2s;margin-bottom:.75rem;}
-.top-card:hover{transform:scale(1.005);}
-.top-avatar-lg{font-size:2.8rem;}
-.top-info{flex:1;}
-.top-badge{font-size:.65rem;color:var(--gold);font-weight:700;margin-bottom:.15rem;}
-.top-name{font-size:1.05rem;font-weight:700;}
-.top-handle{color:var(--muted);font-size:.8rem;}
-.top-metrics{display:flex;gap:.6rem;margin-top:.2rem;font-size:.7rem;color:var(--muted);}
-.top-bid-side{text-align:right;}
-.top-bid-lbl{font-size:.65rem;color:var(--muted);text-transform:uppercase;}
-.top-bid-val{font-size:1.2rem;font-weight:800;color:var(--green);}
-.lb-row{display:flex;align-items:center;gap:.65rem;padding:.75rem .9rem;border-radius:var(--radius);border:1px solid var(--border);background:var(--surface);margin-bottom:.4rem;cursor:pointer;transition:border-color .15s,transform .12s;}
-.lb-row:hover{border-color:var(--accent);transform:translateX(2px);}
-.lb-row.top1{border-color:var(--gold);background:rgba(234,179,8,.02);}
-.lb-row.top2{border-color:var(--silver);background:rgba(161,161,170,.02);}
-.lb-row.top3{border-color:var(--bronze);background:rgba(217,119,6,.02);}
-.rank-num{width:1.8rem;text-align:center;font-weight:800;font-size:.95rem;}
-.r1{color:var(--gold);}.r2{color:var(--silver);}.r3{color:var(--bronze);}.rn{color:var(--muted);}
-.rank-arrow{font-size:.65rem;color:var(--muted);width:.8rem;text-align:center;}
-.user-avatar{font-size:1.5rem;width:2.2rem;text-align:center;}
+:root{--bg:#06070b;--s1:#0c0e15;--s2:#12151f;--s3:#1a1e2e;--border:#1e2235;--border2:#282d42;--accent:#E1306C;--accent-light:#F56040;--accent-bg:rgba(225,48,108,.12);--accent-border:rgba(225,48,108,.3);--hot:#ff4757;--hot-bg:rgba(255,71,87,.1);--hot-border:rgba(255,71,87,.3);--green:#00d68f;--green-bg:rgba(0,214,143,.1);--yellow:#ffc107;--purple:#833AB4;--text:#edf0f7;--text2:#c4c9d9;--muted:#6b7280;--r:12px;--r-sm:8px;--r-xs:6px;--shadow:0 4px 24px rgba(0,0,0,.4);--font:"Inter",system-ui,sans-serif;--gradient:linear-gradient(135deg,#833AB4,#E1306C,#F56040);}
+*{box-sizing:border-box;margin:0;padding:0;}html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:var(--font);line-height:1.5;-webkit-font-smoothing:antialiased;}
+a{color:var(--accent-light);text-decoration:none;}button{font-family:inherit;}
+.container{max-width:1100px;margin:0 auto;padding:0 1.5rem;}
+.nav{position:sticky;top:0;z-index:100;background:rgba(6,7,11,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);height:60px;display:flex;align-items:center;}
+.nav .container{display:flex;align-items:center;justify-content:space-between;width:100%;}
+.nav-logo{font-size:1.2rem;font-weight:900;letter-spacing:-.5px;display:flex;align-items:center;gap:.5rem;}
+.nav-logo .ig-icon{width:28px;height:28px;background:var(--gradient);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.9rem;}
+.nav-logo .text{background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.nav-links{display:flex;gap:1.75rem;}.nav-links a{color:var(--muted);font-size:.85rem;font-weight:500;text-decoration:none;transition:color .2s;}.nav-links a:hover{color:var(--text);}
+.nav-right{display:flex;align-items:center;gap:.75rem;}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;padding:.5rem 1rem;border-radius:var(--r-xs);font-size:.82rem;font-weight:600;cursor:pointer;border:none;transition:all .15s;text-decoration:none;}
+.btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border);}.btn-ghost:hover{background:var(--s2);}
+.btn-accent{background:var(--gradient);color:#fff;}.btn-accent:hover{filter:brightness(1.15);transform:translateY(-1px);}
+.btn-hot{background:var(--hot);color:#fff;border:none;cursor:pointer;font-weight:600;}.btn-hot:hover{filter:brightness(1.1);transform:translateY(-1px);}
+.btn-sm{padding:.35rem .75rem;font-size:.75rem;}.btn-lg{padding:.65rem 1.5rem;font-size:.95rem;}
+.hero{padding:4rem 0 3rem;text-align:center;position:relative;overflow:hidden;}
+.hero::before{content:"";position:absolute;top:-40%;left:50%;transform:translateX(-50%);width:800px;height:500px;background:radial-gradient(ellipse,rgba(225,48,108,.12) 0%,transparent 70%);pointer-events:none;}
+.hero-badge{display:inline-flex;align-items:center;gap:.5rem;background:var(--accent-bg);border:1px solid var(--accent-border);border-radius:999px;padding:.3rem 1rem;font-size:.73rem;font-weight:700;color:var(--accent);letter-spacing:.06em;text-transform:uppercase;margin-bottom:1.5rem;}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 1.4s ease infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.4)}}
+.hero h1{font-size:clamp(2rem,5vw,3.2rem);font-weight:900;line-height:1.08;letter-spacing:-1.5px;margin-bottom:1rem;}
+.hero h1 .hl{background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero p{color:var(--muted);font-size:1.05rem;max-width:520px;margin:0 auto 2rem;line-height:1.7;}
+.hero-btns{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;}
+.stats-bar{display:flex;justify-content:center;gap:2.5rem;margin-top:2.5rem;flex-wrap:wrap;}
+.stat{text-align:center;}.stat .val{font-size:1.5rem;font-weight:900;}.stat .lbl{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:.15rem;}
+.section{padding:2.5rem 0;}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:.75rem;}
+.section-title{font-size:1.15rem;font-weight:800;display:flex;align-items:center;gap:.5rem;}
+.section-title .badge{background:var(--accent);color:#fff;font-size:.65rem;font-weight:700;padding:.1rem .5rem;border-radius:999px;}
+.tabs{display:flex;gap:.35rem;flex-wrap:wrap;}
+.tab{padding:.3rem .8rem;border-radius:999px;font-size:.75rem;font-weight:600;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--muted);transition:all .2s;}
+.tab:hover,.tab.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+.lb-table{display:flex;flex-direction:column;gap:.6rem;}
+.lb-row{display:flex;align-items:center;gap:1rem;background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:.85rem 1.2rem;transition:all .2s;position:relative;overflow:hidden;}
+.lb-row:hover{border-color:var(--accent);transform:translateX(3px);box-shadow:var(--shadow);}
+.lb-row.top1{border-color:var(--accent-border);background:linear-gradient(90deg,rgba(225,48,108,.08) 0%,var(--s1) 100%);}
+.lb-row.top2{border-color:rgba(0,214,143,.25);}.lb-row.top3{border-color:rgba(255,193,7,.25);}
+.lb-row.flash{animation:flash .7s ease;}
+@keyframes flash{0%{background:rgba(225,48,108,.2)}100%{}}
+.rank-num{font-size:1.1rem;font-weight:900;width:28px;text-align:center;flex-shrink:0;}
+.r1{color:var(--accent);}.r2{color:var(--green);}.r3{color:var(--yellow);}.rn{color:var(--muted);}
+.rank-arrow{font-size:.65rem;font-weight:700;width:16px;text-align:center;flex-shrink:0;}
+.ra-up{color:var(--green);}.ra-dn{color:var(--hot);}.ra-same{color:var(--muted);}
+.user-avatar{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0;background:var(--s2);border:2px solid var(--border);}
+.user-avatar.verified{border-color:var(--accent);}
 .user-info{flex:1;min-width:0;}
-.user-name{font-weight:600;font-size:.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.user-handle{color:var(--muted);font-size:.72rem;}
-.user-desc{color:var(--muted);font-size:.68rem;margin-top:.1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.verify{color:var(--accent2);font-size:.68rem;}
-.bid-col{text-align:right;min-width:70px;}
-.bid-amount{font-weight:700;font-size:.9rem;color:var(--green);}
-.bid-label{font-size:.6rem;color:var(--muted);}
-.outbid-btn{margin-left:.4rem;}
-.empty-state{text-align:center;padding:3rem 1.5rem;display:none;}
-.empty-state .emoji{font-size:2.5rem;margin-bottom:.6rem;}
-.empty-state h3{font-size:1.1rem;margin-bottom:.3rem;}
-.empty-state p{color:var(--muted);font-size:.85rem;margin-bottom:1rem;}
-.sidebar{display:flex;flex-direction:column;gap:.75rem;}
-.side-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:.9rem;}
-.side-card h3{font-size:.8rem;font-weight:700;margin-bottom:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
-.feed-item{padding:.4rem 0;border-bottom:1px solid var(--border);font-size:.75rem;line-height:1.3;}
-.feed-item:last-child{border:none;}
-.feed-item .amt{color:var(--green);font-weight:600;margin-left:.2rem;}
-.feed-item .time{color:var(--muted);float:right;font-size:.65rem;}
-.how-section{max-width:900px;margin:0 auto;padding:3rem 1.5rem;}
-.how-section h2{text-align:center;font-size:1.6rem;font-weight:800;margin-bottom:.4rem;}
-.how-sub{text-align:center;color:var(--muted);margin-bottom:1.5rem;font-size:.9rem;}
-.how-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.75rem;margin-bottom:1.5rem;}
-.how-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.1rem;text-align:center;}
-.how-card .hicon{font-size:1.8rem;margin-bottom:.4rem;}
-.how-card h4{font-size:.88rem;margin-bottom:.2rem;}
-.how-card p{font-size:.75rem;color:var(--muted);line-height:1.4;}
-.how-steps{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem;}
-.how-steps h3{font-size:.95rem;margin-bottom:.75rem;}
-.step{display:flex;gap:.65rem;margin-bottom:.75rem;align-items:flex-start;}
-.step:last-child{margin-bottom:0;}
-.step-num{width:1.8rem;height:1.8rem;border-radius:50%;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.78rem;flex-shrink:0;}
-.step-text h5{font-size:.8rem;font-weight:600;margin-bottom:.1rem;}
-.step-text p{font-size:.72rem;color:var(--muted);line-height:1.4;}
-.footer{text-align:center;padding:1.5rem;border-top:1px solid var(--border);color:var(--muted);font-size:.75rem;}
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;z-index:200;opacity:0;pointer-events:none;transition:opacity .2s;}
-.overlay.open{opacity:1;pointer-events:all;}
-.modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.5rem;width:92%;max-width:400px;position:relative;max-height:90vh;overflow-y:auto;}
-.modal-close{position:absolute;top:.6rem;right:.6rem;background:none;border:none;color:var(--muted);font-size:1.1rem;cursor:pointer;}
-.modal h2{font-size:1.1rem;font-weight:800;margin-bottom:.2rem;}
-.msub{color:var(--muted);font-size:.8rem;margin-bottom:.75rem;}
-.form-group{margin-bottom:.6rem;}
-.form-group label{display:block;font-size:.72rem;font-weight:600;color:var(--muted);margin-bottom:.2rem;}
-.form-group input,.form-group select,.form-group textarea{width:100%;padding:.5rem .65rem;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:.85rem;outline:none;transition:border-color .2s;}
-.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--accent);}
-.form-group textarea{resize:vertical;min-height:50px;}
-.bid-target{display:flex;align-items:center;gap:.5rem;padding:.5rem;background:var(--surface2);border-radius:8px;margin-bottom:.6rem;}
-.bid-target .bta{font-size:1.4rem;}
-.bid-target .bti{font-size:.75rem;color:var(--muted);}
-#bidNote{font-size:.7rem;color:var(--muted);margin-bottom:.4rem;}
-.qr-step{display:none;text-align:center;}
-.qr-step.active{display:block;}
-.details-step.hidden{display:none;}
-.qr-img-wrap{margin:1rem auto;width:200px;height:200px;border-radius:12px;overflow:hidden;border:2px solid var(--border);background:#fff;}
-.qr-img-wrap img{width:100%;height:100%;object-fit:cover;}
-.qr-amount{font-size:1.5rem;font-weight:800;color:var(--accent2);margin:.5rem 0;}
-.qr-instructions{font-size:.78rem;color:var(--muted);line-height:1.5;margin-bottom:.75rem;}
-.qr-instructions ol{text-align:left;padding-left:1.2rem;}
-.qr-instructions li{margin-bottom:.3rem;}
-#tw{position:fixed;top:4.5rem;right:1rem;z-index:999;display:flex;flex-direction:column;gap:.4rem;}
-.toast{padding:.5rem .9rem;border-radius:8px;font-size:.8rem;font-weight:500;animation:slidein .3s;color:#fff;}
-.toast.ok{background:var(--green);}
-.toast.warn{background:var(--hot);}
-@keyframes slidein{from{transform:translateX(100%);opacity:0;}to{transform:translateX(0);opacity:1;}}
-@media(max-width:768px){.hero-title{font-size:1.8rem;}.stepper-val{font-size:1.8rem;min-width:4rem;}.stats-bar{gap:1rem;}.stat .sn{font-size:1.1rem;}.top-card{flex-direction:column;text-align:center;gap:.6rem;}.top-bid-side{text-align:center;}.lb-row{flex-wrap:wrap;}.outbid-btn{width:100%;margin-left:0;margin-top:.4rem;}.outbid-btn .btn{width:100%;justify-content:center;}}
-@media(max-width:480px){.nav{padding:.4rem .75rem;}.hero{padding:2.5rem 1rem 1.5rem;}.hero-title{font-size:1.5rem;}.stepper-val{font-size:1.5rem;min-width:3.5rem;}.main-grid{padding:0 .75rem 2rem;}.how-section{padding:2rem .75rem;}}
-</style>
-</head>
-<body>
-<nav class="nav">
-  <div class="nav-left"><div class="logo">Hype<span>Outbid</span></div></div>
-  <div class="nav-right">
-    <span class="made-india">Made in India with <span class="heart">&#10084;</span></span>
-    <div class="currency-wrap">
-      <div class="currency-btn" onclick="toggleCurrMenu()">
-        <span id="currFlag">IN</span>
-        <span id="currLabel">INR</span>
-        <span>&#9662;</span>
-      </div>
-      <div class="currency-menu" id="currMenu"></div>
-    </div>
-  </div>
-</nav>
-<section class="hero">
-  <h1 class="hero-title">
-    <span>Claim #1 for</span>
-    <span class="bid-stepper">
-      <button class="stepper-btn" onclick="stepBid(-10)" aria-label="Decrease">&#8722;</button>
-      <span class="stepper-val" id="heroAmount">&#8377;50</span>
-      <button class="stepper-btn" onclick="stepBid(10)" aria-label="Increase">&#43;</button>
-    </span>
-  </h1>
-  <p class="hero-sub">Bid real money. Highest bidder gets #1. Everyone sees your profile. No algorithms, no tricks.</p>
-  <div class="hero-cta">
-    <button class="btn btn-hot btn-lg" onclick="openBidModal(0)">&#9876;&#65039; Place Your Bid</button>
-    <a href="#how" class="btn btn-ghost btn-lg">How it works</a>
-  </div>
-</section>
-<div class="stats-bar">
-  <div class="stat"><div class="sn" id="statProfiles">0</div><div class="sl">Profiles</div></div>
-  <div class="stat"><div class="sn" id="statBids">&#8377;0</div><div class="sl">Total Bids</div></div>
-  <div class="stat"><div class="sn" id="statClicks">0</div><div class="sl">Clicks</div></div>
-  <div class="stat"><div class="sn" id="onlineCount">0</div><div class="sl">Online</div></div>
-</div>
-<div class="tabs-wrap" id="tabsWrap"></div>
-<div class="main-grid">
-  <div class="left-col">
-    <div id="topCardWrap"></div>
-    <div class="empty-state" id="emptyState">
-      <div class="emoji">&#127942;</div>
-      <h3>Leaderboard is empty!</h3>
-      <p>Be the first to bid and claim #1. Your profile gets maximum visibility.</p>
-      <button class="btn btn-hot btn-lg" onclick="openBidModal(0)">&#9876;&#65039; Be the First</button>
-    </div>
-    <div id="lbTable"></div>
-  </div>
-  <aside class="sidebar">
-    <div class="side-card">
-      <h3>&#9889; Live Activity</h3>
-      <div id="feedList">
-        <div class="feed-item" style="text-align:center;padding:1.5rem;color:var(--muted);">Waiting for the first bid...</div>
-      </div>
-    </div>
-    <div class="side-card">
-      <h3>&#128161; Quick Tips</h3>
-      <div class="feed-item">Higher bid = higher rank. Simple.</div>
-      <div class="feed-item">Add website + Instagram for max clicks.</div>
-      <div class="feed-item">Outbid anyone to take their spot.</div>
-      <div class="feed-item">Payments via UPI QR. Instant.</div>
-    </div>
-  </aside>
-</div>
-<section class="how-section" id="how">
-  <h2>How It Works</h2>
-  <p class="how-sub">A transparent, pay-to-rank leaderboard. Real money. Real visibility.</p>
-  <div class="how-cards">
-    <div class="how-card"><div class="hicon">&#128176;</div><h4>Choose Amount</h4><p>Pick your bid (min &#8377;10). Higher bid = higher rank on the public leaderboard.</p></div>
-    <div class="how-card"><div class="hicon">&#128242;</div><h4>Scan QR &amp; Pay</h4><p>Scan the UPI QR code with any app (GPay, PhonePe, Paytm). Enter exact amount.</p></div>
-    <div class="how-card"><div class="hicon">&#9989;</div><h4>Enter UTR</h4><p>After payment, paste your UTR/transaction reference as proof of payment.</p></div>
-    <div class="how-card"><div class="hicon">&#128640;</div><h4>Go Live</h4><p>Your profile instantly appears on the leaderboard ranked by bid amount.</p></div>
-  </div>
-  <div class="how-steps">
-    <h3>Step-by-Step</h3>
-    <div class="step"><div class="step-num">1</div><div class="step-text"><h5>Click "Place Your Bid"</h5><p>Open the bid form from hero or by clicking Outbid on any profile.</p></div></div>
-    <div class="step"><div class="step-num">2</div><div class="step-text"><h5>Fill Your Details</h5><p>Instagram handle, email, optional website, short bio, and category.</p></div></div>
-    <div class="step"><div class="step-num">3</div><div class="step-text"><h5>Set Amount &amp; Continue</h5><p>Enter bid amount in INR. Must exceed current bid if outbidding someone.</p></div></div>
-    <div class="step"><div class="step-num">4</div><div class="step-text"><h5>Scan QR &amp; Pay</h5><p>A QR code appears. Open any UPI app, scan, and pay the exact amount.</p></div></div>
-    <div class="step"><div class="step-num">5</div><div class="step-text"><h5>Paste UTR &amp; Submit</h5><p>Copy 12-digit UTR from UPI app, paste it, and hit confirm. You are live!</p></div></div>
-  </div>
-</section>
-<footer class="footer">
-  <p>&copy; 2025 HypeOutbid. Made with &#10084;&#65039; in India. Payments via UPI.</p>
-  <p style="margin-top:.3rem;">Display currency is for reference only. All payments in INR.</p>
-</footer>
-<div class="overlay" id="bidOverlay" onclick="if(event.target===this)closeBid()">
-  <div class="modal">
-    <button class="modal-close" onclick="closeBid()">&#10005;</button>
-    <div class="details-step" id="bidStep1">
-      <h2>&#9876;&#65039; Place Your Bid</h2>
-      <p class="msub">Fill details, then pay via UPI QR</p>
-      <div class="bid-target" id="bidTarget" style="display:none;">
-        <span class="bta" id="bidTAv"></span>
-        <div><div id="bidTName" style="font-weight:600;font-size:.85rem;"></div><div id="bidTCur" class="bti"></div></div>
-      </div>
-      <div class="form-group"><label>Instagram Handle *</label><input id="bidHandle" placeholder="@yourhandle" required></div>
-      <div class="form-group"><label>Email *</label><input id="bidEmail" type="email" placeholder="you@email.com" required></div>
-      <div class="form-group"><label>Website (optional)</label><input id="bidWebsite" placeholder="https://yoursite.com"></div>
-      <div class="form-group"><label>Short Bio (optional)</label><textarea id="bidDesc" placeholder="What you do in one line..."></textarea></div>
-      <div class="form-group"><label>Category</label><select id="bidCategory"><option value="creator">Creator</option><option value="business">Business</option><option value="tech">Tech</option><option value="music">Music</option><option value="fashion">Fashion</option><option value="fitness">Fitness</option><option value="education">Education</option><option value="finance">Finance</option><option value="food">Food</option><option value="travel">Travel</option><option value="other">Other</option></select></div>
-      <div class="form-group"><label>Bid Amount (&#8377;) *</label><input id="bidAmt" type="number" min="10" step="1" placeholder="50" required></div>
-      <p id="bidNote">Minimum &#8377;10. Higher bid = higher rank.</p>
-      <button type="button" class="btn btn-hot btn-lg" id="bidNextBtn" style="width:100%;justify-content:center;margin-top:.4rem;" onclick="goToQRStep()">Continue to Payment &#8594;</button>
-    </div>
-    <div class="qr-step" id="bidStep2">
-      <h2>&#128242; Scan &amp; Pay</h2>
-      <p class="msub">Pay via any UPI app</p>
-      <div class="qr-amount" id="qrAmountDisplay">&#8377;50</div>
-      <div class="qr-img-wrap"><img src="/qr-pay.jpg" alt="UPI QR Code"></div>
-      <div class="qr-instructions">
-        <ol>
-          <li>Open GPay / PhonePe / Paytm</li>
-          <li>Scan this QR code</li>
-          <li>Enter <b>exact amount</b> shown above</li>
-          <li>Complete payment &amp; copy <b>UTR</b> (12 digits)</li>
-        </ol>
-      </div>
-      <div class="form-group">
-        <label>UTR / Transaction Reference *</label>
-        <input id="bidUTR" placeholder="e.g. 412345678901" required>
-      </div>
-      <button type="button" class="btn btn-hot btn-lg" id="bidSubmitBtn" style="width:100%;justify-content:center;" onclick="submitBid()">&#9989; Confirm Payment</button>
-      <button type="button" class="btn btn-ghost btn-sm" style="width:100%;justify-content:center;margin-top:.4rem;" onclick="backToDetails()">&#8592; Back</button>
-    </div>
-  </div>
-</div>
-<div id="tw"></div>
-<script>
-var CURRENCIES=[{code:"INR",symbol:"\u20b9",flag:"\ud83c\uddee\ud83c\uddf3",rate:1},{code:"USD",symbol:"$",flag:"\ud83c\uddfa\ud83c\uddf8",rate:0.012},{code:"EUR",symbol:"\u20ac",flag:"\ud83c\uddea\ud83c\uddfa",rate:0.011},{code:"GBP",symbol:"\u00a3",flag:"\ud83c\uddec\ud83c\udde7",rate:0.0095},{code:"AED",symbol:"AED",flag:"\ud83c\udde6\ud83c\uddea",rate:0.044},{code:"SAR",symbol:"SAR",flag:"\ud83c\uddf8\ud83c\udde6",rate:0.045},{code:"CAD",symbol:"C$",flag:"\ud83c\udde8\ud83c\udde6",rate:0.016},{code:"AUD",symbol:"A$",flag:"\ud83c\udde6\ud83c\uddfa",rate:0.018},{code:"JPY",symbol:"\u00a5",flag:"\ud83c\uddef\ud83c\uddf5",rate:1.78},{code:"CNY",symbol:"\u00a5",flag:"\ud83c\udde8\ud83c\uddf3",rate:0.087},{code:"SGD",symbol:"S$",flag:"\ud83c\uddf8\ud83c\uddec",rate:0.016},{code:"MYR",symbol:"RM",flag:"\ud83c\uddf2\ud83c\uddfe",rate:0.053},{code:"THB",symbol:"\u0e3f",flag:"\ud83c\uddf9\ud83c\udded",rate:0.41},{code:"IDR",symbol:"Rp",flag:"\ud83c\uddee\ud83c\udde9",rate:189},{code:"PHP",symbol:"\u20b1",flag:"\ud83c\uddf5\ud83c\udded",rate:0.67},{code:"BDT",symbol:"BDT",flag:"\ud83c\udde7\ud83c\udde9",rate:1.43},{code:"PKR",symbol:"Rs",flag:"\ud83c\uddf5\ud83c\uddf0",rate:3.34},{code:"LKR",symbol:"Rs",flag:"\ud83c\uddf1\ud83c\uddf0",rate:3.6},{code:"NPR",symbol:"Rs",flag:"\ud83c\uddf3\ud83c\uddf5",rate:1.6},{code:"KRW",symbol:"\u20a9",flag:"\ud83c\uddf0\ud83c\uddf7",rate:16.2},{code:"BRL",symbol:"R$",flag:"\ud83c\udde7\ud83c\uddf7",rate:0.069},{code:"MXN",symbol:"MX$",flag:"\ud83c\uddf2\ud83c\uddfd",rate:0.21},{code:"ZAR",symbol:"R",flag:"\ud83c\uddff\ud83c\udde6",rate:0.22},{code:"NGN",symbol:"\u20a6",flag:"\ud83c\uddf3\ud83c\uddec",rate:18.5},{code:"KES",symbol:"KSh",flag:"\ud83c\uddf0\ud83c\uddea",rate:1.55},{code:"EGP",symbol:"EGP",flag:"\ud83c\uddea\ud83c\uddec",rate:0.59},{code:"TRY",symbol:"\u20ba",flag:"\ud83c\uddf9\ud83c\uddf7",rate:0.41},{code:"RUB",symbol:"\u20bd",flag:"\ud83c\uddf7\ud83c\uddfa",rate:1.07},{code:"CHF",symbol:"Fr",flag:"\ud83c\udde8\ud83c\udded",rate:0.0106},{code:"SEK",symbol:"kr",flag:"\ud83c\uddf8\ud83c\uddea",rate:0.124},{code:"NZD",symbol:"NZ$",flag:"\ud83c\uddf3\ud83c\uddff",rate:0.02}];
-var P=[],curFilter="all",bidTargetId=null,CONFIG=null,sbClient=null,curCurrency=CURRENCIES[0],heroAmt=50;
-function fmtMoney(paise){var a=(paise/100)*curCurrency.rate;if(curCurrency.code==="INR")return curCurrency.symbol+Math.round(a).toLocaleString("en-IN");if(curCurrency.rate>10)return curCurrency.symbol+Math.round(a).toLocaleString();return curCurrency.symbol+a.toFixed(a<10?2:0);}
-function toast(m,t){var e=document.createElement("div");e.className="toast "+(t||"ok");e.textContent=m;document.getElementById("tw").appendChild(e);setTimeout(function(){e.remove();},4000);}
-function stepBid(d){heroAmt=Math.max(10,heroAmt+d);document.getElementById("heroAmount").textContent="\u20b9"+heroAmt;}
-function buildCurrencyMenu(){var menu=document.getElementById("currMenu");menu.innerHTML="";CURRENCIES.forEach(function(c){var el=document.createElement("div");el.className="currency-opt"+(c.code===curCurrency.code?" active":"");el.textContent=c.flag+" "+c.code;el.onclick=function(){setCurrency(c.code);};menu.appendChild(el);});}
-function toggleCurrMenu(){document.getElementById("currMenu").classList.toggle("open");}
-function setCurrency(code){curCurrency=CURRENCIES.find(function(c){return c.code===code;})||CURRENCIES[0];document.getElementById("currFlag").textContent=curCurrency.flag;document.getElementById("currLabel").textContent=curCurrency.code;document.getElementById("currMenu").classList.remove("open");buildCurrencyMenu();render();updateStats();localStorage.setItem("currency",code);}
-document.addEventListener("click",function(e){if(!e.target.closest(".currency-wrap"))document.getElementById("currMenu").classList.remove("open");});
-function sorted(){return[...P].sort(function(a,b){return b.bid_paise-a.bid_paise;});}
-function filtered(){var s=sorted();return curFilter==="all"?s:s.filter(function(p){return p.cat===curFilter;});}
-async function init(){var saved=localStorage.getItem('currency');if(saved)setCurrency(saved);buildCurrencyMenu();try{var r=await fetch('/api/config');CONFIG=await r.json();}catch(e){CONFIG=null;}if(CONFIG&&CONFIG.supabaseUrl){sbClient=window.supabase.createClient(CONFIG.supabaseUrl,CONFIG.supabaseAnonKey);await loadLeaderboard();await loadActivity();subscribeRealtime();}render();updateStats();buildCategoryTabs();}
-async function loadLeaderboard(){try{var res=await fetch('/api/leaderboard');if(!res.ok)return;var rows=await res.json();P=rows.map(function(row){return{id:row.id,name:row.name||row.handle.replace('@',''),handle:row.handle,av:row.avatar||'\ud83d\udc64',cat:row.category||'other',url:row.instagram_url||'',website:row.website_url||'',desc:row.description||'',bid_paise:parseInt(row.current_bid_paise)||0,verified:row.verified||false,topBidder:row.top_bidder_handle||'',_clicks:row.click_count||0};});}catch(e){}}
-async function loadActivity(){try{var res=await fetch('/api/activity');if(!res.ok)return;var rows=await res.json();var l=document.getElementById('feedList');l.innerHTML='';if(!rows.length){l.innerHTML='<div class="feed-item" style="text-align:center;padding:1.5rem;color:var(--muted);">Waiting for the first bid...</div>';return;}rows.forEach(function(row){l.innerHTML+='<div class="feed-item">\u2694\uFE0F <b>'+(row.bidder_handle||'someone')+'</b> bid <span class="amt">'+fmtMoney(row.amount_paise)+'</span><span class="time">'+new Date(row.created_at).toLocaleTimeString()+'</span></div>';});}catch(e){}}
-function subscribeRealtime(){if(!sbClient)return;sbClient.channel('bids-live').on('postgres_changes',{event:'INSERT',schema:'public',table:'bids'},function(){loadLeaderboard().then(function(){render();updateStats();buildCategoryTabs();loadActivity();});}).subscribe();}
-function render(){var s=sorted();var tw=document.getElementById('topCardWrap');var em=document.getElementById('emptyState');var tb=document.getElementById('lbTable');if(s.length===0){tw.innerHTML='';tb.innerHTML='';em.style.display='block';return;}em.style.display='none';var top=s[0];tw.innerHTML='<div class="top-card" onclick="visitProfile('+top.id+')"><div class="top-avatar-lg">'+top.av+'</div><div class="top-info"><div class="top-badge">\ud83d\udc51 #1 Current Leader</div><div class="top-name">'+top.name+(top.verified?' <span class="verify">\u2713</span>':'')+'</div><div class="top-handle">'+top.handle+'</div><div class="top-metrics"><span>'+top.cat+'</span>'+(top._clicks?'<span>\u2022 '+top._clicks+' clicks</span>':'')+'</div></div><div class="top-bid-side"><div class="top-bid-lbl">Current Bid</div><div class="top-bid-val">'+fmtMoney(top.bid_paise)+'</div><button class="btn btn-hot btn-sm" style="margin-top:.3rem;" onclick="event.stopPropagation();openBidModal('+top.id+')">\u2694\uFE0F Outbid</button></div></div>';var list=filtered();tb.innerHTML='';list.forEach(function(p){var gr=s.findIndex(function(x){return x.id===p.id;})+1;var rc=gr===1?'r1':gr===2?'r2':gr===3?'r3':'rn';var cls='lb-row'+(gr===1?' top1':gr===2?' top2':gr===3?' top3':'');tb.innerHTML+='<div class="'+cls+'" onclick="visitProfile('+p.id+')"><div class="rank-num '+rc+'">'+(gr===1?'\ud83d\udc51':gr)+'</div><div class="rank-arrow">\u2014</div><div class="user-avatar">'+p.av+'</div><div class="user-info"><div class="user-name">'+p.name+(p.verified?' <span class="verify">\u2713</span>':'')+'</div><div class="user-handle">'+p.handle+'</div>'+(p.desc?'<div class="user-desc">'+p.desc+'</div>':'')+'</div><div class="bid-col"><div class="bid-amount">'+fmtMoney(p.bid_paise)+'</div><div class="bid-label">current bid</div></div><div class="outbid-btn"><button class="btn btn-hot btn-sm" onclick="event.stopPropagation();openBidModal('+p.id+')">Outbid</button></div></div>';});}
-function updateStats(){var s=sorted();document.getElementById('statProfiles').textContent=s.length;document.getElementById('onlineCount').textContent=s.length;document.getElementById('statBids').textContent=fmtMoney(s.reduce(function(sum,x){return sum+x.bid_paise;},0));document.getElementById('statClicks').textContent=s.reduce(function(sum,x){return sum+(x._clicks||0);},0);}
-function buildCategoryTabs(){if(P.length===0)return;var cats={};P.forEach(function(p){if(p.cat)cats[p.cat]=true;});var wrap=document.getElementById('tabsWrap');var labels={creator:'Creators',business:'Business',tech:'Tech',music:'Music',fashion:'Fashion',fitness:'Fitness',education:'Education',finance:'Finance',food:'Food',travel:'Travel',other:'Other'};wrap.innerHTML='<button class="tab'+(curFilter==='all'?' active':'')+'" onclick="filterCat(\'all\',this)">All</button>';Object.keys(cats).forEach(function(c){wrap.innerHTML+='<button class="tab'+(curFilter===c?' active':'')+'" onclick="filterCat(\''+c+'\',this)">'+(labels[c]||c)+'</button>';});}
-function filterCat(c,btn){curFilter=c;document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});if(btn)btn.classList.add('active');render();}
-function visitProfile(id){var p=P.find(function(x){return x.id===id;});if(!p)return;fetch('/api/track-click',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({profile_id:id})}).catch(function(){});if(p.website&&p.website.trim()&&p.url&&p.url.trim()){showLinkChoice(p);}else if(p.website&&p.website.trim()){window.open(p.website,'_blank');}else if(p.url&&p.url.trim()){window.open(p.url,'_blank');}}
-function showLinkChoice(p){var ex=document.getElementById('lcOv');if(ex)ex.remove();var ov=document.createElement('div');ov.id='lcOv';ov.className='overlay open';ov.style.zIndex='300';ov.onclick=function(e){if(e.target===ov)ov.remove();};var b=document.createElement('div');b.className='modal';b.style.maxWidth='300px';b.style.textAlign='center';b.innerHTML='<button class="modal-close" onclick="document.getElementById(\\'lcOv\\').remove()">\u2715</button><h2 style="margin-bottom:.4rem;">Where to?</h2><p class="msub">'+p.name+'</p><div style="display:flex;flex-direction:column;gap:.4rem;"><a href="'+p.website+'" target="_blank" class="btn btn-accent btn-lg" style="width:100%;" onclick="document.getElementById(\\'lcOv\\').remove()">\ud83c\udf10 Website</a><a href="'+p.url+'" target="_blank" class="btn btn-ghost btn-lg" style="width:100%;" onclick="document.getElementById(\\'lcOv\\').remove()">\ud83d\udcf8 Instagram</a></div>';ov.appendChild(b);document.body.appendChild(ov);}
-function openBidModal(id){bidTargetId=id;document.getElementById('bidStep1').className='details-step';document.getElementById('bidStep2').className='qr-step';var tr=document.getElementById('bidTarget');if(id&&id!==0){var p=P.find(function(x){return x.id===id;});if(p){tr.style.display='flex';document.getElementById('bidTAv').textContent=p.av;document.getElementById('bidTName').textContent=p.name+' '+p.handle;document.getElementById('bidTCur').textContent='Current: '+fmtMoney(p.bid_paise);document.getElementById('bidNote').textContent='Must exceed '+fmtMoney(p.bid_paise);document.getElementById('bidAmt').value=Math.ceil(p.bid_paise/100)+10;}}else{tr.style.display='none';document.getElementById('bidNote').textContent='Minimum \u20b910. Higher bid = higher rank.';document.getElementById('bidAmt').value=heroAmt;}document.getElementById('bidOverlay').classList.add('open');}
-function closeBid(){document.getElementById('bidOverlay').classList.remove('open');}
-function goToQRStep(){var amount=parseFloat(document.getElementById('bidAmt').value);var handle=document.getElementById('bidHandle').value.trim();var email=document.getElementById('bidEmail').value.trim();if(!amount||!handle||!email){toast('Fill all required fields','warn');return;}if(!handle.startsWith('@'))handle='@'+handle;if(amount<10){toast('Minimum bid is \u20b910','warn');return;}if(bidTargetId&&bidTargetId!==0){var p=P.find(function(x){return x.id===bidTargetId;});if(p&&Math.round(amount*100)<=p.bid_paise){toast('Must exceed current bid','warn');return;}}document.getElementById('qrAmountDisplay').textContent='\u20b9'+amount;document.getElementById('bidStep1').className='details-step hidden';document.getElementById('bidStep2').className='qr-step active';}
-function backToDetails(){document.getElementById('bidStep1').className='details-step';document.getElementById('bidStep2').className='qr-step';}
-async function submitBid(){var utr=document.getElementById('bidUTR').value.trim();if(!utr){toast('Enter your UTR / Transaction ID','warn');return;}if(utr.length<8){toast('UTR seems too short','warn');return;}var btn=document.getElementById('bidSubmitBtn');btn.textContent='Submitting...';btn.disabled=true;var amount=parseFloat(document.getElementById('bidAmt').value);var handle=document.getElementById('bidHandle').value.trim();if(!handle.startsWith('@'))handle='@'+handle;var email=document.getElementById('bidEmail').value.trim();var website=document.getElementById('bidWebsite').value.trim();var desc=document.getElementById('bidDesc').value.trim();var category=document.getElementById('bidCategory').value;try{var res=await fetch('/api/submit-bid',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({amount_paise:Math.round(amount*100),handle:handle,email:email,website:website,description:desc,category:category,utr:utr,profile_id:bidTargetId||0})});var data=await res.json();if(res.ok&&data.success){toast('Bid submitted! You are on the leaderboard.','ok');closeBid();document.getElementById('bidUTR').value='';setTimeout(function(){loadLeaderboard().then(function(){render();updateStats();buildCategoryTabs();loadActivity();});},1000);}else{toast(data.error||'Something went wrong','warn');}}catch(e){toast('Network error. Try again.','warn');}btn.textContent='\u2705 Confirm Payment';btn.disabled=false;}
-init();
+.user-name{font-size:.92rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:.35rem;}
+.user-name .verify{color:var(--accent);font-size:.75rem;}
+.user-handle{font-size:.75rem;color:var(--muted);}
+.user-stats{display:flex;gap:.75rem;margin-top:.2rem;}
+.us{font-size:.68rem;color:var(--muted);}.us b{color:var(--text2);}
+.bid-col{text-align:right;flex-shrink:0;}
+.bid-amount{font-size:1.1rem;font-weight:900;color:var(--green);}
+.bid-label{font-size:.65rem;color:var(--muted);}
+.outbid-btn{flex-shrink:0;}
+.top-card{background:linear-gradient(135deg,rgba(225,48,108,.12) 0%,rgba(131,58,180,.08) 100%);border:1px solid var(--accent-border);border-radius:var(--r);padding:1.5rem 2rem;display:flex;align-items:center;gap:1.5rem;margin-bottom:2rem;position:relative;overflow:hidden;}
+.top-card::before{content:"#1";position:absolute;right:1.5rem;top:50%;transform:translateY(-50%);font-size:5rem;font-weight:900;color:rgba(225,48,108,.08);pointer-events:none;}
+.top-avatar{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2.5rem;background:var(--s2);border:3px solid var(--accent);flex-shrink:0;}
+.top-info{flex:1;}.top-badge{display:inline-flex;align-items:center;gap:.3rem;background:var(--gradient);color:#fff;border-radius:999px;padding:.15rem .65rem;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.3rem;}
+.top-name{font-size:1.4rem;font-weight:900;margin-bottom:.1rem;display:flex;align-items:center;gap:.4rem;}.top-name .verify{color:var(--accent);}
+.top-handle{color:var(--muted);font-size:.85rem;margin-bottom:.4rem;}
+.top-metrics{display:flex;gap:1.5rem;flex-wrap:wrap;}.tm{font-size:.78rem;color:var(--muted);}.tm b{color:var(--text);font-weight:700;}
+.top-bid-side{text-align:right;flex-shrink:0;}
+.top-bid-val{font-size:2rem;font-weight:900;color:var(--green);}
+.top-bid-lbl{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;}
+.two-col{display:grid;grid-template-columns:1fr 280px;gap:1.5rem;margin-top:1.5rem;}
+@media(max-width:900px){.two-col{grid-template-columns:1fr;}}
+.feed{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
+.feed-header{padding:.85rem 1.1rem;border-bottom:1px solid var(--border);font-size:.82rem;font-weight:700;display:flex;align-items:center;gap:.5rem;}
+.feed-list{max-height:420px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
+.feed-item{padding:.55rem 1.1rem;border-bottom:1px solid rgba(30,34,53,.7);font-size:.76rem;line-height:1.4;animation:fadeIn .3s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.feed-item b{color:var(--accent);}.feed-item .amt{color:var(--green);font-weight:700;}.feed-item .time{color:var(--muted);font-size:.65rem;float:right;}
+.how-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-top:1.5rem;}
+.how-card{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:1.3rem 1rem;text-align:center;}
+.how-icon{font-size:1.8rem;margin-bottom:.6rem;}.how-card h3{font-size:.88rem;font-weight:700;margin-bottom:.3rem;}.how-card p{font-size:.75rem;color:var(--muted);line-height:1.5;}
+.cta-section{margin-top:3rem;background:linear-gradient(135deg,rgba(225,48,108,.12) 0%,rgba(131,58,180,.08) 100%);border:1px solid var(--accent-border);border-radius:var(--r);padding:2.5rem 2rem;text-align:center;}
+.cta-section h2{font-size:1.5rem;font-weight:900;margin-bottom:.5rem;}.cta-section p{color:var(--muted);margin-bottom:1.5rem;}
+.footer{border-top:1px solid var(--border);padding:2rem 0;margin-top:3rem;text-align:center;}
+.footer-links{display:flex;gap:1.5rem;justify-content:center;margin-bottom:.75rem;}.footer-links a{color:var(--muted);font-size:.8rem;text-decoration:none;}
+.footer-copy{font-size:.72rem;color:var(--muted);}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);z-index:200;display:none;align-items:center;justify-content:center;padding:1rem;}.overlay.open{display:flex;}
+.modal{background:var(--s1);border:1px solid var(--border);border-radius:var(--r);padding:2rem;max-width:440px;width:100%;position:relative;}
+.modal-close{position:absolute;top:1rem;right:1rem;background:none;border:none;color:var(--muted);font-size:1.2rem;cursor:pointer;}
+.modal h2{font-size:1.2rem;font-weight:800;margin-bottom:.3rem;}.modal .msub{color:var(--muted);font-size:.82rem;margin-bottom:1.25rem;}
+.form-group{margin-bottom:1rem;}.form-group label{display:block;font-size:.75rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.35rem;}
+.form-input{width:100%;padding:.65rem .9rem;background:var(--s2);border:1px solid var(--border);border-radius:var(--r-xs);color:var(--text);font-size:.9rem;font-weight:500;font-family:inherit;}.form-input:focus{outline:none;border-color:var(--accent);}
+.form-note{font-size:.7rem;color:var(--muted);margin-top:.3rem;}
+.target-row{display:flex;align-items:center;gap:.75rem;background:var(--s2);border-radius:var(--r-sm);padding:.75rem;margin-bottom:1.25rem;}
+.target-av{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.3rem;background:var(--s3);}
+.target-info .tn{font-weight:700;font-size:.9rem;}.target-info .tc{font-size:.75rem;color:var(--muted);}
+.toast-wrap{position:fixed;bottom:1.5rem;right:1.5rem;z-index:300;display:flex;flex-direction:column;gap:.5rem;}
+.toast{background:var(--s1);border:1px solid var(--border);border-radius:var(--r-xs);padding:.7rem 1rem;font-size:.83rem;max-width:300px;box-shadow:var(--shadow);animation:ti .3s ease;border-left:3px solid var(--green);}
+.toast.warn{border-left-color:var(--hot);}
+@keyframes ti{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:translateX(0)}}
+@media(max-width:768px){
+  .nav-links{display:none;}
+  .nav-right .btn-ghost{display:none;}
+  .nav .container{padding:0 .75rem;}
+  .hero{padding:2.5rem 0 2rem;}
+  .hero h1{font-size:1.6rem;letter-spacing:-.8px;}
+  .hero p{font-size:.9rem;}
+  .hero-btns{flex-direction:column;align-items:center;}
+  .stats-bar{gap:1.2rem;}
+  .stat .val{font-size:1.1rem;}
+  .top-card{flex-direction:column;text-align:center;padding:1.2rem 1rem;gap:1rem;}
+  .top-card::before{display:none;}
+  .top-avatar{width:52px;height:52px;font-size:2rem;}
+  .top-bid-side{text-align:center;}
+  .top-metrics{justify-content:center;}
+  .top-name{font-size:1.1rem;justify-content:center;}
+  .top-bid-val{font-size:1.5rem;}
+  .section-header{flex-direction:column;align-items:flex-start;}
+  .tabs{overflow-x:auto;flex-wrap:nowrap;padding-bottom:.5rem;-webkit-overflow-scrolling:touch;}
+  .tab{white-space:nowrap;flex-shrink:0;}
+  .lb-row{flex-wrap:wrap;padding:.75rem .8rem;gap:.5rem .75rem;}
+  .rank-num{font-size:.9rem;width:22px;}
+  .rank-arrow{width:14px;}
+  .user-avatar{width:36px;height:36px;font-size:1.2rem;}
+  .user-info{min-width:0;flex:1;}
+  .user-name{font-size:.82rem;}
+  .user-handle{font-size:.68rem;}
+  .user-desc{font-size:.68rem;-webkit-line-clamp:1;}
+  .user-stats{gap:.5rem;}
+  .us{font-size:.62rem;}
+  .bid-col{position:absolute;top:.75rem;right:.8rem;}
+  .bid-amount{font-size:.9rem;}
+  .bid-label{font-size:.58rem;}
+  .outbid-btn{position:absolute;bottom:.75rem;right:.8rem;}
+  .outbid-btn .btn{padding:.25rem .6rem;font-size:.7rem;}
+  .lb-row{position:relative;padding-right:5.5rem;min-height:4.5rem;}
+  .how-grid{grid-template-columns:1fr 1fr;gap:.75rem;}
+  .how-card{padding:1rem .75rem;}
+  .two-col{grid-template-columns:1fr;}
+  .feed{max-height:300px;}
+  .modal{padding:1.5rem 1.2rem;margin:.5rem;}
+  .cta-section{padding:1.5rem 1rem;}
+  .cta-section h2{font-size:1.2rem;}
+  .container{padding:0 1rem;}
+  .hero-select-wrap{width:100%;}
+  .hero-select-wrap .dropdown-toggle{width:100%;}
+}
+@media(max-width:380px){
+  .lb-row{padding:.6rem .6rem .6rem .5rem;padding-right:5rem;}
+  .rank-num{font-size:.8rem;width:18px;}
+  .user-avatar{width:30px;height:30px;font-size:1rem;}
+  .user-name{font-size:.78rem;}
+  .bid-amount{font-size:.82rem;}
+  .how-grid{grid-template-columns:1fr;}
+  .top-card{padding:1rem .8rem;}
+  .stats-bar{gap:.8rem;}
+  .stat .val{font-size:.95rem;}
+  .hero h1{font-size:1.35rem;}
+}
 
-</script>
-</body>
-</html>
+/* ── INTERACTIVE & POLISH ── */
+.hero-bid-row{display:flex;gap:.75rem;max-width:700px;margin:1.5rem auto 0;align-items:center;}
+.hero-input{flex:1;background:var(--s2);border:1px solid var(--border);border-radius:var(--r-sm);padding:.75rem 1rem;color:var(--text);font-size:.95rem;outline:none;transition:border .2s,box-shadow .2s;}
+.hero-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-bg);}
+.hero-input::placeholder{color:var(--muted);}
+.hero-select{background:var(--s2);border:1px solid var(--border);border-radius:var(--r-sm);padding:.75rem 1rem;color:var(--text);font-size:.85rem;cursor:pointer;min-width:180px;outline:none;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:2.5rem;transition:border .2s,box-shadow .2s;}
+.hero-select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-bg);}
+.hero-select option{background:var(--s1);color:var(--text);padding:.5rem;}
+.hero-sub{color:var(--text2);font-size:.95rem;margin-top:.5rem;}
+.hero-note{color:var(--muted);font-size:.8rem;margin-top:.75rem;}
+.hl-green{color:var(--green);}
+
+#heroPrice{font-size:inherit;color:var(--hot);transition:all .3s ease;}
+#onlineCount{color:var(--green);}
+
+/* Dark form inputs everywhere */
+.form-input{background:var(--s2) !important;border:1px solid var(--border) !important;color:var(--text) !important;border-radius:var(--r-sm);padding:.75rem 1rem;font-size:.95rem;outline:none;width:100%;box-sizing:border-box;transition:border .2s,box-shadow .2s;}
+.form-input:focus{border-color:var(--accent) !important;box-shadow:0 0 0 3px var(--accent-bg) !important;background:var(--s3) !important;}
+.form-input::placeholder{color:var(--muted) !important;}
+
+/* Pointer cursors on interactive elements */
+.lb-row{cursor:pointer;transition:all .2s ease;border:1px solid transparent;}
+.lb-row:hover{background:var(--s2);border-color:var(--border);transform:translateX(4px);box-shadow:0 4px 16px rgba(0,0,0,.3);}
+.lb-row:hover .bid-amount{color:var(--hot);transform:scale(1.05);}
+.lb-row:hover .user-name{color:var(--accent-light);}
+.top-card{cursor:pointer;transition:all .3s ease;}
+.top-card:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(225,48,108,.15);}
+.user-name{transition:color .2s;cursor:pointer;}
+.user-handle{cursor:pointer;transition:color .2s;}
+.user-handle:hover{color:var(--accent);}
+.bid-amount{transition:all .2s ease;}
+
+/* Tab hover effects */
+
+
+/* Button hover enhancements */
+.btn{cursor:pointer;transition:all .2s ease;position:relative;overflow:hidden;}
+.btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.3);}
+.btn:active{transform:translateY(0);box-shadow:none;}
+.btn-hot{position:relative;}
+.btn-hot:hover{box-shadow:0 4px 20px rgba(255,71,87,.3);}
+.btn-accent:hover{box-shadow:0 4px 20px rgba(225,48,108,.3);}
+
+/* Outbid button pulse on hover */
+.outbid-btn .btn:hover{animation:pulse-hot .6s ease-in-out infinite alternate;}
+@keyframes pulse-hot{from{box-shadow:0 0 0 0 rgba(255,71,87,.4)}to{box-shadow:0 0 0 8px rgba(255,71,87,0)}}
+
+/* Modal dark inputs */
+.modal{background:var(--s1);border:1px solid var(--border);}
+.modal input{background:var(--s2) !important;border:1px solid var(--border) !important;color:var(--text) !important;caret-color:var(--accent);}
+.modal input:focus{border-color:var(--accent) !important;box-shadow:0 0 0 3px var(--accent-bg) !important;background:var(--s3) !important;}
+.modal input::placeholder{color:var(--muted) !important;}
+
+/* Nav links interactive */
+.nav-links a{position:relative;transition:color .2s;}
+.nav-links a:hover{color:var(--accent);}
+.nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;right:0;height:2px;background:var(--accent);transform:scaleX(0);transition:transform .2s;border-radius:2px;}
+.nav-links a:hover::after{transform:scaleX(1);}
+
+/* Live dot pulse */
+.live-dot{animation:livePulse 2s ease-in-out infinite;}
+@keyframes livePulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.6;transform:scale(1.3);}}
+
+/* Hero price animation */
+#heroPrice{display:inline-block;transition:all .3s cubic-bezier(.4,0,.2,1);}
+.price-bounce{animation:priceBounce .4s ease;}
+@keyframes priceBounce{0%{transform:scale(1)}50%{transform:scale(1.15)}100%{transform:scale(1)}}
+
+/* Smooth scroll */
+html{scroll-behavior:smooth;}
+
+/* Feed items hover */
+.feed-item{transition:all .2s;cursor:default;border-left:2px solid transparent;padding-left:.5rem;}
+.feed-item:hover{background:var(--s2);border-left-color:var(--accent);border-radius:var(--r-xs);}
+
+/* Badge pulse */
+.badge{animation:badgePulse 2s ease-in-out infinite;}
+@keyframes badgePulse{0%,100%{opacity:1}50%{opacity:.7}}
+
+/* Rank number animations */
+.rank-num{transition:all .3s ease;}
+.r1{animation:goldShine 3s ease-in-out infinite;}
+@keyframes goldShine{0%,100%{text-shadow:0 0 8px rgba(255,193,7,.3)}50%{text-shadow:0 0 16px rgba(255,193,7,.6)}}
+
+/* Tooltip on hover for handles */
+.user-handle{text-decoration:none;border-bottom:1px dashed transparent;transition:all .2s;}
+.user-handle:hover{border-bottom-color:var(--accent);color:var(--accent);}
+
+/* Stats bar number animation */
+.stat .val{transition:all .3s ease;}
+.stat:hover .val{color:var(--accent);transform:scale(1.05);}
+.stat{cursor:default;transition:transform .2s;}
+.stat:hover{transform:translateY(-2px);}
+
+
+
+
+
+
+
+/* Category pills - colorful */
+.tab{background:var(--s2);border:1px solid var(--border);border-radius:20px;padding:.45rem 1rem;font-size:.8rem;color:var(--text2);cursor:pointer;transition:all .2s ease;white-space:nowrap;font-weight:500;}
+.tab:hover{background:var(--s3);color:var(--text);border-color:var(--accent);transform:translateY(-1px);}
+.tab.active{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:600;}
+.tab.active::after{display:none;}
+
+
+
+
+
+
+.hero-tagline{font-size:1.1rem;color:var(--text2);font-weight:500;margin-bottom:.5rem;letter-spacing:-.01em;max-width:600px;margin-left:auto;margin-right:auto;}
+
+/* Made in India badge */
+.made-india{font-size:.75rem;color:var(--muted);font-weight:500;letter-spacing:.02em;margin-right:.75rem;padding:.3rem .6rem;border:1px solid var(--border);border-radius:var(--r-xs);white-space:nowrap;}
+
+/* Improved Light Theme */
+body.light{--bg:#f5f7fa;--s1:#ffffff;--s2:#f0f2f5;--s3:#e8eaef;--border:#d4d8e0;--border2:#bcc2cc;--accent:#E1306C;--accent-light:#F56040;--accent-bg:rgba(225,48,108,.08);--accent-border:rgba(225,48,108,.2);--hot:#e63946;--hot-bg:rgba(230,57,70,.06);--hot-border:rgba(230,57,70,.2);--green:#059669;--green-bg:rgba(5,150,105,.06);--text:#111827;--text2:#374151;--muted:#6b7280;--shadow:0 2px 12px rgba(0,0,0,.06);}
+body.light{background:var(--bg);color:var(--text);}
+body.light .nav{background:rgba(255,255,255,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);}
+body.light .nav-logo .text{color:var(--text);}
+body.light .nav-links a{color:var(--text2);}
+body.light .nav-links a:hover{color:var(--accent);}
+body.light .hero{background:linear-gradient(180deg,#f0f4ff 0%,var(--bg) 100%);}
+body.light .hero-badge{background:rgba(5,150,105,.08);border-color:rgba(5,150,105,.2);color:#059669;}
+body.light .hero h1{color:var(--text);}
+body.light .hero-tagline{color:var(--text2);}
+body.light .hero-sub{color:var(--text2);}
+body.light .hero-input{background:#fff;border-color:var(--border);color:var(--text);}
+body.light .hero-input::placeholder{color:var(--muted);}
+body.light .hero-select{background:#fff;border-color:var(--border);color:var(--text);}
+body.light .hero-select option{background:#fff;color:var(--text);}
+body.light .top-card{background:linear-gradient(135deg,#fff5f7,#fff8f0);border:1px solid #fecdd3;}
+body.light .top-name{color:var(--text);}
+body.light .top-handle{color:var(--text2);}
+body.light .section-title{color:var(--text);}
+body.light .tab{background:#fff;border-color:var(--border);color:var(--text2);}
+body.light .tab:hover{background:var(--s2);border-color:var(--accent);color:var(--text);}
+body.light .tab.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+body.light .lb-row{background:#fff;border:1px solid var(--border);border-radius:var(--r-sm);margin-bottom:.5rem;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+body.light .lb-row:hover{background:#fafbfc;border-color:var(--accent-border);box-shadow:0 4px 12px rgba(225,48,108,.08);}
+body.light .user-name{color:var(--text);}
+body.light .user-handle{color:var(--text2);}
+body.light .user-stats{color:var(--muted);}
+body.light .bid-amount{color:var(--hot);}
+body.light .modal{background:#fff;border:1px solid var(--border);box-shadow:0 20px 60px rgba(0,0,0,.12);}
+body.light .modal h2{color:var(--text);}
+body.light .modal .msub{color:var(--text2);}
+body.light .modal label{color:var(--text2);}
+body.light .form-input{background:#fff !important;border:1px solid var(--border) !important;color:var(--text) !important;}
+body.light .form-input:focus{border-color:var(--accent) !important;box-shadow:0 0 0 3px var(--accent-bg) !important;background:#fff !important;}
+body.light .form-input::placeholder{color:var(--muted) !important;}
+body.light .form-note{color:var(--muted);}
+body.light .target-row{background:var(--s2);border:1px solid var(--border);}
+body.light .feed{background:#fff;border:1px solid var(--border);}
+body.light .feed-header{color:var(--text);}
+body.light .feed-item{color:var(--text2);}
+body.light .how-card{background:#fff;border:1px solid var(--border);}
+body.light .how-card h3{color:var(--text);}
+body.light .how-card p{color:var(--text2);}
+body.light .cta-section{background:linear-gradient(135deg,#fff5f7,#fff0f6);border:1px solid #fecdd3;}
+body.light .cta-section h2{color:var(--text);}
+body.light .cta-section p{color:var(--text2);}
+body.light .footer{background:var(--s2);border-top:1px solid var(--border);}
+body.light .footer-copy{color:var(--muted);}
+body.light .footer-links a{color:var(--text2);}
+body.light .toast{background:#fff;border-color:var(--border);color:var(--text);}
+body.light .overlay{background:rgba(0,0,0,.4);}
+body.light .theme-toggle{background:#fff;border-color:var(--border);box-shadow:0 2px 8px rgba(0,0,0,.08);}
+body.light .made-india{color:var(--text2);border-color:var(--border);}
+body.light .btn-ghost{color:var(--text);border-color:var(--border);}
+body.light .btn-ghost:hover{background:var(--s2);}
+body.light .stat .val{color:var(--text);}
+body.light .stat .lbl{color:var(--muted);}
+body.light .rank-num{color:var(--text);}
+body.light .bid-label{color:var(--muted);}
+
+
+/* Theme toggle in nav */
+.theme-btn{background:var(--s2);border:1px solid var(--border);border-radius:50%;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1rem;transition:all .2s;margin-right:.5rem;}
+.theme-btn:hover{border-color:var(--accent);transform:rotate(20deg);}
+
+
+/* Custom Dropdown */
+.custom-dropdown{position:relative;min-width:200px;}
+.dropdown-btn{display:flex;align-items:center;gap:.5rem;width:100%;background:var(--s2);border:1px solid var(--border);border-radius:var(--r-sm);padding:.75rem 1rem;color:var(--text);font-size:.85rem;cursor:pointer;transition:all .2s;text-align:left;}
+.dropdown-btn:hover{border-color:var(--accent);}
+.dropdown-btn:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-bg);outline:none;}
+.dd-icon{font-size:1rem;}
+.dd-text{flex:1;}
+.dd-arrow{transition:transform .2s;opacity:.6;}
+.custom-dropdown.open .dd-arrow{transform:rotate(180deg);}
+.dropdown-menu{position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--s1);border:1px solid var(--border);border-radius:var(--r-sm);padding:.4rem;max-height:320px;overflow-y:auto;z-index:100;opacity:0;visibility:hidden;transform:translateY(-8px);transition:all .2s ease;box-shadow:0 12px 40px rgba(0,0,0,.4);}
+.custom-dropdown.open .dropdown-menu{opacity:1;visibility:visible;transform:translateY(0);}
+.dd-item{display:flex;align-items:center;gap:.6rem;padding:.6rem .75rem;border-radius:var(--r-xs);cursor:pointer;font-size:.85rem;color:var(--text2);transition:all .15s;}
+.dd-item:hover{background:var(--accent-bg);color:var(--text);}
+.dd-item.selected{background:var(--accent-bg);color:var(--accent);font-weight:600;}
+.dd-item.selected::after{content:"✓";margin-left:auto;color:var(--accent);}
+.dd-i-icon{font-size:1rem;width:20px;text-align:center;}
+.dropdown-menu::-webkit-scrollbar{width:6px;}
+.dropdown-menu::-webkit-scrollbar-track{background:transparent;}
+.dropdown-menu::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+body.light .dropdown-menu{background:#fff;box-shadow:0 12px 40px rgba(0,0,0,.12);}
+body.light .dd-item:hover{background:rgba(225,48,108,.06);}
+body.light .dropdown-btn{background:#fff;}
+
+
+/* Fix tabs overflow - wrap instead of cut */
+.tabs{display:flex;gap:.5rem;flex-wrap:wrap;padding-bottom:.5rem;}
+
+/* Fix dropdown z-index and overflow */
+.hero{overflow:visible !important;}
+.hero .container{overflow:visible !important;}
+.hero-bid-row{position:relative;z-index:50;overflow:visible;}
+.custom-dropdown{z-index:100;}
+.dropdown-menu{z-index:101;min-width:240px;}
+
+/* Fix section header to not clip */
+.section-header{overflow:visible;}
+
+
+/* Profile description in leaderboard */
+.user-desc{font-size:.78rem;color:var(--muted);margin-top:.2rem;max-width:500px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.lb-row:hover .user-desc{color:var(--text2);}
+.clicks{color:var(--green) !important;font-size:.7rem !important;}
+body.light .user-desc{color:var(--muted);}
+body.light .lb-row:hover .user-desc{color:var(--text2);}
+
+</style>
+<!-- Instamojo: no external script needed, payment via redirect -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+</head>
+<body><nav class="nav"><div class="container">
+  <div class="nav-logo"><div class="text">HypeOutbid</div></div>
+  <div class="nav-links"><a href="#leaderboard">Leaderboard</a><a href="#how">How it Works</a><a href="#activity">Live Feed</a></div>
+  <div class="nav-right"><button class="theme-btn" id="themeToggle" onclick="toggleTheme()" title="Toggle theme">🌙</button><span class="made-india">🇮🇳 Made in India</span><button class="btn btn-ghost btn-sm" onclick="openClaimModal()">Claim Profile</button><button class="btn btn-accent btn-sm" onclick="openBidModal(0)">Place a Bid</button></div>
+</div></nav>
+
+
+<section class="hero"><div class="container">
+  <div class="hero-badge"><div class="live-dot"></div> <span id="onlineCount">347</span> online · <span id="statProfiles">20</span> profiles listed</div>
+  <p class="hero-tagline">Where the next billion-dollar founders and viral creators fight for the #1 spot.</p>
+  <h1>Claim #1 for <span class="hl" id="heroPrice">₹10</span></h1>
+  <p class="hero-sub">New spots start at <span class="hl-green">₹10</span>. Paying less than the #1 price still puts you on the board at whatever place that bid can take.</p>
+  <div class="hero-bid-row">
+    <input class="hero-input" type="text" id="heroHandle" placeholder="Your product URL or @handle"/>
+    <div class="custom-dropdown" id="heroCatWrap">
+      <button class="dropdown-btn" id="heroCatBtn" onclick="toggleDropdown()">
+        <span class="dd-icon">📂</span>
+        <span class="dd-text">Choose a category</span>
+        <svg class="dd-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="dropdown-menu" id="heroCatMenu">
+        <div class="dd-item" data-val="all" onclick="selectCat(this)"><span class="dd-i-icon">📊</span> All Categories</div>
+        <div class="dd-item" data-val="celebrity" onclick="selectCat(this)"><span class="dd-i-icon">⭐</span> Celebrities</div>
+        <div class="dd-item" data-val="creator" onclick="selectCat(this)"><span class="dd-i-icon">🎬</span> Creators & Influencers</div>
+        <div class="dd-item" data-val="athlete" onclick="selectCat(this)"><span class="dd-i-icon">🏆</span> Athletes & Sports</div>
+        <div class="dd-item" data-val="music" onclick="selectCat(this)"><span class="dd-i-icon">🎵</span> Music & Entertainment</div>
+        <div class="dd-item" data-val="business" onclick="selectCat(this)"><span class="dd-i-icon">📈</span> Business & Brands</div>
+        <div class="dd-item" data-val="fashion" onclick="selectCat(this)"><span class="dd-i-icon">👗</span> Fashion & Beauty</div>
+        <div class="dd-item" data-val="food" onclick="selectCat(this)"><span class="dd-i-icon">🍕</span> Food & Lifestyle</div>
+        <div class="dd-item" data-val="travel" onclick="selectCat(this)"><span class="dd-i-icon">✈️</span> Travel & Adventure</div>
+        <div class="dd-item" data-val="tech" onclick="selectCat(this)"><span class="dd-i-icon">💻</span> Tech & Gaming</div>
+        <div class="dd-item" data-val="comedy" onclick="selectCat(this)"><span class="dd-i-icon">😂</span> Comedy & Memes</div>
+        <div class="dd-item" data-val="photography" onclick="selectCat(this)"><span class="dd-i-icon">📸</span> Photography</div>
+        <div class="dd-item" data-val="fitness" onclick="selectCat(this)"><span class="dd-i-icon">💪</span> Fitness & Health</div>
+        <div class="dd-item" data-val="indian" onclick="selectCat(this)"><span class="dd-i-icon">🇮🇳</span> India</div>
+        <div class="dd-item" data-val="ai" onclick="selectCat(this)"><span class="dd-i-icon">🤖</span> AI & Startups</div>
+        <div class="dd-item" data-val="crypto" onclick="selectCat(this)"><span class="dd-i-icon">🪙</span> Crypto & Web3</div>
+        <div class="dd-item" data-val="finance" onclick="selectCat(this)"><span class="dd-i-icon">💰</span> Finance & Investing</div>
+        <div class="dd-item" data-val="education" onclick="selectCat(this)"><span class="dd-i-icon">📚</span> Education & Coaching</div>
+      </div>
+    </div>
+    <button class="btn btn-hot btn-lg" onclick="openBidModal(0)">Outbid</button>
+  </div>
+  <p class="hero-note">Already on the list? Enter the same @handle and up your bid.</p>
+</div></section>
+
+<main class="container">
+
+<section class="section" id="leaderboard">
+  <div class="top-card" id="topCard">
+    <div class="top-avatar" id="topAv">👑</div>
+    <div class="top-info">
+      <div class="top-badge">👑 #1 — Current Leader</div>
+      <div class="top-name" id="topName">Cristiano Ronaldo <span class="verify">✓</span></div>
+      <div class="top-handle" id="topHandle">@cristiano</div>
+      <div class="top-metrics"><span class="tm"><b>636M</b> followers</span><span class="tm"><b>3.2%</b> engagement</span><span class="tm"><b>Sports</b></span></div>
+    </div>
+    <div class="top-bid-side">
+      <div class="top-bid-lbl">Current Bid</div>
+      <div class="top-bid-val" id="topBid">₹10</div>
+      <button class="btn btn-hot" style="margin-top:.5rem;padding:.5rem 1.2rem;font-size:.85rem;" onclick="openBidModal(1)">⚔️ Outbid</button>
+    </div>
+  </div>
+
+  <div class="section-header">
+    <div class="section-title">🏆 Live Leaderboard <span class="badge">LIVE</span></div>
+    <div class="tabs">
+      <button class="tab active" onclick="filterCat('all',this)">All</button>
+      <button class="tab" onclick="filterCat('celebrity',this)">⭐ Celebrities</button>
+      <button class="tab" onclick="filterCat('creator',this)">🎬 Creators</button>
+      <button class="tab" onclick="filterCat('athlete',this)">🏆 Athletes</button>
+      <button class="tab" onclick="filterCat('music',this)">🎵 Music</button>
+      <button class="tab" onclick="filterCat('business',this)">📈 Business</button>
+      <button class="tab" onclick="filterCat('fashion',this)">👗 Fashion</button>
+      <button class="tab" onclick="filterCat('food',this)">🍕 Food</button>
+      <button class="tab" onclick="filterCat('travel',this)">✈️ Travel</button>
+      <button class="tab" onclick="filterCat('tech',this)">💻 Tech & Gaming</button>
+      <button class="tab" onclick="filterCat('comedy',this)">😂 Comedy</button>
+      <button class="tab" onclick="filterCat('photography',this)">📸 Photography</button>
+      <button class="tab" onclick="filterCat('fitness',this)">💪 Fitness</button>
+      <button class="tab" onclick="filterCat('indian',this)">🇮🇳 India</button>
+      <button class="tab" onclick="filterCat('ai',this)">🤖 AI & Startups</button>
+      <button class="tab" onclick="filterCat('crypto',this)">🪙 Crypto</button>
+      <button class="tab" onclick="filterCat('finance',this)">💰 Finance</button>
+      <button class="tab" onclick="filterCat('education',this)">📚 Education</button>
+    </div>
+  </div>
+  <div class="lb-table" id="lbTable"></div>
+</section>
+
+<div class="two-col" id="activity">
+  <div>
+    <section class="section" id="how" style="padding-top:0;">
+      <div class="section-header"><div class="section-title">How HypeOutbid Works</div></div>
+      <div class="how-grid">
+        <div class="how-card"><div class="how-icon">💰</div><h3>Place a Bid</h3><p>Bid any amount on any profile. Higher bid = higher rank on the leaderboard.</p></div>
+        <div class="how-card"><div class="how-icon">⚔️</div><h3>Get Outbid</h3><p>Someone bids more? They take your spot. Rebid to reclaim it.</p></div>
+        <div class="how-card"><div class="how-icon">👑</div><h3>Own the Top</h3><p>The #1 spot gets featured everywhere. Homepage, newsletter, socials.</p></div>
+        <div class="how-card"><div class="how-icon">📈</div><h3>Get Discovered</h3><p>890K people visit monthly. Top profiles get massive exposure.</p></div>
+      </div>
+    </section>
+  </div>
+  <div>
+    <div class="feed">
+      <div class="feed-header"><div class="live-dot"></div> Live Bids</div>
+      <div class="feed-list" id="feedList"></div>
+    </div>
+  </div>
+</div>
+
+<div class="cta-section">
+  <h2>Think You Deserve the Top Spot?</h2>
+  <p>Place your bid now. Outbid the current leader. Get seen by hundreds of thousands.</p>
+  <div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap;">
+    <button class="btn btn-accent btn-lg" onclick="openBidModal(0)">Place Your Bid</button>
+    <button class="btn btn-ghost btn-lg" onclick="openClaimModal()">Claim Your Profile</button>
+  </div>
+</div>
+
+</main>
+
+<footer class="footer"><div class="container"><div class="footer-links"><a href="#">About</a><a href="#">Terms</a><a href="#">Privacy</a><a href="#">Contact</a></div><div class="footer-copy">© 2026 HypeOutbid.lol — The live bidding leaderboard for social media.</div></div></footer>
+
+<!-- BID MODAL -->
+<div class="overlay" id="bidOverlay" onclick="if(event.target===this)closeBid()"><div class="modal">
+  <button class="modal-close" onclick="closeBid()">&#x2715;</button>
+  <h2>⚔️ Place Your Bid</h2>
+  <p class="msub" id="bidSub">Outbid the current holder to take their rank</p>
+  <div class="target-row" id="bidTarget"><div class="target-av" id="bidTAv">👤</div><div class="target-info"><div class="tn" id="bidTName">Select a profile</div><div class="tc" id="bidTCur">Current bid: ₹0</div></div></div>
+  <div class="form-group"><label>Your Bid Amount (INR ₹)</label><input class="form-input" type="number" id="bidAmt" placeholder="0" min="1" step="1" style="font-size:1.1rem;font-weight:700;"/><div class="form-note" id="bidNote">Must exceed current bid by at least ₹10</div></div>
+  <div class="form-group"><label>Your Instagram Handle</label><input class="form-input" type="text" id="bidHandle" placeholder="@yourhandle"/></div>
+  <div class="form-group"><label>Website URL <span style="color:var(--muted);font-weight:400;">(optional)</span></label><input class="form-input" type="url" id="bidWebsite" placeholder="https://yoursite.com"/></div>
+  <div class="form-group"><label>Short Intro <span style="color:var(--muted);font-weight:400;">(optional, max 120 chars)</span></label><input class="form-input" type="text" id="bidDesc" placeholder="What do you do? Tell the world..." maxlength="120"/></div>
+  <div class="form-group"><label>Email (for notifications)</label><input class="form-input" type="email" id="bidEmail" placeholder="you@email.com"/></div>
+  <button class="btn btn-accent" id="bidSubmitBtn" style="width:100%;padding:.75rem;font-size:1rem;" onclick="handleBid(event)">Pay &amp; Lock Your Rank →</button>
+  <div class="form-note" style="text-align:center;margin-top:.6rem;">Pay via UPI QR. You get notified if outbid.</div>
+
+  <div id="qrPayStep" style="display:none;text-align:center;">
+    <h2 style="margin-bottom:.3rem;">&#128242; Scan & Pay</h2>
+    <p class="msub">Pay via any UPI app</p>
+    <div id="qrAmtShow" style="font-size:1.5rem;font-weight:800;color:var(--accent);margin:.4rem 0;"></div>
+    <div style="margin:1rem auto;width:200px;height:200px;border-radius:12px;overflow:hidden;border:2px solid var(--border);background:#fff;"><img src="/qr-pay.jpg" alt="UPI QR" style="width:100%;height:100%;object-fit:cover;"></div>
+    <div style="font-size:.78rem;color:var(--muted);line-height:1.5;margin-bottom:.75rem;text-align:left;"><ol style="padding-left:1.2rem;"><li>Open GPay / PhonePe / Paytm</li><li>Scan this QR code</li><li>Enter <b>exact amount</b> shown above</li><li>Complete payment & copy <b>UTR</b> (12 digits)</li></ol></div>
+    <div class="form-group"><label>UTR / Transaction Reference *</label><input class="form-input" id="bidUTR" placeholder="e.g. 412345678901"/></div>
+    <button class="btn btn-accent" style="width:100%;padding:.75rem;font-size:1rem;" onclick="confirmQRPayment()">&#9989; Confirm Payment</button>
+    <button class="btn" style="width:100%;padding:.5rem;font-size:.85rem;margin-top:.4rem;background:transparent;border:1px solid var(--border);" onclick="backFromQR()">&#8592; Back</button>
+  </div>
+</div></div>
+
+<!-- CLAIM MODAL -->
+<div class="overlay" id="claimOverlay" onclick="if(event.target===this)closeClaim()"><div class="modal">
+  <button class="modal-close" onclick="closeClaim()">&#x2715;</button>
+  <h2>🏷️ Claim Your Profile</h2>
+  <p class="msub">Is your account on our leaderboard? Claim it to manage your listing.</p>
+  <div class="form-group"><label>Your Instagram Handle</label><input class="form-input" type="text" id="claimHandle" placeholder="@yourhandle"/></div>
+  <div class="form-group"><label>Your Email</label><input class="form-input" type="email" id="claimEmail" placeholder="you@email.com"/></div>
+  <button class="btn btn-accent" style="width:100%;padding:.7rem;font-size:.95rem;" onclick="submitClaim()">Claim Profile</button>
+  <div class="form-note" style="text-align:center;margin-top:.6rem;">We will verify via DM or email.</div>
+</div></div>
+
+<div class="toast-wrap" id="tw"></div><script>
+// ── DATA (bids will be overwritten from DB) ──
+var P=[
+  // Celebrities
+  {id:1,name:"Cristiano Ronaldo",handle:"@cristiano",av:"⚽",followers:"636M",eng:"3.2%",cat:"celebrity",url:"https://instagram.com/cristiano",desc:"Football legend. 5x Ballon d'Or winner. Most followed person on Instagram.",bid_paise:1000,verified:true},
+  {id:2,name:"Kylie Jenner",handle:"@kyliejenner",av:"💄",followers:"399M",eng:"1.9%",cat:"celebrity",url:"https://instagram.com/kyliejenner",desc:"Founder of Kylie Cosmetics. Reality TV star & beauty mogul.",bid_paise:1000,verified:true},
+  {id:3,name:"Dwayne Johnson",handle:"@therock",av:"💪",followers:"395M",eng:"1.5%",cat:"celebrity",url:"https://instagram.com/therock",desc:"Actor, producer & former WWE champion. Highest-paid actor in Hollywood.",bid_paise:1000,verified:true},
+  {id:4,name:"Kim Kardashian",handle:"@kimkardashian",av:"✨",followers:"364M",eng:"1.7%",cat:"celebrity",url:"https://instagram.com/kimkardashian",desc:"",bid_paise:1000,verified:true},
+  // Creators & Influencers
+  {id:5,name:"MrBeast",handle:"@mrbeast",av:"🎬",followers:"245M",eng:"4.2%",cat:"creator",url:"https://instagram.com/mrbeast",desc:"YouTube's biggest creator. Philanthropist. Building the future of content.",bid_paise:1000,verified:true},
+  {id:6,name:"Khaby Lame",handle:"@khaby00",av:"🤷",followers:"162M",eng:"3.8%",cat:"creator",url:"https://instagram.com/khaby00",desc:"",bid_paise:1000,verified:true},
+  {id:7,name:"PewDiePie",handle:"@pewdiepie",av:"👊",followers:"21M",eng:"6.2%",cat:"creator",url:"https://instagram.com/pewdiepie",desc:"",bid_paise:1000,verified:true},
+  {id:8,name:"Emma Chamberlain",handle:"@emmachamberlain",av:"☕",followers:"16M",eng:"5.5%",cat:"creator",url:"https://instagram.com/emmachamberlain",desc:"",bid_paise:1000,verified:true},
+  // Athletes & Sports
+  {id:9,name:"Lionel Messi",handle:"@leomessi",av:"🐐",followers:"504M",eng:"2.8%",cat:"athlete",url:"https://instagram.com/leomessi",desc:"8x Ballon d'Or. Inter Miami CF. The greatest of all time.",bid_paise:1000,verified:true},
+  {id:10,name:"Virat Kohli",handle:"@virat.kohli",av:"🏏",followers:"271M",eng:"3.5%",cat:"athlete",url:"https://instagram.com/virat.kohli",desc:"India's cricket king. Record-breaking batsman. Global sports icon.",bid_paise:1000,verified:true},
+  {id:11,name:"Neymar Jr",handle:"@neymarjr",av:"🇧🇷",followers:"228M",eng:"2.9%",cat:"athlete",url:"https://instagram.com/neymarjr",desc:"",bid_paise:1000,verified:true},
+  {id:12,name:"LeBron James",handle:"@kingjames",av:"🏀",followers:"159M",eng:"2.1%",cat:"athlete",url:"https://instagram.com/kingjames",desc:"",bid_paise:1000,verified:true},
+  // Music & Entertainment
+  {id:13,name:"Taylor Swift",handle:"@taylorswift",av:"🎵",followers:"283M",eng:"2.1%",cat:"music",url:"https://instagram.com/taylorswift",desc:"Grammy-winning artist. Eras Tour broke every record in music history.",bid_paise:1000,verified:true},
+  {id:14,name:"Drake",handle:"@champagnepapi",av:"🎤",followers:"146M",eng:"1.8%",cat:"music",url:"https://instagram.com/champagnepapi",desc:"",bid_paise:1000,verified:true},
+  {id:15,name:"Billie Eilish",handle:"@billieeilish",av:"🖤",followers:"118M",eng:"2.3%",cat:"music",url:"https://instagram.com/billieeilish",desc:"",bid_paise:1000,verified:true},
+  {id:16,name:"Bad Bunny",handle:"@badbunnypr",av:"🐰",followers:"95M",eng:"3.1%",cat:"music",url:"https://instagram.com/badbunnypr",desc:"",bid_paise:1000,verified:true},
+  // Business & Brands
+  {id:17,name:"Elon Musk",handle:"@elonmusk",av:"🚀",followers:"42M",eng:"5.1%",cat:"business",url:"https://instagram.com/elonmusk",desc:"CEO of Tesla, SpaceX, xAI. Building the future of humanity.",bid_paise:1000,verified:true},
+  {id:18,name:"Gary Vee",handle:"@garyvee",av:"🍷",followers:"16M",eng:"4.5%",cat:"business",url:"https://instagram.com/garyvee",desc:"",bid_paise:1000,verified:true},
+  {id:19,name:"Mark Zuckerberg",handle:"@zuck",av:"👓",followers:"14M",eng:"8.1%",cat:"business",url:"https://instagram.com/zuck",desc:"",bid_paise:1000,verified:true},
+  {id:20,name:"Nikhil Kamath",handle:"@nikhil.kamath",av:"📈",followers:"5M",eng:"7.8%",cat:"business",url:"https://instagram.com/nikhil.kamath",desc:"",bid_paise:1000,verified:false},
+  // Fashion & Beauty
+  {id:21,name:"Chiara Ferragni",handle:"@chiaraferragni",av:"👗",followers:"29M",eng:"2.1%",cat:"fashion",url:"https://instagram.com/chiaraferragni",desc:"",bid_paise:1000,verified:true},
+  {id:22,name:"Huda Kattan",handle:"@hudabeauty",av:"💋",followers:"54M",eng:"2.8%",cat:"fashion",url:"https://instagram.com/hudabeauty",desc:"Beauty mogul. Built a billion-dollar cosmetics brand from a blog.",bid_paise:1000,verified:true},
+  {id:23,name:"Camila Coelho",handle:"@camilacoelho",av:"👠",followers:"10M",eng:"3.2%",cat:"fashion",url:"https://instagram.com/camilacoelho",desc:"",bid_paise:1000,verified:true},
+  {id:24,name:"Jeffree Star",handle:"@jeffreestar",av:"💅",followers:"13M",eng:"3.9%",cat:"fashion",url:"https://instagram.com/jeffreestar",desc:"",bid_paise:1000,verified:true},
+  // Food & Travel
+  {id:25,name:"Gordon Ramsay",handle:"@gordongram",av:"👨‍🍳",followers:"19M",eng:"3.4%",cat:"food",url:"https://instagram.com/gordongram",desc:"Michelin-starred chef. TV personality. Restaurant empire worldwide.",bid_paise:1000,verified:true},
+  {id:26,name:"Burak Ozdemir",handle:"@aborznaborurkaborozdemir",av:"🥩",followers:"51M",eng:"3.5%",cat:"food",url:"https://instagram.com/aborznaborurkaborozdemir",desc:"",bid_paise:1000,verified:true},
+  {id:27,name:"Salt Bae",handle:"@nuaboreu_saltbae",av:"🧂",followers:"51M",eng:"2.6%",cat:"food",url:"https://instagram.com/nuaboreu_saltbae",desc:"",bid_paise:1000,verified:true},
+  {id:28,name:"Nusret Gokce",handle:"@nusr_et",av:"🍖",followers:"53M",eng:"2.9%",cat:"food",url:"https://instagram.com/nusr_et",desc:"",bid_paise:1000,verified:true},
+  // Tech & Gaming
+  {id:29,name:"MKBHD",handle:"@mkbhd",av:"📱",followers:"5M",eng:"6.5%",cat:"tech",url:"https://instagram.com/mkbhd",desc:"Tech reviewer with the highest production quality on YouTube.",bid_paise:1000,verified:true},
+  {id:30,name:"Ninja",handle:"@ninja",av:"🎮",followers:"12M",eng:"3.8%",cat:"tech",url:"https://instagram.com/ninja",desc:"Pro gamer turned content creator. Pioneered gaming on mainstream media.",bid_paise:1000,verified:true},
+  {id:31,name:"Linus Tech",handle:"@linustech",av:"💻",followers:"4M",eng:"5.2%",cat:"tech",url:"https://instagram.com/linustech",desc:"",bid_paise:1000,verified:true},
+  {id:32,name:"Pokimane",handle:"@pokimanelol",av:"🎧",followers:"7M",eng:"4.8%",cat:"tech",url:"https://instagram.com/pokimanelol",desc:"",bid_paise:1000,verified:true},
+  // Comedy & Memes
+  {id:33,name:"Zach King",handle:"@zachking",av:"🎩",followers:"78M",eng:"5.1%",cat:"comedy",url:"https://instagram.com/zachking",desc:"Digital magician. 78M followers watching impossible visual tricks.",bid_paise:1000,verified:true},
+  {id:34,name:"Lele Pons",handle:"@lelepons",av:"🤣",followers:"53M",eng:"2.2%",cat:"comedy",url:"https://instagram.com/lelepons",desc:"",bid_paise:1000,verified:true},
+  {id:35,name:"Matt Rife",handle:"@mattrife",av:"😂",followers:"19M",eng:"6.1%",cat:"comedy",url:"https://instagram.com/mattrife",desc:"",bid_paise:1000,verified:true},
+  {id:36,name:"Bhuvan Bam",handle:"@bfrhanmainan",av:"🎭",followers:"18M",eng:"5.4%",cat:"comedy",url:"https://instagram.com/bfrhanmainan",desc:"",bid_paise:1000,verified:true},
+  // Photography
+  {id:37,name:"Chris Burkard",handle:"@chrisburkard",av:"📷",followers:"4M",eng:"7.2%",cat:"photography",url:"https://instagram.com/chrisburkard",desc:"Adventure photographer. National Geographic. Capturing Earth's raw beauty.",bid_paise:1000,verified:true},
+  {id:38,name:"Murad Osmann",handle:"@muradosmann",av:"🏔️",followers:"4.5M",eng:"3.9%",cat:"photography",url:"https://instagram.com/muradosmann",desc:"",bid_paise:1000,verified:true},
+  {id:39,name:"Brandon Woelfel",handle:"@brandonwoelfel",av:"🌃",followers:"3M",eng:"6.8%",cat:"photography",url:"https://instagram.com/brandonwoelfel",desc:"",bid_paise:1000,verified:true},
+  {id:40,name:"Peter McKinnon",handle:"@petermckinnon",av:"📸",followers:"3.5M",eng:"5.5%",cat:"photography",url:"https://instagram.com/petermckinnon",desc:"",bid_paise:1000,verified:true},
+  // Fitness & Health
+  {id:41,name:"Kayla Itsines",handle:"@kayla_itsines",av:"🏋️",followers:"16M",eng:"3.1%",cat:"fitness",url:"https://instagram.com/kayla_itsines",desc:"",bid_paise:1000,verified:true},
+  {id:42,name:"Simeon Panda",handle:"@simeonpanda",av:"💪",followers:"8M",eng:"4.6%",cat:"fitness",url:"https://instagram.com/simeonpanda",desc:"",bid_paise:1000,verified:true},
+  {id:43,name:"Chloe Ting",handle:"@chloe_t",av:"🧘",followers:"5M",eng:"5.3%",cat:"fitness",url:"https://instagram.com/chloe_t",desc:"",bid_paise:1000,verified:true},
+  {id:44,name:"David Laid",handle:"@davidlaid",av:"🏆",followers:"4M",eng:"6.7%",cat:"fitness",url:"https://instagram.com/davidlaid",desc:"",bid_paise:1000,verified:true},
+  // India
+  {id:45,name:"Narendra Modi",handle:"@narendramodi",av:"🇮🇳",followers:"102M",eng:"2.8%",cat:"indian",url:"https://instagram.com/narendramodi",desc:"",bid_paise:1000,verified:true},
+  {id:46,name:"Priyanka Chopra",handle:"@priyankachopra",av:"⭐",followers:"91M",eng:"2.4%",cat:"indian",url:"https://instagram.com/priyankachopra",desc:"",bid_paise:1000,verified:true},
+  {id:47,name:"Shraddha Kapoor",handle:"@shraddhakapoor",av:"🌸",followers:"87M",eng:"4.1%",cat:"indian",url:"https://instagram.com/shraddhakapoor",desc:"",bid_paise:1000,verified:true},
+  {id:48,name:"Ranveer Singh",handle:"@ranveersingh",av:"🎭",followers:"44M",eng:"3.9%",cat:"indian",url:"https://instagram.com/ranveersingh",desc:"",bid_paise:1000,verified:true},
+  // AI & Startups
+  {id:49,name:"Sam Altman",handle:"@sama",av:"🧠",followers:"3M",eng:"9.2%",cat:"ai",url:"https://instagram.com/sama",desc:"CEO of OpenAI. Building safe AGI for the benefit of humanity.",bid_paise:1000,verified:true},
+  {id:50,name:"Aravind Srinivas",handle:"@AravSrinivas",av:"🔍",followers:"800K",eng:"11%",cat:"ai",url:"https://instagram.com/AravSrinivas",desc:"",bid_paise:1000,verified:true},
+  {id:51,name:"Dario Amodei",handle:"@daboramodei",av:"🤖",followers:"500K",eng:"8.5%",cat:"ai",url:"https://instagram.com/daboramodei",desc:"",bid_paise:1000,verified:false},
+  {id:52,name:"Emmett Shear",handle:"@eshear",av:"💡",followers:"400K",eng:"7.8%",cat:"ai",url:"https://instagram.com/eshear",desc:"",bid_paise:1000,verified:false},
+  {id:53,name:"Alexandr Wang",handle:"@alexandr_wang",av:"📊",followers:"300K",eng:"9.1%",cat:"ai",url:"https://instagram.com/alexandr_wang",desc:"",bid_paise:1000,verified:false},
+  {id:54,name:"Pieter Levels",handle:"@levelsio",av:"🛫",followers:"600K",eng:"12%",cat:"ai",url:"https://instagram.com/levelsio",desc:"Indie maker. Built 40+ startups. $3M ARR solo founder.",bid_paise:1000,verified:true},
+  // Crypto & Web3
+  {id:55,name:"Vitalik Buterin",handle:"@vaborikbuterin",av:"💎",followers:"5M",eng:"6.3%",cat:"crypto",url:"https://instagram.com/vaborikbuterin",desc:"Co-founder of Ethereum. Decentralizing the world's infrastructure.",bid_paise:1000,verified:true},
+  {id:56,name:"CZ Binance",handle:"@caborz",av:"🪙",followers:"12M",eng:"4.1%",cat:"crypto",url:"https://instagram.com/caborz",desc:"",bid_paise:1000,verified:true},
+  {id:57,name:"Brian Armstrong",handle:"@brian_armstrong",av:"🏦",followers:"2M",eng:"5.5%",cat:"crypto",url:"https://instagram.com/brian_armstrong",desc:"",bid_paise:1000,verified:true},
+  {id:58,name:"Balaji Srinivasan",handle:"@balaborijis",av:"🌐",followers:"1.5M",eng:"7.2%",cat:"crypto",url:"https://instagram.com/balaborijis",desc:"",bid_paise:1000,verified:true},
+  // Finance & Investing
+  {id:59,name:"Ankur Warikoo",handle:"@waaborikoo",av:"📖",followers:"4M",eng:"6.8%",cat:"finance",url:"https://instagram.com/waaborikoo",desc:"Entrepreneur & educator. Making personal finance simple for India.",bid_paise:1000,verified:true},
+  {id:60,name:"Zerodha Nithin",handle:"@nitaborhin0dha",av:"📉",followers:"2M",eng:"5.9%",cat:"finance",url:"https://instagram.com/nitaborhin0dha",desc:"",bid_paise:1000,verified:true},
+  {id:61,name:"Graham Stephan",handle:"@graaborhamstephan",av:"🏠",followers:"4M",eng:"5.1%",cat:"finance",url:"https://instagram.com/graaborhamstephan",desc:"",bid_paise:1000,verified:true},
+  {id:62,name:"Sharan Hegde",handle:"@financewithsharan",av:"💸",followers:"3M",eng:"7.5%",cat:"finance",url:"https://instagram.com/financewithsharan",desc:"",bid_paise:1000,verified:true},
+  // Education & Coaching
+  {id:63,name:"Ali Abdaal",handle:"@aliabdaal",av:"🎓",followers:"5M",eng:"5.8%",cat:"education",url:"https://instagram.com/aliabdaal",desc:"Doctor turned productivity YouTuber. Teaching millions to work smarter.",bid_paise:1000,verified:true},
+  {id:64,name:"Jay Shetty",handle:"@jayshetty",av:"🧘",followers:"15M",eng:"3.4%",cat:"education",url:"https://instagram.com/jayshetty",desc:"",bid_paise:1000,verified:true},
+  {id:65,name:"Thomas Frank",handle:"@thomaborasfrank",av:"📝",followers:"2M",eng:"6.2%",cat:"education",url:"https://instagram.com/thomaborasfrank",desc:"",bid_paise:1000,verified:true},
+  {id:66,name:"Ranveer Allahbadia",handle:"@beerbiceps",av:"🎙️",followers:"9M",eng:"5.6%",cat:"education",url:"https://instagram.com/beerbiceps",desc:"",bid_paise:1000,verified:true},
+  // Travel & Adventure
+  {id:67,name:"Nas Daily",handle:"@nasdaily",av:"🌍",followers:"42M",eng:"4.0%",cat:"travel",url:"https://instagram.com/nasdaily",desc:"1000+ videos in 1000 days. Telling human stories across 60 countries.",bid_paise:1000,verified:true},
+  {id:68,name:"Jack Morris",handle:"@doyoutravel",av:"✈️",followers:"3M",eng:"5.8%",cat:"travel",url:"https://instagram.com/doyoutravel",desc:"",bid_paise:1000,verified:true},
+  {id:69,name:"Lexie Alford",handle:"@lexielimitless",av:"🗺️",followers:"2M",eng:"7.1%",cat:"travel",url:"https://instagram.com/lexielimitless",desc:"",bid_paise:1000,verified:true},
+  {id:70,name:"Drew Binsky",handle:"@drewbinsky",av:"🎒",followers:"3.5M",eng:"5.4%",cat:"travel",url:"https://instagram.com/drewbinsky",desc:"",bid_paise:1000,verified:true},
+  {id:71,name:"Kara & Nate",handle:"@karaandnate",av:"🌏",followers:"1.5M",eng:"6.3%",cat:"travel",url:"https://instagram.com/karaandnate",desc:"",bid_paise:1000,verified:true},
+  {id:72,name:"Travellingdesi",handle:"@travellingdesi_",av:"🧳",followers:"1M",eng:"8.2%",cat:"travel",url:"https://instagram.com/travellingdesi_",desc:"",bid_paise:1000,verified:false},
+];
+
+var curFilter="all", prevR={}, bidTargetId=null, CONFIG=null, sbClient=null;
+
+// paise helpers — all money stored as integer paise, displayed as $
+function toRupees(paise){ return paise/100; }
+function toPaise(rupees){ return Math.round(Number(rupees)*100); }
+function fmtINR(paise){ return "₹"+(paise/100).toLocaleString("en-IN"); }
+function nowt(){ var d=new Date(); return d.getHours()+":"+String(d.getMinutes()).padStart(2,"0")+":"+String(d.getSeconds()).padStart(2,"0"); }
+
+function sorted(){ return [...P].sort(function(a,b){ return b.bid_paise - a.bid_paise; }); }
+function filtered(){ var s=sorted(); return curFilter==="all"?s:s.filter(function(p){ return p.cat===curFilter; }); }
+
+// ── INIT ─────────────────────────────────────────────────────
+async function init(){
+  try{
+    var r = await fetch("/api/config");
+    CONFIG = await r.json();
+  } catch(e){ CONFIG = null; }
+
+  if(CONFIG && CONFIG.supabaseUrl){
+    sbClient = window.supabase.createClient(CONFIG.supabaseUrl, CONFIG.supabaseAnonKey);
+    await loadLeaderboard();
+    await loadActivity();
+    subscribeRealtime();
+    updateHeroPrice(); startOnlineCounter();
+  } else {
+    sorted().forEach(function(x,i){ prevR[x.id]=i+1; });
+    render(); renderDefaultFeed(); startSimulation();
+  updateHeroPrice(); startOnlineCounter();
+  }
+}
+
+// ── LOAD FROM DB ─────────────────────────────────────────────
+async function loadLeaderboard(){
+  try{
+    var res = await fetch("/api/leaderboard");
+    var rows = await res.json();
+    rows.forEach(function(row){
+      var p = P.find(function(x){ return x.id===row.id; });
+      if(p){
+        p.bid_paise = parseInt(row.current_bid_paise) || 100;
+        if(row.current_bidder_handle) p.topBidder = row.current_bidder_handle;
+      }
+    });
+  } catch(e){}
+  sorted().forEach(function(x,i){ prevR[x.id]=i+1; });
+  render();
+  document.getElementById("statBids").textContent = fmtINR(P.reduce(function(s,x){ return s+x.bid_paise; },0));
+  var sp = document.getElementById("statProfiles"); if(sp) sp.textContent = P.length;
+}
+
+async function loadActivity(){
+  try{
+    var res = await fetch("/api/activity");
+    var rows = await res.json();
+    var l = document.getElementById("feedList"); l.innerHTML="";
+    if(rows.length===0){
+      renderDefaultFeed(); return;
+    }
+    rows.forEach(function(row){
+      var name = row.profiles ? row.profiles.handle : row.bidder_handle;
+      l.innerHTML += "<div class=\"feed-item\">⚔️ <b>"+row.bidder_handle+"</b> bid <span class=\"amt\">"+fmtINR(row.amount_paise)+"</span> on <b>"+(row.profiles?row.profiles.handle:"")+"</b><span class=\"time\">"+new Date(row.created_at).toLocaleTimeString()+"</span></div>";
+    });
+  } catch(e){ renderDefaultFeed(); }
+}
+
+// ── SUPABASE REALTIME ─────────────────────────────────────────
+function subscribeRealtime(){
+  if(!sbClient) return;
+
+  // Listen for confirmed payments (profiles table updated)
+  sbClient.channel("profiles-live")
+    .on("postgres_changes", {event:"UPDATE", schema:"public", table:"profiles"},
+      function(payload){
+        var row = payload.new;
+        var p = P.find(function(x){ return x.id===row.id; });
+        if(p){
+          sorted().forEach(function(x,i){ prevR[x.id]=i+1; });
+          p.bid_paise = parseInt(row.current_bid_paise);
+          p.topBidder = row.current_bidder_handle;
+          p._f = true;
+          var nr = sorted().findIndex(function(x){ return x.id===p.id; })+1;
+          document.getElementById("statBids").textContent = fmtINR(P.reduce(function(s,x){ return s+x.bid_paise; },0));
+          render();
+        }
+      }
+    ).subscribe();
+
+  // Listen for new activity
+  sbClient.channel("activity-live")
+    .on("postgres_changes", {event:"INSERT", schema:"public", table:"activity"},
+      function(payload){
+        var row = payload.new;
+        var p = P.find(function(x){ return x.id===row.profile_id; });
+        addFeed("⚔️ <b>"+row.bidder_handle+"</b> bid <span class=\"amt\">"+fmtINR(row.amount_paise)+"</span>"+(p?" on <b>"+p.handle+"</b>":"")+" 🔥");
+      }
+    ).subscribe();
+}
+
+// ── RENDER ────────────────────────────────────────────────────
+function render(){
+  var s=sorted(), top=s[0];
+  document.getElementById("topAv").textContent=top.av;
+  document.getElementById("topName").innerHTML=top.name+" "+(top.verified?"<span class=\"verify\">✓</span>":"");
+  document.getElementById("topHandle").textContent=top.handle;
+  document.getElementById("topBid").textContent=fmtINR(top.bid_paise);
+  document.getElementById("topCard").querySelector(".top-metrics").innerHTML="<span class=\"tm\"><b>"+top.followers+"</b> followers</span><span class=\"tm\"><b>"+top.eng+"</b> engagement</span><span class=\"tm\"><b>"+top.cat+"</b></span>";
+  document.getElementById("topCard").querySelector("button").onclick=function(){ openBidModal(top.id); };
+  document.getElementById("topCard").onclick=function(e){ if(e.target.tagName!=="BUTTON" && !e.target.closest("button")) visitProfile(top.id); };
+  document.getElementById("topCard").style.cursor="pointer";
+  var list=filtered(), tb=document.getElementById("lbTable"); tb.innerHTML="";
+  list.forEach(function(p){
+    var gr=s.findIndex(function(x){ return x.id===p.id; })+1;
+    var prev=prevR[p.id];
+    var arrow="<span class=\"rank-arrow ra-same\">—</span>";
+    if(prev!==undefined&&prev>gr) arrow="<span class=\"rank-arrow ra-up\">▲</span>";
+    if(prev!==undefined&&prev<gr) arrow="<span class=\"rank-arrow ra-dn\">▼</span>";
+    var rc=gr===1?"r1":gr===2?"r2":gr===3?"r3":"rn";
+    var rowcls="lb-row"+(gr===1?" top1":gr===2?" top2":gr===3?" top3":"")+(p._f?" flash":"");
+    tb.innerHTML+="<div class=\""+rowcls+"\" onclick=\"visitProfile("+p.id+")\">"+ 
+      "<div class=\"rank-num "+rc+"\">"+( gr===1?"👑":gr)+"</div>"+arrow+
+      "<div class=\"user-avatar"+(p.verified?" verified":"")+"\">"+( p.av||"👤")+"</div>"+
+      "<div class=\"user-info\"><div class=\"user-name\">"+p.name+(p.verified?" <span class=\"verify\">✓</span>":"")+"</div>"+
+      "<div class=\"user-handle\">"+p.handle+(p.topBidder?"<span style=\"color:var(--green);font-size:.7rem;margin-left:.5rem;\"> held by "+p.topBidder+"</span>":"")+"</div>"+
+      (p.desc?"<div class=\"user-desc\">"+p.desc+"</div>":"")+
+      "<div class=\"user-stats\"><span class=\"us\"><b>"+p.followers+"</b> followers</span><span class=\"us\"><b>"+p.eng+"</b> eng.</span>"+(p._clicks?"<span class=\"us clicks\">● "+p._clicks+" clicks</span>":"")+"</div></div>"+
+      "<div class=\"bid-col\"><div class=\"bid-amount\">"+fmtINR(p.bid_paise)+"</div><div class=\"bid-label\">current bid</div></div>"+
+      "<div class=\"outbid-btn\"><button class=\"btn btn-hot btn-sm\" onclick=\"event.stopPropagation();openBidModal("+p.id+")\">Outbid</button></div>"+
+    "</div>";
+    if(p._f){ setTimeout(function(){ p._f=false; },800); }
+  });
+}
+
+function filterCat(c,btn){ curFilter=c; document.querySelectorAll(".tab").forEach(function(t){ t.classList.remove("active"); }); btn.classList.add("active"); render(); updateHeroPrice(); }
+
+function updateHeroPrice(){
+  var cat = heroCatValue || curFilter;
+  if(cat==="all"||!cat) cat="all";
+  var list = cat==="all" ? sorted() : sorted().filter(function(p){ return p.cat===cat; });
+  var topBid = list.length>0 ? list[0].bid_paise : 0;
+  var price = topBid>0 ? topBid+1000 : 1000;
+  var el=document.getElementById("heroPrice"); el.textContent = fmtINR(price); el.classList.remove("price-bounce"); void el.offsetWidth; el.classList.add("price-bounce");
+}
+
+function renderDefaultFeed(){
+  var l=document.getElementById("feedList"); l.innerHTML="";
+  ["🔥 Leaderboard is live — first bids start at <span class=\"amt\">₹10</span>",
+   "⚔️ Be the first to outbid and claim #1!",
+   "💰 All bids start at ₹10 — no ceiling"].forEach(function(msg){
+    l.innerHTML+="<div class=\"feed-item\">"+msg+"<span class=\"time\">just now</span></div>";
+  });
+}
+
+function addFeed(msg){
+  var l=document.getElementById("feedList"),d=document.createElement("div");
+  d.className="feed-item"; d.innerHTML=msg+"<span class=\"time\">"+nowt()+"</span>";
+  l.insertBefore(d,l.firstChild);
+  while(l.children.length>20) l.removeChild(l.lastChild);
+}
+
+
+function startOnlineCounter(){
+  var base=Math.floor(Math.random()*200)+300;
+  document.getElementById("onlineCount").textContent=base;
+  setInterval(function(){
+    base+=Math.floor(Math.random()*11)-5;
+    if(base<200)base=200; if(base>800)base=800;
+    document.getElementById("onlineCount").textContent=base;
+  },3000);
+}
+// Demo simulation (only when no backend connected)
+function startSimulation(){
+  setInterval(function(){
+    var p=P[Math.floor(Math.random()*P.length)];
+    var bump=Math.floor(Math.random()*5000+1000); // 1000-6000 paise = ₹10-₹60
+    sorted().forEach(function(x,i){ prevR[x.id]=i+1; });
+    p.bid_paise+=bump; p._f=true;
+    var nr=sorted().findIndex(function(x){ return x.id===p.id; })+1;
+    addFeed("⚔️ <b>"+p.handle+"</b> bid <span class=\"amt\">"+fmtINR(bump)+"</span> — now <span class=\"amt\">#"+nr+"</span> at <span class=\"amt\">"+fmtINR(p.bid_paise)+"</span>");
+    document.getElementById("statBids").textContent=fmtINR(P.reduce(function(s,x){ return s+x.bid_paise; },0));
+    render();
+  }, 4000+Math.random()*3000);
+}
+
+// ── MODALS ────────────────────────────────────────────────────
+function openBidModal(id){
+  bidTargetId=id;
+  if(id===0){
+    document.getElementById("bidTAv").textContent="👤";
+    document.getElementById("bidTName").textContent="Open bid — choose any rank";
+    document.getElementById("bidTCur").textContent="Bid on any profile or claim an open spot";
+    document.getElementById("bidSub").textContent="Place a bid to enter the leaderboard";
+    document.getElementById("bidAmt").value="1";
+    document.getElementById("bidAmt").min="1";
+    document.getElementById("bidNote").textContent="Minimum bid is ₹10";
+  } else {
+    var p=P.find(function(x){ return x.id===id; });
+    var rank=sorted().findIndex(function(x){ return x.id===id; })+1;
+    var curRupees=toRupees(p.bid_paise);
+    document.getElementById("bidTAv").textContent=p.av;
+    document.getElementById("bidTName").textContent=p.name;
+    document.getElementById("bidTCur").textContent="Current bid: "+fmtINR(p.bid_paise)+" · Rank #"+rank;
+    document.getElementById("bidSub").textContent="Outbid "+p.name+" to take rank #"+rank;
+    document.getElementById("bidAmt").value=curRupees+1;
+    document.getElementById("bidAmt").min=curRupees+1;
+    document.getElementById("bidNote").textContent="Must exceed "+fmtINR(p.bid_paise)+" by at least ₹10";
+  }
+  document.getElementById("bidOverlay").classList.add("open");
+}
+function closeBid(){ document.getElementById("bidOverlay").classList.remove("open"); }
+
+// ── PAYMENT ───────────────────────────────────────────────────
+async function handleBid(e){
+  e.preventDefault();
+  var amount_rupees=parseFloat(document.getElementById("bidAmt").value);
+  var handle=document.getElementById("bidHandle").value.trim();
+  var email=document.getElementById("bidEmail").value.trim();
+
+  if(!amount_rupees||!handle||!email){ toast("Fill in all fields","warn"); return; }
+  if(!handle.startsWith("@")) handle="@"+handle;
+  if(amount_rupees<10){ toast("Minimum bid is ₹10","warn"); return; }
+
+  if(bidTargetId&&bidTargetId!==0){
+    var p=P.find(function(x){ return x.id===bidTargetId; });
+    if(toPaise(amount_rupees)<=p.bid_paise){ toast("Must exceed "+fmtINR(p.bid_paise),"warn"); return; }
+  }
+
+  // Demo mode (local file preview)
+  if(!CONFIG||!CONFIG.paymentEnabled){
+    sorted().forEach(function(x,i){ prevR[x.id]=i+1; });
+    if(bidTargetId&&bidTargetId!==0){
+      var p=P.find(function(x){ return x.id===bidTargetId; });
+      p.bid_paise=toPaise(amount_rupees); p._f=true;
+    } else {
+      P.push({id:Date.now(),name:handle.replace("@",""),handle:handle,av:"🔥",followers:"—",eng:"—",cat:"creator",bid_paise:toPaise(amount_rupees),verified:false,_f:true});
+    }
+    var target=bidTargetId||P[P.length-1].id;
+    var nr=sorted().findIndex(function(x){ return x.id===target; })+1;
+    addFeed("⚔️ <b>"+handle+"</b> bid <span class=\"amt\">"+fmtINR(toPaise(amount_rupees))+"</span> — now <span class=\"amt\">#"+nr+"</span>");
+    document.getElementById("statBids").textContent=fmtINR(P.reduce(function(s,x){ return s+x.bid_paise; },0));
+    closeBid(); toast("You are now rank #"+nr+"! 🔥","ok"); render();
+    return;
+  }
+
+  // Show QR payment step
+  document.getElementById("qrAmtShow").textContent="\u20b9"+amount_rupees;
+  var modal=document.getElementById("bidOverlay").querySelector(".modal");
+  Array.from(modal.children).forEach(function(c){if(c.id!=="qrPayStep"&&c.className!=="modal-close")c.style.display="none";});
+  document.getElementById("qrPayStep").style.display="block";
+  window._pendingBid={amount_paise:toPaise(amount_rupees),handle:handle,email:email,website:document.getElementById("bidWebsite").value.trim(),desc:document.getElementById("bidDesc").value.trim(),profile_id:bidTargetId||0};
+}
+
+function backFromQR(){
+  var modal=document.getElementById("bidOverlay").querySelector(".modal");
+  Array.from(modal.children).forEach(function(c){c.style.display="";});
+  document.getElementById("qrPayStep").style.display="none";
+}
+async function confirmQRPayment(){
+  var utr=document.getElementById("bidUTR").value.trim();
+  if(!utr||utr.length<8){toast("Enter valid UTR (12+ digits)","warn");return;}
+  var bid=window._pendingBid;if(!bid){toast("No pending bid","warn");return;}
+  var btn=document.querySelector("#qrPayStep .btn-accent");
+  btn.textContent="Submitting...";btn.disabled=true;
+  try{
+    var res=await fetch("/api/submit-bid",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({amount_paise:bid.amount_paise,handle:bid.handle,email:bid.email,website:bid.website,description:bid.desc,category:"creator",utr:utr,profile_id:bid.profile_id})});
+    var d=await res.json();
+    if(res.ok&&d.success){
+      toast("Bid confirmed! You are on the leaderboard.","ok");
+      closeBid();backFromQR();document.getElementById("bidUTR").value="";
+      sorted().forEach(function(x,i){prevR[x.id]=i+1;});
+      if(bid.profile_id&&bid.profile_id!==0){var p=P.find(function(x){return x.id===bid.profile_id;});if(p){p.bid_paise=bid.amount_paise;p._f=true;}}
+      else{P.push({id:Date.now(),name:bid.handle.replace("@",""),handle:bid.handle,av:"\ud83d\udd25",followers:"\u2014",eng:"\u2014",cat:"creator",bid_paise:bid.amount_paise,verified:false,_f:true});}
+      render();
+    }else{toast(d.error||"Failed","warn");}
+  }catch(e){toast("Network error","warn");}
+  btn.textContent="\u2705 Confirm Payment";btn.disabled=false;
+}
+
+function openClaimModal(){ document.getElementById("claimOverlay").classList.add("open"); }
+function closeClaim(){ document.getElementById("claimOverlay").classList.remove("open"); }
+function submitClaim(){
+  var h=document.getElementById("claimHandle").value.trim();
+  var email=document.getElementById("claimEmail").value.trim();
+  if(!h||!email){ toast("Enter handle and email","warn"); return; }
+  closeClaim();
+  toast("Claim submitted for "+h+"! We will verify via DM.","ok");
+}
+
+function toast(msg,type){ var w=document.getElementById("tw"),d=document.createElement("div"); d.className="toast"+(type==="warn"?" warn":""); d.innerHTML=msg; w.appendChild(d); setTimeout(function(){ d.remove(); },4000); }
+
+// Boot
+
+// Check for payment result in URL (redirect from Instamojo)
+function checkPaymentResult(){
+  var params = new URLSearchParams(window.location.search);
+  var payment = params.get("payment");
+  if(payment === "success"){
+    var amount = params.get("amount");
+    toast("Payment confirmed! \u20b9" + (amount||"") + " \ud83d\udd25 Leaderboard updating...","ok");
+    // Clean URL
+    window.history.replaceState({}, document.title, "/");
+  } else if(payment === "failed"){
+    var reason = params.get("reason") || "unknown";
+    toast("Payment failed: " + reason + ". Please try again.","warn");
+    window.history.replaceState({}, document.title, "/");
+  }
+}
+
+init();
+checkPaymentResult();
+
+// ── THEME TOGGLE ──
+function toggleTheme(){
+  var body=document.body;
+  var btn=document.getElementById("themeToggle");
+  if(body.classList.contains("light")){
+    body.classList.remove("light");
+    btn.textContent="🌙";
+    localStorage.setItem("theme","dark");
+  } else {
+    body.classList.add("light");
+    btn.textContent="☀️";
+    localStorage.setItem("theme","light");
+  }
+}
+// Load saved theme
+(function(){
+  var saved=localStorage.getItem("theme");
+  if(saved==="light"){
+    document.body.classList.add("light");
+    var btn=document.getElementById("themeToggle");
+    if(btn) btn.textContent="☀️";
+  }
+})();
+
+
+// ── CUSTOM DROPDOWN ──
+var heroCatValue = "all";
+function toggleDropdown(){
+  document.getElementById("heroCatWrap").classList.toggle("open");
+}
+function selectCat(el){
+  var val = el.getAttribute("data-val");
+  var text = el.textContent.trim();
+  var icon = el.querySelector(".dd-i-icon").textContent;
+  heroCatValue = val;
+  document.getElementById("heroCatBtn").querySelector(".dd-text").textContent = text;
+  document.getElementById("heroCatBtn").querySelector(".dd-icon").textContent = icon;
+  document.querySelectorAll(".dd-item").forEach(function(i){ i.classList.remove("selected"); });
+  el.classList.add("selected");
+  document.getElementById("heroCatWrap").classList.remove("open");
+  updateHeroPrice();
+}
+// Close dropdown on outside click
+document.addEventListener("click", function(e){
+  var dd = document.getElementById("heroCatWrap");
+  if(dd && !dd.contains(e.target)) dd.classList.remove("open");
+});
+
+
+// ── VISIT PROFILE (click row → open their link) ──
+function visitProfile(id){
+  var p = P.find(function(x){ return x.id===id; });
+  if(!p) return;
+  if(!p._clicks) p._clicks=Math.floor(Math.random()*500)+10;
+  p._clicks++;
+  var hasWebsite = p.website && p.website.trim();
+  var hasInsta = p.url && p.url.trim();
+  if(hasWebsite && hasInsta){
+    showLinkChoice(p);
+  } else if(hasWebsite){
+    window.open(p.website, "_blank");
+  } else if(hasInsta){
+    window.open(p.url + "?utm_source=hypeoutbid", "_blank");
+  } else {
+    openBidModal(id);
+  }
+}
+
+function showLinkChoice(p){
+  var ex = document.getElementById("linkChoiceOverlay");
+  if(ex) ex.remove();
+  var ov = document.createElement("div");
+  ov.id = "linkChoiceOverlay";
+  ov.className = "overlay open";
+  ov.style.zIndex = "300";
+  ov.onclick = function(e){ if(e.target===ov) ov.remove(); };
+  var box = document.createElement("div");
+  box.className = "modal";
+  box.style.maxWidth = "340px";
+  box.style.textAlign = "center";
+  box.style.padding = "1.5rem 2rem";
+  var closeBtn = document.createElement("button");
+  closeBtn.className = "modal-close";
+  closeBtn.innerHTML = "\u2715";
+  closeBtn.onclick = function(){ ov.remove(); };
+  var h2 = document.createElement("h2");
+  h2.style.cssText = "font-size:1.1rem;margin-bottom:.3rem;";
+  h2.textContent = "Where do you want to go?";
+  var sub = document.createElement("p");
+  sub.className = "msub";
+  sub.style.marginBottom = "1.25rem";
+  sub.innerHTML = "Choose a destination for <b>" + p.name + "</b>";
+  var btns = document.createElement("div");
+  btns.style.cssText = "display:flex;flex-direction:column;gap:.6rem;";
+  var webBtn = document.createElement("a");
+  webBtn.href = p.website;
+  webBtn.target = "_blank";
+  webBtn.className = "btn btn-accent btn-lg";
+  webBtn.style.width = "100%";
+  webBtn.textContent = "\ud83c\udf10 Visit Website";
+  webBtn.onclick = function(){ ov.remove(); };
+  var igBtn = document.createElement("a");
+  igBtn.href = p.url + "?utm_source=hypeoutbid";
+  igBtn.target = "_blank";
+  igBtn.className = "btn btn-ghost btn-lg";
+  igBtn.style.width = "100%";
+  igBtn.textContent = "\ud83d\udcf8 Open Instagram";
+  igBtn.onclick = function(){ ov.remove(); };
+  btns.appendChild(webBtn);
+  btns.appendChild(igBtn);
+  box.appendChild(closeBtn);
+  box.appendChild(h2);
+  box.appendChild(sub);
+  box.appendChild(btns);
+  ov.appendChild(box);
+  document.body.appendChild(ov);
+}
+
+// Assign random click counts to profiles
+P.forEach(function(p){ p._clicks = Math.floor(Math.random()*2000)+50; });
+
+</script></body></html>
