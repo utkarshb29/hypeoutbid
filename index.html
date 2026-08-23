@@ -406,7 +406,7 @@ body.light .lb-row:hover .user-desc{color:var(--text2);}
 
 
 <section class="hero"><div class="container">
-  <div class="hero-badge"><div class="live-dot"></div> <span id="onlineCount">347</span> online · <span id="statProfiles">20</span> profiles listed</div>
+  <div class="hero-badge"><div class="live-dot"></div> <span id="launchTimerTop">0h 0m</span> live · <span id="statProfiles">0</span> profiles · <span id="statBidsTop">₹0</span> earned</div>
   <p class="hero-tagline">Where the next billion-dollar founders and viral creators fight for the #1 spot.</p>
   <h1>Claim #1 for <span class="hl" id="heroPrice">₹10</span></h1>
   <p class="hero-sub">New spots start at <span class="hl-green">₹10</span>. Paying less than the #1 price still puts you on the board at whatever place that bid can take.</p>
@@ -578,6 +578,7 @@ body.light .lb-row:hover .user-desc{color:var(--text2);}
 
 <div class="toast-wrap" id="tw"></div><script>
 // ── DATA (bids will be overwritten from DB) ──
+var LAUNCH_TIME=new Date("2026-08-23T12:00:00+05:30").getTime();
 var P=[];
 
 var curFilter="all", prevR={}, bidTargetId=null, CONFIG=null, sbClient=null;
@@ -761,13 +762,17 @@ function addFeed(msg){
 
 
 function startOnlineCounter(){
-  var base=Math.floor(Math.random()*200)+300;
-  document.getElementById("onlineCount").textContent=base;
-  setInterval(function(){
-    base+=Math.floor(Math.random()*11)-5;
-    if(base<200)base=200; if(base>800)base=800;
-    document.getElementById("onlineCount").textContent=base;
-  },3000);
+  function upTop(){
+    var now=Date.now(),diff=now-LAUNCH_TIME;if(diff<0)diff=0;
+    var h=Math.floor(diff/3600000),m=Math.floor((diff%3600000)/60000);
+    var el=document.getElementById("launchTimerTop");
+    if(el) el.textContent=h+"h "+m+"m";
+    var sp=document.getElementById("statProfiles");
+    if(sp) sp.textContent=P.length;
+    var sb=document.getElementById("statBidsTop");
+    if(sb) sb.textContent="₹"+(P.reduce(function(s,x){return s+x.bid_paise;},0)/100);
+  }
+  upTop(); setInterval(upTop, 10000);
 }
 // Demo simulation (only when no backend connected)
 function startSimulation(){
