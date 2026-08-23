@@ -77,14 +77,36 @@ module.exports = async (req, res) => {
         targetProfileId = created.id;
       }
     } else {
-      // Outbidding existing profile - check amount
+      // Outbidding existing profile - check if it exists
       const { data: target } = await supabase
         .from("profiles")
-        .select("current_bid_paise")
+        .select("current_bid_paise, handle")
         .eq("id", profile_id)
         .single();
-      if (target && amount_paise <= target.current_bid_paise) {
-        return res.status(400).json({ error: "Must exceed current bid", success: false });
+      if (target) {
+        if (amount_paise <= target.current_bid_paise) {
+          return res.status(400).json({ error: "Must exceed current bid", success: false });
+        }
+      } else {
+        // Profile doesn't exist yet (fresh DB) - create it
+        const { data: created, error: createErr } = await supabase
+          .from("profiles")
+          .insert({
+            handle: cleanHandle,
+            name: cleanHandle.replace("@", ""),
+            category: category || "other",
+            instagram_url: igUrl,
+            website_url: website || null,
+            description: description || null,
+            current_bid_paise: amount_paise,
+            top_bidder_handle: cleanHandle
+          })
+          .select("id")
+          .single();
+        if (createErr) {
+          return res.status(500).json({ error: "Failed to create profile: " + createErr.message, success: false });
+        }
+        targetProfileId = created.id;
       }
     }
 
